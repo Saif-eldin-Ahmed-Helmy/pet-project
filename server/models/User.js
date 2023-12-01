@@ -4,6 +4,12 @@ const bcrypt = require('bcrypt');
 
 // should we add a field for the user's date of birth and gender?
 const locationSchema = new mongoose.Schema({
+    locationId: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+    },
     locationSignature: { // this will be a fingerprint for the location of the user, probably gonna use longitude and latitude, when we get in a group call we can discuss this
         type: String,
         required: true,

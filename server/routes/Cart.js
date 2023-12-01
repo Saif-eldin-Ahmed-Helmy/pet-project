@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
             existingItem.quantity += quantity || 1;
             await existingItem.save();
         } else {
-            const newItem = await CartItem.create({ itemId });
+            const newItem = await CartItem.create({ itemId, quantity: quantity || 1 });
             user.shoppingCart.push(newItem);
             await user.save();
         }
@@ -65,7 +65,7 @@ router.delete('/', async (req, res) => {
                 await CartItem.deleteOne({ _id: cartItem._id });
             } else {
                 cartItem.quantity--;
-                await CartItem.updateOne({ _id: cartItem._id }, { quantity: cartItem.quantity });
+                await cartItem.save();
             }
 
             await user.save();

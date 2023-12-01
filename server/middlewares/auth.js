@@ -1,20 +1,19 @@
 const jwt = require('jsonwebtoken');
+const { handleUnauthorized } = require('../utils/errorHandler');
 
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
 
     if (!token) {
-        return res.status(401).json({ error: 'Unauthorized - Missing Token' });
+        return handleUnauthorized(res);
     }
 
-    console.log(token);
     try {
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        req.tokenPayload = decoded;
+        req.tokenPayload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         next();
     } catch (error) {
         console.error(error);
-        res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        handleUnauthorized(res);
     }
 };
 
