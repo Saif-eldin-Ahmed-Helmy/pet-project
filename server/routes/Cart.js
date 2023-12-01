@@ -1,68 +1,81 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const CartItem = require('../models/CartItem');
 const { verifyToken } = require('../middlewares/auth');
+const { handleUnauthorized, handleServerError, handleUserNotFound, handleBadRequest } = require('../utils/errorHandler');
 
 router.use(verifyToken);
 
 router.get('/', async (req, res) => {
     try {
-        if (!req.tokenPayload) {
-            return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
-        }
+        if (!req.tokenPayload) return handleUnauthorized(res);
 
         const { email } = req.tokenPayload;
+        const user = await User.findOne({ email }).populate('shoppingCart');
+        if (!user) return handleUserNotFound(res);
 
-        if (!email) {
-            return res.status(400).json({ error: 'Email is required.' });
-        }
-
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        const shoppingCart = user.shoppingCart;
-
-        res.json(shoppingCart);
+        res.json(user.shoppingCart);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        handleServerError(res);
     }
 });
 
 router.post('/', async (req, res) => {
-    if (!req.tokenPayload) {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+    try {
+        if (!req.tokenPayload) return handleUnauthorized(res);
+
+        const { email } = req.tokenPayload;
+        const { itemId, quantity } = req.body;
+        if (!itemId) return handleBadRequest(res);
+
+        const user = await User.findOne({ email }).populate('shoppingCart');
+
+        const existingItem = user.shoppingCart.find(cartItem => cartItem.itemId === itemId);
+        if (existingItem) {
+            existingItem.quantity += quantity || 1;
+            await existingItem.save();
+        } else {
+            const newItem = await CartItem.create({ itemId });
+            user.shoppingCart.push(newItem);
+            await user.save();
+        }
+
+        res.json(user.shoppingCart);
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
-
-    const { email } = req.tokenPayload;
-    const { itemId } = req.body;
-
-    if (!email || !itemId) {
-        return res.status(400).json({ error: 'Email and item id are required.' });
-    }
-
-    // todo: validate if the itemid actually exists
-    // todo: add the item to the user's shopping cart, and if it already exists then increment the quantity by one
 });
 
 router.delete('/', async (req, res) => {
-    const { email } = req.tokenPayload;
-    const { itemId } = req.body;
-    if (!email || !itemId) {
-        return res.status(400).json({ error: 'Email and item id are required.' });
+    try {
+        const { email } = req.tokenPayload;
+        const { itemId, removeFromBasket } = req.body;
+        if (!itemId) return handleBadRequest(res);
+
+        const user = await User.findOne({ email }).populate('shoppingCart');
+        const cartItemIndex = user.shoppingCart.findIndex(cartItem => cartItem.itemId === itemId);
+
+        if (cartItemIndex !== -1) {
+            const cartItem = user.shoppingCart[cartItemIndex];
+            if (removeFromBasket || cartItem.quantity === 1) {
+                user.shoppingCart.splice(cartItemIndex, 1);
+                await CartItem.deleteOne({ _id: cartItem._id });
+            } else {
+                cartItem.quantity--;
+                await CartItem.updateOne({ _id: cartItem._id }, { quantity: cartItem.quantity });
+            }
+
+            await user.save();
+        }
+
+        res.json(user.shoppingCart);
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
-
-    /*
-      TODO:
-      validate if the item ID actually exists
-      allow removing the item from the shopping cart
-      AND also allow decrementing the quantity by one if the quantity is greater than one
-    */
-
 });
 
 module.exports = router;

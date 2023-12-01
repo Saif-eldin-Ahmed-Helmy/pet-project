@@ -1,70 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const user = require('../models/User');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
+const { handleBadRequest, handleServerError } = require('../utils/errorHandler');
 
-router.get('/', (req, res) => {
-    const { email, password } = req.query;
+router.get('/', async (req, res) => {
+    try {
+        const { email, password } = req.query;
 
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required.' });
+        if (!email || !password) {
+            return handleBadRequest(res, 'Email and password are required.');
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            return handleBadRequest(res, 'Invalid email or password.');
+        }
+
+        const payload = {
+            email: user.email,
+            role: user.role,
+        };
+
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
+        res.json({ accessToken });
+
+        console.log(accessToken);
+        console.log(user);
+        console.log(payload);
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
-
-    user.findOne({ email  })
-        .then((data) => {
-            if (!data || !bcrypt.compareSync(password, data.password)) {
-                return res.status(400).json({ error: 'Invalid email or password.' });
-            }
-            const payload = {
-                email: data.email,
-                role: data.role
-            };
-
-            const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
-            res.json({ accessToken: accessToken });
-
-            console.log(accessToken);
-            console.log(data);
-            console.log(payload);
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        });
 });
 
-router.post('/', (req, res) => {
-    const { email, password, name } = req.body;
+router.post('/', async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
 
-    if (!email || !password || !name) {
-        return res.status(400).json({ error: 'Email, password, and name are required.' });
+        if (!email || !password || !name) {
+            return handleBadRequest(res, 'Email, password, and name are required.');
+        }
+
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return handleBadRequest(res, 'Email already exists.');
+        }
+
+        const newUser = await User.create({ email, password, name });
+
+        const payload = {
+            email: newUser.email,
+            role: newUser.role,
+        };
+
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
+        res.json({ accessToken });
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
-
-    const account = user.findOne({ email })
-        .then((data) => {
-            if (data) {
-                return res.status(400).json({ error: 'Email already exists.' });
-            }
-            user.create({ email, password, name })
-                .then((data) => {
-                    const payload = {
-                        email: data.email,
-                        role: data.role
-                    };
-
-                    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
-                    res.json({ accessToken: accessToken });
-                })
-                .catch((error) => {
-                    console.error(error);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                });
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        });
 });
 
 module.exports = router;
