@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const User = require('../models/User');
 
 main().catch(err => console.log(err));
 
