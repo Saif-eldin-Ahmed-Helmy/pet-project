@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const Items = require("../models/Item");
-const { verifyToken } = require('../middlewares/auth');
 const { handleItemNotFound, handleUnauthorized, handleBadRequest } = require("../utils/errorHandler");
+const { verifySession } = require('../middlewares/auth');
 
-router.use(verifyToken)
+router.use(verifySession);
 
 /**
- * Query opetions
+ * Query options
  * - category
  * - inStock
  * - price
@@ -20,10 +20,6 @@ router.use(verifyToken)
  * - example.com/items?itemID=465
  */
 router.get('/', async (req, res) => {
-    if (!req.tokenPayload) {
-        return handleUnauthorized(res);
-    }
-
     let limit = req.query.limit;
     let category = req.query.category;
     let inStock = req.query.inStock == true ? 1 : 0;
@@ -55,21 +51,16 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    if (!req.tokenPayload) {
-        return handleUnauthorized(res);
-    }
-    const { email, role } = req.tokenPayload;
+    const role = req.role;
     if (role !== 'admin') {
         return handleUnauthorized(res);
     }
+
     // @todo: let admins add a new item to the database
 });
 
 router.delete('/', (req, res) => {
-    if (!req.tokenPayload) {
-        return handleUnauthorized(res);
-    }
-    const { email, role } = req.tokenPayload;
+    const role = req.role;
     if (role !== 'admin') {
         return handleUnauthorized(res);
     }

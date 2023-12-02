@@ -1,4 +1,3 @@
-// errorHandler.js
 module.exports = {
     handleUnauthorized: (res) => res.status(401).json({ error: 'Unauthorized - Invalid Token' }),
     handleServerError: (res) => res.status(500).json({ error: 'Internal Server Error' }),
