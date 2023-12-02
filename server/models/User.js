@@ -7,8 +7,8 @@ const locationSchema = new mongoose.Schema({
     locationId: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true,
+        unique: true,
     },
     locationSignature: { // this will be a fingerprint for the location of the user, probably gonna use longitude and latitude, when we get in a group call we can discuss this
         type: String,
@@ -41,6 +41,9 @@ const locationSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
+    googleId: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,
@@ -55,7 +58,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
     },
     name: {
         type: String,

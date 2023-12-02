@@ -1,20 +1,16 @@
 const jwt = require('jsonwebtoken');
 const { handleUnauthorized } = require('../utils/errorHandler');
 
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-
-    if (!token) {
+const verifySession = (req, res, next) => {
+    if (!req.user) {
         return handleUnauthorized(res);
     }
+    const {email, role} = req.user;
 
-    try {
-        req.tokenPayload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        next();
-    } catch (error) {
-        console.error(error);
-        handleUnauthorized(res);
+    if (!email || !role) {
+        return handleUnauthorized(res);
     }
+    next();
 };
 
-module.exports = { verifyToken };
+module.exports = { verifySession };
