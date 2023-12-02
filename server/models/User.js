@@ -34,6 +34,10 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    deleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const userSchema = new mongoose.Schema({
@@ -67,6 +71,10 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    deleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 userSchema.pre('save', async function(next) {
