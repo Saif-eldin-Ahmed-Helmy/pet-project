@@ -4,14 +4,17 @@ const router = express.Router();
 const Items = require("../models/Item");
 const { handleItemNotFound, handleUnauthorized, handleBadRequest } = require("../utils/errorHandler");
 const { verifySession } = require('../middlewares/auth');
+const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
 router.use(verifySession);
+router.use(attachUserDataToRequest);
 
 /**
  * Query options
  * - category
  * - inStock
- * - price
+ * - priceMin
+ * - priceMax
  * - itemID
  * - limit
  * 
@@ -20,34 +23,28 @@ router.use(verifySession);
  * - example.com/items?itemID=465
  */
 router.get('/', async (req, res) => {
-    let limit = req.query.limit;
-    let category = req.query.category;
-    let inStock = req.query.inStock == true ? 1 : 0;
-    let priceRange = String(req.query.price).split('-');
-    let itemID = req.query.itemID;
-
-    if(limit != null){
-        let items = await Items.find({
-            category: category,
-            stock: { $gte: inStock }, // gte: finds where the stock is more than or equal 1
-            price: { $gte: priceRange[0] , $lte: priceRange[1] }
-        }).limit(limit);
-
-        res.json({ items });
-    } else if(itemID != null) {
-        let item = await Items.findOne({ itemID });
-
-        if(item != null) {
-            res.json({ item });
-            return;
+    const limit = req.query.limit;
+    const category = req.query.category;
+    const inStock = !req.query.inStock || req.query.inStock === 'true';
+    const priceMin = req.query.priceMin || 0;
+    const priceMax = req.query.priceMax || 1000000;
+    const itemId = req.query.itemId;
+    const deleted = req.query.deleted === 'true'
+    if (deleted) {
+        const role = req.role;
+        if (role !== 'admin') {
+            return handleUnauthorized(res);
         }
-
-        handleItemNotFound(res);
-    } else if(!req.query) {
-        let items = await Items.find();
-
-        res.json({ items });
     }
+
+    let items = await Items.find({
+        deleted: deleted,
+        itemId: itemId || { $exists: true }, // if itemID is null, return all items
+        category: category || { $exists: true }, // if category is null, return all items
+        stock: inStock ? { $gt: 0 } : 0, // If inStock is true, return items with stock > 0, else return items with stock = 0
+        price: { $gte: priceMin, $lte: priceMax }
+    }).limit(limit);
+    res.json({items});
 });
 
 router.post('/', (req, res) => {
