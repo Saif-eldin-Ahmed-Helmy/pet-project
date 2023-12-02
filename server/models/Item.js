@@ -27,6 +27,10 @@ const itemSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    deleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const Item = mongoose.model('Item', itemSchema);

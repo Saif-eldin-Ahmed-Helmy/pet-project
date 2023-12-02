@@ -1,37 +1,77 @@
 const express = require('express');
 const router = express.Router();
 
+const Items = require("../models/Item");
 const { verifyToken } = require('../middlewares/auth');
+const { handleItemNotFound, handleUnauthorized, handleBadRequest } = require("../utils/errorHandler");
 
 router.use(verifyToken)
 
-router.get('/', (req, res) => {
+/**
+ * Query opetions
+ * - category
+ * - inStock
+ * - price
+ * - itemID
+ * - limit
+ * 
+ * Examples:
+ * - example.com/items?category=dogs&inStock=true&price=50-150&limit=24
+ * - example.com/items?itemID=465
+ */
+router.get('/', async (req, res) => {
     if (!req.tokenPayload) {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        return handleUnauthorized(res);
     }
-    // this is a normal method that users can use so no need to check the user role here
-    // this will return the list of items in the database
-    // can add filters here to search for specific items
+
+    let limit = req.query.limit;
+    let category = req.query.category;
+    let inStock = req.query.inStock == true ? 1 : 0;
+    let priceRange = String(req.query.price).split('-');
+    let itemID = req.query.itemID;
+
+    if(limit != null){
+        let items = await Items.find({
+            category: category,
+            stock: { $gte: inStock }, // gte: finds where the stock is more than or equal 1
+            price: { $gte: priceRange[0] , $lte: priceRange[1] }
+        }).limit(limit);
+
+        res.json({ items });
+    } else if(itemID != null) {
+        let item = await Items.findOne({ itemID });
+
+        if(item != null) {
+            res.json({ item });
+            return;
+        }
+
+        handleItemNotFound(res);
+    } else if(!req.query) {
+        let items = await Items.find();
+
+        res.json({ items });
+    }
 });
 
 router.post('/', (req, res) => {
     if (!req.tokenPayload) {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        return handleUnauthorized(res);
     }
     const { email, role } = req.tokenPayload;
     if (role !== 'admin') {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        return handleUnauthorized(res);
     }
     // @todo: let admins add a new item to the database
 });
 
 router.delete('/', (req, res) => {
     if (!req.tokenPayload) {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        return handleUnauthorized(res);
     }
     const { email, role } = req.tokenPayload;
     if (role !== 'admin') {
-        return res.status(401).json({ error: 'Unauthorized - Invalid Token' });
+        return handleUnauthorized(res);
     }
     // @todo: let admins delete an item from the database
 });
