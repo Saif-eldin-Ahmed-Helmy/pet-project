@@ -19,7 +19,7 @@ router.use(attachUserDataToRequest);
  * - limit
  * 
  * Examples:
- * - example.com/items?category=dogs&inStock=true&price=50-150&limit=24
+ * - example.com/items?category=dogs&inStock=true&priceMin=50&priceMax=150&limit=24
  * - example.com/items?itemID=465
  */
 router.get('/', async (req, res) => {
@@ -30,6 +30,7 @@ router.get('/', async (req, res) => {
     const priceMax = req.query.priceMax || 1000000;
     const itemId = req.query.itemId;
     const deleted = req.query.deleted === 'true'
+    
     if (deleted) {
         const role = req.role;
         if (role !== 'admin') {
@@ -47,21 +48,40 @@ router.get('/', async (req, res) => {
     res.json({items});
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const role = req.role;
     if (role !== 'admin') {
         return handleUnauthorized(res);
     }
+    
+    let item = req.body;
 
-    // @todo: let admins add a new item to the database
+    let itemId = item.itemID;
+    let existingItem = await Items.findOne({ itemId });
+    if(existingItem) {
+        return handleBadRequest(res, "Item with that ID already exists");
+    }
+
+    let newItem = await Items.create({ item });
+
+    res.json({ newItem });
 });
 
-router.delete('/', (req, res) => {
+router.delete('/', async (req, res) => {
     const role = req.role;
     if (role !== 'admin') {
         return handleUnauthorized(res);
     }
-    // @todo: let admins delete an item from the database
+
+    let itemId = req.body.itemID;
+    let existingItem = await Items.findOne({ itemID });
+    if(!existingItem) {
+        return handleBadRequest(res, "Item with that ID does not exists");
+    }
+
+    let updatedItem = await Items.findOneAndUpdate({ itemId }, { deleted: true });
+
+    res.json({ deleted: true });
 });
 
 module.exports = router;
