@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+.navbar {
+    color: #1a1a1a;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    background-image: linear-gradient(white, white);
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .logo {
+    width: 12%;
+    height: 12%;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.navbar .icon {
+    font-size: 150%;
+    margin: 0 10px;
+    display: inline-block;
+    color: #1a1a1a;
+}
