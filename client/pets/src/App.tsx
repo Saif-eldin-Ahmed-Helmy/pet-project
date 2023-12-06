@@ -43,7 +43,7 @@ function App() {
                     <ButtonComponent className="main-menu-button" variant="primary" size="lg">Shop Now</ButtonComponent>
                 </Container>
             </Container>
-            <div className="container mt-100" style={{marginTop: "100"}}>
+            <div className="container" style={{marginTop: 100}}>
                 <Row>
                     <div className="col-xs-4 col-sm-2 px-md-0">
                         <div className="logo_item item_icon">
