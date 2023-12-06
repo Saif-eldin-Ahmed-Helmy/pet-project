@@ -1,4 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
 #root {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +43,53 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* main menu */
+.main-menu {
+  margin-top: 9%;
+}
+
+.main-menu-container {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+}
+
+.main-menu-image {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  object-fit: cover;
+  background: #1a1a1a;
+}
+
+.main-menu-head {
+  font-size: 180%;
+  position: absolute;
+  left: -8%;
+  text-align: left;
+  transform: translate(-50%, -50%);
+  color: white;
+  z-index: 1;
+}
+
+.main-menu-subhead {
+  margin-top: 8%;
+  text-align: left;
+  font-size: 350%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: white;
+  z-index: 1;
+}
+
+.main-menu-button {
+  position: absolute;
+  top: 200px; /* Adjust this value as needed */
+  left: -21%; /* Adjust this value as needed */
+  z-index: 1;
+  color: #1a1a1a !important;
+  background-color: white !important;
 }
