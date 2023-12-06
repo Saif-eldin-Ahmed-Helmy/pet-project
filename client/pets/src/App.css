@@ -57,9 +57,9 @@
 }
 
 .main-menu-image {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
+  width: auto;
+  height: auto;
+  position: relative;
   left: 0;
   object-fit: cover;
   background: #1a1a1a;
