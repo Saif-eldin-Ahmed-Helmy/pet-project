@@ -24,17 +24,20 @@ router.get('/', async (req, res) => {
         const limit = req.query.limit;
         const category = req.query.category;
         const subCategory = req.query.subCategory;
-        const inStock = !req.query.inStock || req.query.inStock === 'true';
+        const inStock = req.query.inStock === 'true';
         const priceMin = req.query.priceMin || 0;
         const priceMax = req.query.priceMax || 1000000;
         const itemId = req.query.itemId;
         const deleted = req.query.deleted === 'true'
 
         if (deleted) {
-            //    const role = req.role;
-            //    if (role !== 'admin') {
-            //        return handleUnauthorized(res);
-            //    }
+            if (!req.isAuthenticated() || !req.user) {
+                return handleUnauthorized(res);
+            }
+            const {role} = req.user;
+            if (role !== 'admin') {
+                return handleUnauthorized(res);
+            }
         }
 
         let items = await Items.find({
@@ -42,7 +45,7 @@ router.get('/', async (req, res) => {
             itemId: itemId || {$exists: true}, // if itemId is null, return all items
             category: category || {$exists: true}, // if category is null, return all items
             subCategory: subCategory || {$exists: true}, // if subCategory is null, return all items
-            stock: inStock ? {$gt: 0} : 0, // If inStock is true, return items with stock > 0, else return items with stock = 0
+            stock: inStock ? {$gt: 0} : {$gte: 0}, // If inStock is true, return items with stock > 0, else return all items with stock >= 0
             price: {$gte: priceMin, $lte: priceMax}
         }).limit(limit);
         res.json({items});

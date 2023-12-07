@@ -14,15 +14,15 @@ const Layout: React.FC = () => {
                     {
                         title: "CATS",
                         items: [
-                            {href: "/cats?subCategory=food", label: "Cat Food"},
-                            {href: "/cats?subCategory=accessories", label: "Cat Accessories"},
+                            {href: "/shop?category=cats&subCategory=food", label: "Cat Food"},
+                            {href: "/shop?category=cats&subCategory=accessories", label: "Cat Accessories"},
                         ],
                     },
                     {
                         title: "DOGS",
                         items: [
-                            {href: "/dogs?subCategory=food", label: "Dog Food"},
-                            {href: "/dogs?subCategory=accessories", label: "Dog Accessories"},
+                            {href: "/shop?category=dogs&subCategory=food", label: "Dog Food"},
+                            {href: "/shop?category=dogs&subCategory=accessories", label: "Dog Accessories"},
                         ],
                     }
                 ]}

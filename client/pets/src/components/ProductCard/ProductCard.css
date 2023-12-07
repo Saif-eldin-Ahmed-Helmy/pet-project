@@ -3,8 +3,15 @@
     width: 18rem;
 }
 
+.product-card .image-container img {
+    width: 100%;  /* This will make the image take the full width of the container */
+    height: 200px;  /* Adjust this value according to your needs */
+    object-fit: cover;  /* This will make sure your image covers the whole area of the container without distorting the aspect ratio */
+}
+
 .product-card:hover .favorite-button,
-.product-card:hover .buy-button {
+.product-card:hover .buy-button,
+.product-card:hover .buy-button-ofs{
     visibility: visible;
 }
 
@@ -29,6 +36,12 @@
     transition: all 0.3s ease;
 }
 
+.favorite-button:focus-visible {
+    color: #dac22d !important;
+    background-color: #dac22d !important;
+    box-shadow: 0 0 0 0.25rem rgba(253, 233, 13, 0.25) !important
+}
+
 .buy-button {
     position: absolute;
     top: 50%;
@@ -37,6 +50,18 @@
     visibility: hidden;
     transition: all 0.3s ease;
     background-image: linear-gradient(gold, gold);
+    border-color: #dabe1e !important;
+}
+
+.buy-button-ofs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border: 0 !important;
+    background-image: linear-gradient(gray, gray);
 }
 
 .heart-red {

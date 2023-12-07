@@ -92,4 +92,14 @@
   z-index: 1;
   color: #1a1a1a !important;
   background-color: white !important;
+  border: 0 !important;
+}
+
+.main-menu-button:hover {
+  position: absolute;
+  top: 200px; /* Adjust this value as needed */
+  left: -21%; /* Adjust this value as needed */
+  z-index: 1;
+  color: white !important;
+  background-color: gold !important;
 }
