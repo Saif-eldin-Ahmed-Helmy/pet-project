@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductComponentProps> = ({ product, isFavorited, to
             <a href={`/product/${product.itemId}`}>
                 <div className="image-container">
                     <Card.Img variant="top" src={product.picture} />
-                    <ButtonComponent className="buy-button" onClick={() => {}}>Buy</ButtonComponent> {/* Use ButtonComponent */}
+                    <ButtonComponent className={product.stock > 0 ? 'buy-button' : 'buy-button-ofs'} onClick={() => {}}>{product.stock > 0 ? 'Buy' : 'Out of Stock'}</ButtonComponent> {}
                 </div>
             </a>
             <Card.Body>

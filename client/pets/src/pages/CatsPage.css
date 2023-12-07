@@ -1,4 +1,6 @@
 .filter-form {
+    font-family: 'Work Sans', sans-serif !important;
+    font-weight: bolder;
     background: #f8f9fa;
     padding: 10px; /* Reduced from 20px to 10px */
     border-radius: 5px;
@@ -29,4 +31,22 @@
 .filter-form .form-check .form-check-input {
     position: relative;
     margin-left: 0;
+}
+
+.dropdown-toggle {
+    width: 120px !important;
+    background-color: transparent !important;
+    color: gray !important;
+    border: 1px solid white !important;
+}
+
+.form-check-input:checked {
+    color: gold !important;
+    background-color: gold !important;
+    border: 0 !important;
+}
+
+.form-check-input:focus {
+    border-color: goldenrod !important;
+    box-shadow: 0 0 0 0.25rem rgba(253, 233, 13, 0.25) !important;
 }

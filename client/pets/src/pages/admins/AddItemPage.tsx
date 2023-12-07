@@ -9,13 +9,13 @@ const AddItemPage: React.FC = () => {
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('cats');
-    const [subCategory, setSubCategory] = useState('food');
+    const [subCategoryState, setSubCategoryState] = useState('food');
     const [deleted, setDeleted] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const item = { itemId, name, picture, stock, price, description, category, subCategory, deleted };
+        const item = { itemId, name, picture, stock, price, description, category, subCategory: subCategoryState, deleted };
         const response = await fetch('http://localhost:3001/api/items', {
             method: 'POST',
             credentials: 'include',
@@ -81,7 +81,7 @@ const AddItemPage: React.FC = () => {
             </Form.Group>
             <Form.Group controlId="formSubCategory">
                 <Form.Label>Sub Category</Form.Label>
-                <Form.Control as="select" value={subCategory} onChange={e => setSubCategory(e.target.value)}>
+                <Form.Control as="select" value={subCategoryState} onChange={e => setSubCategoryState(e.target.value)}>
                     <option value="food">Food</option>
                     <option value="accessories">Accessories</option>
                 </Form.Control>

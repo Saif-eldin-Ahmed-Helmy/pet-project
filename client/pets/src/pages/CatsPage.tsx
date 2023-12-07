@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Container from "react-bootstrap/Container";
-import {Row, Col, Form, FormControl, Button} from "react-bootstrap";
+import {Row, Col, Form, FormControl, DropdownButton, Dropdown} from "react-bootstrap";
 import ProductCard from '../components/ProductCard/ProductCard';
 import './CatsPage.css';
+import { useLocation } from 'react-router-dom';
+import CheckboxComponent from "../components/Checkbox/Checkbox.tsx";
+
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+}
 
 interface Product {
     itemId: string;
@@ -17,19 +23,23 @@ interface Product {
 
 const CatsPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [inStock, setInStock] = useState(true);
+    const [showOutOfStock, setShowOutOfStock] = useState(true);
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(0);
     const [limit, setLimit] = useState(10);
-    const [category, setCategory] = useState('');
-    const [showFilters, setShowFilters] = useState(false);
+    const query = useQuery();
+    const category = query.get('category');
+    const subCategory = query.get('subCategory');
+    const [categoryState, setCategoryState] = useState(category || '');
+    const [subCategoryState, setSubCategoryState] = useState(subCategory || '');
+    const [showFilters, setShowFilters] = useState(true);
 
     useEffect(() => {
         fetchProducts();
-    }, [inStock, minPrice, maxPrice, limit, category]);
+    }, [showOutOfStock, minPrice, maxPrice, limit, categoryState, subCategoryState]);
 
     const fetchProducts = async () => {
-        const response = await fetch(`http://localhost:3001/api/items?inStock=${inStock}&priceMin=${minPrice}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&subCategory=${category}`);
+        const response = await fetch(`http://localhost:3001/api/items?priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&category=${categoryState}&subCategory=${subCategoryState}`);
         const data = await response.json();
         setProducts(data.items);
         products.map(product => (
@@ -37,43 +47,66 @@ const CatsPage: React.FC = () => {
         ));
     };
 
+    //<Button variant="primary" onClick={() => setShowFilters(!showFilters)}>Toggle Filters</Button>
+
     return (
         <div>
             <Container className="shop-menu" style={{marginTop: 200}}>
                 <Container className="shop-menu-container">
                     <h2 className="shop-menu-subhead">
-                        <p>FOR CATS</p>
+                        <p>
+                            {categoryState === 'cats' ? 'FOR CATS' : categoryState === 'dogs' ? 'FOR DOGS' : 'FOR YOUR PET'}
+                        </p>
                     </h2>
                     <h2 className="shop-menu-description" style={{fontSize: 20, fontFamily: "sans-serif"}}>
                         <p>Make your pet happy!</p>
                     </h2>
-                    <Button variant="primary" onClick={() => setShowFilters(!showFilters)}>Toggle Filters</Button>
-
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <Form className="filter-form" style={{width: '50%', display: showFilters ? 'flex' : 'none'}}>
-                        <Form.Group controlId="formInStock">
-                            <Form.Check type="checkbox" label="In Stock" checked={inStock} onChange={e => setInStock(e.target.checked)} />
-                        </Form.Group>
-                        <Form.Group controlId="formMinPrice">
+                    <Form className="filter-form" style={{backgroundColor: "white", width: '100%', display: showFilters ? 'flex' : 'none'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                            <p>Out Of Stock</p>
+                            <CheckboxComponent onCheckboxChange={setShowOutOfStock} />
+                        </div>
+                        <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMinPrice">
                             <Form.Label>Min Price</Form.Label>
                             <FormControl type="number" value={minPrice} onChange={e => setMinPrice(e.target.value ? parseFloat(e.target.value) : 0)} />
                         </Form.Group>
-                        <Form.Group controlId="formMaxPrice">
+                        <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMaxPrice">
                             <Form.Label>Max Price</Form.Label>
                             <FormControl type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value ? parseFloat(e.target.value) : 0)} />
                         </Form.Group>
-                        <Form.Group controlId="formLimit">
+                        <Form.Group style={{marginLeft: 10, width: '5%'}} controlId="formLimit">
                             <Form.Label>Limit</Form.Label>
                             <FormControl type="number" value={limit} onChange={e => setLimit(e.target.value ? parseInt(e.target.value) : 0)} />
                         </Form.Group>
-                        <Form.Group controlId="formCategory">
-                            <Form.Label>Category</Form.Label>
-                            <Form.Control as="select" value={category} onChange={e => setCategory(e.target.value)}>
-                                <option value="">All</option>
-                                <option value="food">Food</option>
-                                <option value="accessories">Accessories</option>
-                            </Form.Control>
-                        </Form.Group>
+                        <div style={{marginLeft: 20, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                            <p>Category</p>
+                            <DropdownButton
+                                style={{ top: -10 }}
+                                id="dropdown-basic-button"
+                                title={categoryState === '' ? 'All' : categoryState === 'cats' ? 'Cats' : 'Dogs'}
+                                onSelect={(selectedKey: any) => setCategoryState(selectedKey)}
+                            >
+                                <Dropdown.Item eventKey="">All</Dropdown.Item>
+                                <Dropdown.Item eventKey="cats">Cats</Dropdown.Item>
+                                <Dropdown.Item eventKey="dogs">Dogs</Dropdown.Item>
+                            </DropdownButton>
+                        </div>
+
+
+                        <div style={{marginLeft: 20, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                            <p>Sub Category</p>
+                            <DropdownButton
+                                style={{ top: -10 }}
+                                id="dropdown-basic-button"
+                                title={subCategoryState === '' ? 'All' : subCategoryState === 'food' ? 'Food' : 'Accessories'}
+                                onSelect={(selectedKey: any) => setSubCategoryState(selectedKey)}
+                            >
+                                <Dropdown.Item eventKey="">All</Dropdown.Item>
+                                <Dropdown.Item eventKey="food">Food</Dropdown.Item>
+                                <Dropdown.Item eventKey="accessories">Accessories</Dropdown.Item>
+                            </DropdownButton>
+                        </div>
                     </Form>
                     </div>
                     <Row className="product_listing__main product_listing__grid">
