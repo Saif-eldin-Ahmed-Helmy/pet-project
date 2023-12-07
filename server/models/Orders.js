@@ -21,7 +21,7 @@ let orderTrace = new mongoose.Schema({
 })
 
 let orderItems = new mongoose.Schema({
-    itemID: {
+    itemId: {
         type: String,
         required: true
     },
@@ -62,7 +62,7 @@ let couponCodes = new mongoose.Schema({
         default: 'order',
         enum: ['order', 'item'] //whether the discount on the whole order or just one item
     },
-    itemID: {
+    itemId: {
         type: String
     },
     maximumBalance: {

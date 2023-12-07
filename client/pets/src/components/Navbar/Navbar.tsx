@@ -60,7 +60,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                         <a href="/cart" className="icon">
                             <FaShoppingCart/>
                         </a>
-                        <a href="/user" className="icon">
+                        <a href="/login" className="icon">
                             <FaUser/>
                         </a>
                     </div>

@@ -7,6 +7,14 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const cors = require('cors');
+
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -37,6 +45,9 @@ app.use('/api/items', itemsRouter);
 
 const cartRouter = require('./routes/Cart');
 app.use('/api/cart', cartRouter);
+
+const imagesRouter = require('./routes/Images');
+app.use('/api/images', imagesRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
