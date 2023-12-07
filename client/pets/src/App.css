@@ -59,10 +59,10 @@
 .main-menu-image {
   width: auto;
   height: auto;
-  position: relative;
-  left: 0;
+  margin-left: -30%;
   object-fit: cover;
   background: #1a1a1a;
+  max-width: 99.3vw !important;
 }
 
 .main-menu-head {

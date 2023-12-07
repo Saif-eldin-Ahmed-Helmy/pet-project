@@ -7,8 +7,12 @@ const itemSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
     },
+    name: {
+        type: String,
+        required: true,
+    },
     picture: {
-        type: String, // @todo: assuming it's a link to a CDN, idk what CDN we should use yet though
+        type: String,
         required: true,
     },
     stock: {
@@ -24,6 +28,10 @@ const itemSchema = new mongoose.Schema({
         required: true,
     },
     category: {
+        type: String,
+        required: true,
+    },
+    subCategory: {
         type: String,
         required: true,
     },

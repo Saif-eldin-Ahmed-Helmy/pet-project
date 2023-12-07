@@ -16,6 +16,7 @@ const attachUserDataToRequest = async (req, res, next, populateFields = []) => {
         req.user = user;
         req.email = email;
         req.role = user.role;
+        console.log(req.user);
         next();
     } catch (error) {
         console.error(error);

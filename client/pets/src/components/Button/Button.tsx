@@ -4,7 +4,7 @@ import {Button} from "react-bootstrap";
 interface ButtonProps {
     className?: string;
     type?: 'button' | 'submit' | 'reset';
-    variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+    variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'link';
     size?: 'lg' | 'sm';
     disabled?: boolean;
     onClick?: () => void;

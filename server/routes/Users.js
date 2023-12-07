@@ -29,7 +29,7 @@ passport.use(new GoogleStrategy({
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/' }),
+    passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
         const user = req.user;
 
@@ -37,7 +37,7 @@ router.get('/google/callback',
             return handleUserNotFound(res);
         }
 
-        res.redirect('/api/users/test');
+        res.redirect('http://localhost:5173');
 });
 
 /*passport.use(new FacebookStrategy({
@@ -95,10 +95,16 @@ passport.use('local-login', new LocalStrategy({
     }
 }));
 
-router.get('/', passport.authenticate('local-login', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-}));
+router.get('/', function(req, res, next) {
+    passport.authenticate('local-login', function(err, user, info) {
+        if (err) { return next(err); }
+        if (!user) { return res.redirect('/login'); }
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+            return res.redirect('http://localhost:5173');
+        });
+    })(req, res, next);
+});
 
 passport.use('local-register', new LocalStrategy({
     usernameField: 'email',

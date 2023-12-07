@@ -1,0 +1,32 @@
+.filter-form {
+    background: #f8f9fa;
+    padding: 10px; /* Reduced from 20px to 10px */
+    border-radius: 5px;
+    margin-bottom: 10px; /* Reduced from 20px to 10px */
+    display: none; /* Hide the form initially */
+    font-size: 0.8em; /* Make the text smaller */
+}
+
+.filter-form .form-group {
+    margin-bottom: 5px; /* Reduced from 15px to 5px */
+}
+
+.filter-form .form-control {
+    box-shadow: none;
+    border-radius: 0;
+    border-color: #ced4da;
+    padding: 5px; /* Reduced padding */
+}
+
+.filter-form .form-check {
+    padding-left: 0;
+}
+
+.filter-form .form-check .form-check-label {
+    padding-left: 1.25rem;
+}
+
+.filter-form .form-check .form-check-input {
+    position: relative;
+    margin-left: 0;
+}

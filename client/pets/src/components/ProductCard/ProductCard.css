@@ -1,0 +1,48 @@
+.product-card {
+    position: relative;
+    width: 18rem;
+}
+
+.product-card:hover .favorite-button,
+.product-card:hover .buy-button {
+    visibility: visible;
+}
+
+.favorite-button:hover,
+.favorite-button:focus,
+.favorite-button:active {
+    background-image: linear-gradient(gold, gold);
+}
+
+.favorite-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    visibility: hidden;
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: inherit;
+    font-size: 1.5em;
+    transition: all 0.3s ease;
+}
+
+.buy-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    transition: all 0.3s ease;
+    background-image: linear-gradient(gold, gold);
+}
+
+.heart-red {
+    color: red;
+}
+
+.heart-gray {
+    color: gray;
+}
