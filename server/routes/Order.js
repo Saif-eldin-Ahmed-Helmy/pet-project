@@ -4,7 +4,7 @@ const router = express.Router();
 const Orders = require("../models/Orders");
 const Items = require("../models/Item");
 const couponCode = require("../models/couponCode");
-const { handleBadRequest } = require("../utils/errorHandler");
+const { handleBadRequest, handleUnauthorized } = require("../utils/errorHandler");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
@@ -21,22 +21,22 @@ router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders'
  * - city (shiped within this city)
  */
 router.get("/", async (req, res) => {
-    const orderID = req.body.orderID;
+    const orderId = req.body.orderID;
     const traceType = req.body.traceType;
     const itemID = req.body.itemID;
     const itemCategory = req.body.itemCategory;
     const couponCode = req.body.couponCode;
     const city = req.body.city;
 
-    if(orderID != null) {
-        const hasOrder = req.user.orders.find(order => order.orderID == orderID);
+    if(orderId != null) {
+        const hasOrder = req.user.orders.find(order => order.orderId == orderId);
         if(!hasOrder || !req.role == "admin") {
             let userOrders = req.user.orders;
             res.json({ userOrders });
             return;
         }
 
-        let Order = await Orders.find({ orderID: orderID });
+        let Order = await Orders.find({ orderId: orderId });
         res.json({ Order });
         return;
     }
@@ -121,7 +121,7 @@ router.post("/", async(req, res) => {
 
     req.user.balance -= finalAmount;
 
-    await Orders.create({
+    let newOrder = await Orders.create({
         orderId: orderId,
         trace: {
             type: "placed",
@@ -136,10 +136,27 @@ router.post("/", async(req, res) => {
         finalAmount: finalAmount
     })
 
+    req.user.orders.push(newOrder);
     await req.user.save();
 })
 
-router
+router.put("/", async(req, res) => {
+    const orderId = req.body.orderId;
+    const traceType = req.body.traceType;
+    const executor = req.body.executor;
+
+    const order = req.user.orders.find(order => order.orderId == orderId);
+    if(!order || !req.role == "admin") return handleUnauthorized(res);
+
+    order.trace.push({
+        type: traceType,
+        date: new Date(),
+        executor: executor,
+        active: true
+    })
+
+    req.user.orders.save();
+})
 
 const newId = function(){
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
