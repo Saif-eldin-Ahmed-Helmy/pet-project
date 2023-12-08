@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-
 // should we add a field for the user's date of birth and gender?
 const locationSchema = new mongoose.Schema({
     locationId: {
@@ -34,6 +33,10 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    active: {
+        type: Boolean,
+        required: true
+    },
     deleted: {
         type: Boolean,
         default: false
@@ -65,6 +68,10 @@ const userSchema = new mongoose.Schema({
         trim: true,
     },
     locations: [locationSchema],
+    orders: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Order'
+    },
     shoppingCart: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'CartItem',
@@ -72,6 +79,11 @@ const userSchema = new mongoose.Schema({
     balance: {
         type: Number,
         default: 0,
+    },
+    preferedLanguage: {
+        type: String,
+        default: 'en',
+        enum: ['en', 'ar']
     },
     deleted: {
         type: Boolean,
