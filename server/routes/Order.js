@@ -117,7 +117,11 @@ router.post("/", async(req, res) => {
         }
     })
 
-    Orders.create({
+    if(req.user.balance < finalAmount) return handleBadRequest(res, 'no enough balance to proceed');
+
+    req.user.balance -= finalAmount;
+
+    await Orders.create({
         orderId: orderId,
         trace: {
             type: "placed",
@@ -131,7 +135,11 @@ router.post("/", async(req, res) => {
         amount: amount,
         finalAmount: finalAmount
     })
+
+    await req.user.save();
 })
+
+router
 
 const newId = function(){
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
