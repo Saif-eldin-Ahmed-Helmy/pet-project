@@ -2,22 +2,22 @@
     font-family: 'Work Sans', sans-serif !important;
     font-weight: bolder;
     background: #f8f9fa;
-    padding: 10px; /* Reduced from 20px to 10px */
+    padding: 10px;
     border-radius: 5px;
-    margin-bottom: 10px; /* Reduced from 20px to 10px */
-    display: none; /* Hide the form initially */
-    font-size: 0.8em; /* Make the text smaller */
+    margin-bottom: 10px;
+    display: none;
+    font-size: 0.8em;
 }
 
 .filter-form .form-group {
-    margin-bottom: 5px; /* Reduced from 15px to 5px */
+    margin-bottom: 5px;
 }
 
 .filter-form .form-control {
     box-shadow: none;
     border-radius: 0;
     border-color: #ced4da;
-    padding: 5px; /* Reduced padding */
+    padding: 5px;
 }
 
 .filter-form .form-check {

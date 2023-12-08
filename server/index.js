@@ -28,6 +28,8 @@ app.use(
         saveUninitialized: false,
         store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
         cookie: {
+            secure: process.env.NODE_ENV === 'production', // set secure to true in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // set sameSite to 'none' in production and 'lax' in development
             maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
             rolling: true,
         },
@@ -48,6 +50,9 @@ app.use('/api/cart', cartRouter);
 
 const imagesRouter = require('./routes/Images');
 app.use('/api/images', imagesRouter);
+
+const ordersRoute = require('./routes/Orders');
+app.use('/api/orders', ordersRoute);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

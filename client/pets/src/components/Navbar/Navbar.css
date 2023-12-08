@@ -5,8 +5,18 @@
     font-weight: 800;
     font-style: normal;
     background-image: linear-gradient(white, white);
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dabe1e;
+    box-shadow: 0 2px 4px rgb(218, 194, 45);
+    height: 10vh;
+}
+
+.navbar-brand {
+    margin-bottom: 3px;
+}
+
+.nav-link-home {
+    margin-left: 35px;
+    margin-right: 20px;
 }
 
 .navbar .logo {

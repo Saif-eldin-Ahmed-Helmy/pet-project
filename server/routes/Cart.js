@@ -71,4 +71,24 @@ router.delete('/', async (req, res) => {
     }
 });
 
+router.put('/', async (req, res) => {
+    try {
+        const { itemId, quantity } = req.body;
+        if (!itemId || !quantity) {
+            return handleBadRequest(res);
+        }
+
+        const cartItem = req.user.shoppingCart.find(cartItem => cartItem.itemId === itemId);
+        if (cartItem) {
+            cartItem.quantity = quantity;
+            await cartItem.save();
+        }
+
+        res.json(req.user.shoppingCart);
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
 module.exports = router;

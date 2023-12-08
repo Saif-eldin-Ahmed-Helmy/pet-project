@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-let orderTrace = new mongoose.Schema({
+const orderTrace = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['placed', 'canceled', 'shipped', 'arrived']
+        enum: ['placed', 'packed', 'shipped', 'arrived', 'canceled']
     },
     date: {
         type: String,
@@ -20,7 +20,7 @@ let orderTrace = new mongoose.Schema({
     }
 })
 
-let orderItems = new mongoose.Schema({
+const orderItems = new mongoose.Schema({
     itemId: {
         type: String,
         required: true
@@ -36,10 +36,14 @@ let orderItems = new mongoose.Schema({
     category: {
         type: String,
         required: true
+    },
+    subCategory: {
+        type: String,
+        required: true
     }
 })
 
-let couponCodes = new mongoose.Schema({
+const couponCodes = new mongoose.Schema({
     code: {
         type: String,
         required: true
@@ -55,7 +59,7 @@ let couponCodes = new mongoose.Schema({
     discountType: {
         type: String,
         default: 'percentage',
-        enum: ['percentage', 'balance']
+        enum: ['percentage', 'amount']
     },
     couponType: {
         type: String,
@@ -65,13 +69,50 @@ let couponCodes = new mongoose.Schema({
     itemId: {
         type: String
     },
-    maximumBalance: {
+    maximumAmount: {
         type: Number,
     }
 })
 
-let orderSchema = new mongoose.Schema({
-    orderID: {
+const locationSchema = new mongoose.Schema({
+    locationId: {
+        type: String,
+        required: true,
+        lowercase: true,
+        unique: true,
+    },
+    locationSignature: { // this will be a fingerprint for the location of the user, probably gonna use longitude and latitude, when we get in a group call we can discuss this
+        type: String,
+        required: true,
+    },
+    apartmentNumber: {
+        type: String,
+        required: true,
+    },
+    floorNumber: {
+        type: Number,
+        required: true,
+    },
+    streetName: {
+        type: String,
+        required: true,
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+    phoneNumber: {
+        type: String,
+        required: true,
+    },
+    active: {
+        type: Boolean,
+        default: true
+    }
+});
+
+const orderSchema = new mongoose.Schema({
+    orderId: {
         type: Number,
         required: true,
         unique: true
@@ -79,12 +120,12 @@ let orderSchema = new mongoose.Schema({
     trace: [orderTrace],
     items: [orderItems],
     couponCodes: [couponCodes],
-    location: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'locationSchema',
+    location: locationSchema,
+    amount: { //the order amount without any discounts
+        type: Number,
         required: true
     },
-    amount: { //the order amount without any discounts 
+    finalAmount: { // with the discounts
         type: Number,
         required: true
     }

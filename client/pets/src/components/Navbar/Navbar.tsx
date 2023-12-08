@@ -36,7 +36,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         {links.map((link, index) => (
-                            <Nav.Link key={index} href={link.href}>
+                            <Nav.Link key={index} href={link.href} className={`nav-link-${link.label.toLowerCase().replace(' ', '-')}`}>
                                 {link.label}
                             </Nav.Link>
                         ))}
@@ -60,7 +60,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                         <a href="/cart" className="icon">
                             <FaShoppingCart/>
                         </a>
-                        <a href="/login" className="icon">
+                        <a href="/user" className="icon">
                             <FaUser/>
                         </a>
                     </div>

@@ -2,27 +2,17 @@ import React, { useState, useEffect } from 'react';
 import Container from "react-bootstrap/Container";
 import {Row, Col, Form, FormControl, DropdownButton, Dropdown} from "react-bootstrap";
 import ProductCard from '../components/ProductCard/ProductCard';
-import './CatsPage.css';
+import './ShopPage.css';
 import { useLocation } from 'react-router-dom';
 import CheckboxComponent from "../components/Checkbox/Checkbox.tsx";
+import {Item} from "../interfaces/item.ts";
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 }
 
-interface Product {
-    itemId: string;
-    name: string;
-    picture: string;
-    stock: number;
-    price: number;
-    description: string;
-    category: string;
-    deleted: boolean;
-}
-
-const CatsPage: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+const ShopPage: React.FC = () => {
+    const [products, setProducts] = useState<Item[]>([]);
     const [showOutOfStock, setShowOutOfStock] = useState(true);
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(0);
@@ -51,7 +41,7 @@ const CatsPage: React.FC = () => {
 
     return (
         <div>
-            <Container className="shop-menu" style={{marginTop: 200}}>
+            <Container className="shop-menu" style={{marginTop: 150}}>
                 <Container className="shop-menu-container">
                     <h2 className="shop-menu-subhead">
                         <p>
@@ -109,21 +99,21 @@ const CatsPage: React.FC = () => {
                         </div>
                     </Form>
                     </div>
-                    <Row className="product_listing__main product_listing__grid">
-                        {products.map(product => (
-                            <Col xs={12} sm={6} md={4} key={product.itemId}>
-                                <ProductCard
-                                    product={product}
-                                    isFavorited={false} // todo:  Replace with actual favorited state
-                                    toggleFavorite={() => {}} // todo:  Replace with actual toggleFavorite function
-                                />
-                            </Col>
-                        ))}
-                    </Row>
+                    <Container>
+                        <Row>
+                            {products.map(product => (
+                                <Col sm={12} md={6} lg={4} xl={3}>
+                                    <ProductCard product={product} enableBuy={true} enableFavorite={true} isFavorited={false}
+                                                 toggleFavorite={() => {
+                                                 }}/>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Container>
                 </Container>
             </Container>
         </div>
     );
 };
 
-export default CatsPage;
+export default ShopPage;

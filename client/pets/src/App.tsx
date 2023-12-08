@@ -2,10 +2,19 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Layout from "./pages/Layout.tsx";
 import './App.css';
-import ShopPage from "./pages/CatsPage.tsx";
+import ShopPage from "./pages/ShopPage.tsx";
 import AddItemPage from "./pages/admins/AddItemPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ProductPage from "./pages/ProductPage.tsx";
+import AdminItemsPage from "./pages/admins/AdminItemsPage.tsx";
+import EditItemPage from "./pages/admins/EditItemPage.tsx";
+import NotFoundPage from "./pages/NotFoundPage.tsx";
+import ProtectedRoute from "./routes/ProtectedRoute.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
+import UserPage from "./pages/UserPage.tsx";
+import AccountSettingsPage from "./pages/AccountSettingsPage.tsx";
+import EditLocationPage from "./pages/EditLocationPage.tsx";
+import AddLocationPage from "./pages/AddLocationPage.tsx";
 
 function App() {
     return (
@@ -13,10 +22,24 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route element={<ProtectedRoute navigateTo="/user" isAuth={false}/>}>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                    </Route>
                     <Route path="/shop" element={<ShopPage />} />
                     <Route path="/product/:itemId" element={<ProductPage />} />
-                    <Route path="/admin/add-item" element={<AddItemPage />} />
+                    <Route element={<ProtectedRoute role='admin'/>}>
+                        <Route path="/admin/items" element={<AdminItemsPage />} />
+                        <Route path="/admin/edit-item/:itemId" element={<EditItemPage />} />
+                        <Route path="/admin/add-item" element={<AddItemPage />} />
+                    </Route>
+                    <Route element={<ProtectedRoute navigateTo="/login"/>}>
+                        <Route path="/user" element={<UserPage />} />
+                        <Route path="/user/settings" element={<AccountSettingsPage />} />
+                        <Route path="/user/add-location" element={<AddLocationPage />} />
+                        <Route path="/user/edit-location/:locationId" element={<EditLocationPage />} />
+                    </Route>
+                    <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
