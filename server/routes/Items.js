@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Items = require("../models/Item");
-const { handleItemNotFound, handleUnauthorized, handleBadRequest, handleServerError} = require("../utils/errorHandler");
+const { handleUnauthorized, handleBadRequest, handleServerError} = require("../utils/errorHandler");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
