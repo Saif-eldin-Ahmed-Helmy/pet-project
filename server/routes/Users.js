@@ -22,6 +22,10 @@ passport.use(new GoogleStrategy({
         if (!user) {
             user = await User.create({ googleId: profile.id, email: profile.emails[0].value, name: profile.displayName });
         }
+        else {
+            user.googleId = profile.id;
+            await user.save();
+        }
         cb(null, user);
     }
 ));
@@ -29,7 +33,7 @@ passport.use(new GoogleStrategy({
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
+    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }),
     (req, res) => {
         const user = req.user;
 
@@ -76,7 +80,7 @@ passport.use('local-login', new LocalStrategy({
         const user = await User.findOne({ email });
 
         if (!user || !user.password || !bcrypt.compareSync(password, user.password)) {
-            return done(null, false, { message: 'Invalid email or password.' });
+            return done(null, false, { error: 'Invalid email or password.' });
         }
 
         const payload = {
@@ -98,10 +102,10 @@ passport.use('local-login', new LocalStrategy({
 router.get('/', function(req, res, next) {
     passport.authenticate('local-login', function(err, user, info) {
         if (err) { return next(err); }
-        if (!user) { return res.redirect('/login'); }
+        if (!user) { return res.status(404).json(info) }
         req.logIn(user, function(err) {
             if (err) { return next(err); }
-            return res.redirect('http://localhost:5173');
+            return res.status(200).json({email: user.email});
         });
     })(req, res, next);
 });
@@ -111,14 +115,14 @@ passport.use('local-register', new LocalStrategy({
     passReqToCallback: true,
 }, async (req, email, password, done) => {
     try {
-        const { name } = req.body;
+        const { name, gender, dateOfBirth } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return done(null, false, { message: 'Email already exists.' });
+            return done(null, false, { error: 'Email already exists.' });
         }
 
-        const newUser = await User.create({ email, password, name });
+        const newUser = await User.create({ email, password, name, gender, dateOfBirth });
 
         const userObj = {
             email: newUser.email,
@@ -136,10 +140,14 @@ passport.use('local-register', new LocalStrategy({
     }
 }));
 
-router.post('/', (req, res, next) => {
-    passport.authenticate('local-register', {
-        successRedirect: '/',
-        failureRedirect: '/register',
+router.post('/', function(req, res, next) {
+    passport.authenticate('local-register', function(err, user, info) {
+        if (err) { return next(err); }
+        if (!user) { return res.status(404).json(info) }
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+            return res.status(200).json({email: user.email});
+        });
     })(req, res, next);
 });
 
@@ -156,19 +164,32 @@ passport.deserializeUser(async (email, done) => {
         done(null, {
             email: user.email,
             role: user.role,
+            name: user.name,
+            preferredLanguage: user.preferredLanguage,
         });
     } catch (error) {
         done(error);
     }
 });
 
-// just a route to test your current session info, delete this later
-router.get('/test', (req, res) => {
+router.get('/session', (req, res) => {
     if (req.isAuthenticated()) {
         const userEmail = req.user ? req.user : null;
-        res.send(userEmail);
+        res.json({ isAuthenticated: true, email: userEmail.email, role: userEmail.role, name: userEmail.name });
     } else {
-        res.send('User not authenticated');
+        res.json({ isAuthenticated: false });
+    }
+});
+
+router.get('/logout', (req, res) => {
+    if (req.isAuthenticated()) {
+        req.session.destroy(err => {
+            if (err) {
+                return res.status(500).json({error: 'Error occurred while logging out.'});
+            }
+            res.clearCookie('connect.sid');
+            res.redirect('http://localhost:5173/login');
+        });
     }
 });
 
@@ -241,7 +262,15 @@ const adjustUserBalance = async (email, amount, add, res) => {
 
 router.get('/locations', async (req, res) => {
     try {
-        res.json(req.user.locations);
+        const { locationId } = req.query;
+        if (locationId) {
+            const location = req.user.locations.find(loc => loc.locationId === locationId.toLowerCase());
+            if (!location) {
+                return handleBadRequest(res, 'Location not found.');
+            }
+            return res.json(location);
+        }
+        return res.json(req.user.locations);
     } catch (error) {
         console.error(error);
         handleServerError(res);
@@ -278,6 +307,35 @@ router.post('/locations', async (req, res) => {
     }
 });
 
+router.put('/locations', async (req, res) => {
+   try {
+       const { oldLocationId, locationId, locationSignature, apartmentNumber, floorNumber, streetName, city, phoneNumber } = req.body;
+
+       const index = req.user.locations.findIndex(loc => loc.locationId === oldLocationId.toLowerCase());
+
+       if (index === -1) {
+           return handleBadRequest(res, 'Location not found.');
+       }
+
+       req.user.locations[index] = {
+           locationId,
+           locationSignature,
+           apartmentNumber,
+           floorNumber,
+           streetName,
+           city,
+           phoneNumber,
+       };
+       await req.user.save();
+
+       res.json(req.user.locations);
+   }
+    catch (error) {
+         console.error(error);
+         handleServerError(res);
+    }
+});
+
 router.delete('/locations', async (req, res) => {
     try {
         const {locationId} = req.body;
@@ -292,6 +350,53 @@ router.delete('/locations', async (req, res) => {
         await req.user.save();
 
         res.json(req.user.locations);
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
+router.put('/language', async (req, res) => {
+    try {
+        const { language } = req.body;
+        if (!language) {
+            return handleBadRequest(res, 'Language not specified.');
+        }
+
+        req.user.preferredLanguage = language;
+        await req.user.save();
+
+        res.json({ language: req.user.preferredLanguage });
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
+router.get('/favorites', async (req, res) => {
+    try {
+        const user = req.user;
+        res.json({ favorites: user.favorites });
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
+router.post('/favorites', async (req, res) => {
+    try {
+        const user = req.user;
+        const { itemId } = req.body;
+
+        const index = user.favorites.indexOf(itemId);
+        if (index === -1) {
+            user.favorites.push(itemId);
+        } else {
+            user.favorites.splice(index, 1);
+        }
+
+        await user.save();
+        res.json({ favorites: user.favorites });
     } catch (error) {
         console.error(error);
         handleServerError(res);

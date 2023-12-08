@@ -14,6 +14,7 @@ const Layout: React.FC = () => {
                     {
                         title: "CATS",
                         items: [
+                            {href: "/shop?category=cats", label: "All"},
                             {href: "/shop?category=cats&subCategory=food", label: "Cat Food"},
                             {href: "/shop?category=cats&subCategory=accessories", label: "Cat Accessories"},
                         ],
@@ -21,6 +22,7 @@ const Layout: React.FC = () => {
                     {
                         title: "DOGS",
                         items: [
+                            {href: "/shop?category=dogs", label: "All"},
                             {href: "/shop?category=dogs&subCategory=food", label: "Dog Food"},
                             {href: "/shop?category=dogs&subCategory=accessories", label: "Dog Accessories"},
                         ],

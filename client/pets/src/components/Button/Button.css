@@ -1,0 +1,9 @@
+.custom-button {
+    background-image: linear-gradient(gold, gold);
+    border-color: #dabe1e !important;
+}
+
+.custom-button:hover {
+    color: white !important;
+    background-color: gold !important;
+}

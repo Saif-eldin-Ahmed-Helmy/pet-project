@@ -3,10 +3,11 @@ import { Form } from "react-bootstrap";
 
 interface CheckboxProps {
     onCheckboxChange: (checked: boolean) => void;
+    checked?: boolean;
 }
 
-const CheckboxComponent: React.FC<CheckboxProps> = ({ onCheckboxChange }) => {
-    const [isChecked, setIsChecked] = useState(false);
+const CheckboxComponent: React.FC<CheckboxProps> = ({ onCheckboxChange, checked = true }) => {
+    const [isChecked, setIsChecked] = useState(checked);
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsChecked(event.target.checked);

@@ -1,5 +1,6 @@
 import React from 'react';
 import {Button} from "react-bootstrap";
+import './Button.css';
 
 interface ButtonProps {
     className?: string;
@@ -12,7 +13,7 @@ interface ButtonProps {
 }
 
 const ButtonComponent: React.FC<ButtonProps> = ({
-                                                    className = '',
+                                                    className = 'custom-button',
                                                     type = 'button',
                                                     variant = 'primary',
                                                     size,
