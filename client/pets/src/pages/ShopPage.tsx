@@ -22,7 +22,7 @@ const ShopPage: React.FC = () => {
     const subCategory = query.get('subCategory');
     const [categoryState, setCategoryState] = useState(category || '');
     const [subCategoryState, setSubCategoryState] = useState(subCategory || '');
-    const [showFilters, setShowFilters] = useState(true);
+    const showFilters = true;
 
     useEffect(() => {
         fetchProducts();
