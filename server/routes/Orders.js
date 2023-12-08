@@ -2,81 +2,65 @@ const express = require('express');
 const router = express.Router();
 
 const Order = require("../models/Order");
-const Items = require("../models/Item");
+const Item = require("../models/Item");
 const CouponCode = require("../models/CouponCode");
-const { handleBadRequest } = require("../utils/errorHandler");
+const { handleBadRequest, handleUnauthorized } = require("../utils/errorHandler");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
 router.use(verifySession)
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders', 'shoppingCart']));
 
-/**
- * Body options
- * - orderID
- * - traceType (whether it's placed, canceled, shipped or arrived)
- * - itemID (has this item in it)
- * - itemCategory (has this category in it)
- * - couponCode (has this copoun code)
- * - city (shiped within this city)
- */
 router.get("/", async (req, res) => {
-    const orderID = req.body.orderID;
-    const traceType = req.body.traceType;
-    const itemID = req.body.itemID;
-    const itemCategory = req.body.itemCategory;
-    const couponCode = req.body.couponCode;
-    const city = req.body.city;
+    const { orderId, traceType, itemId, itemCategory, couponCode, city } = req.query;
 
-    if(orderID != null) {
-        const hasOrder = req.user.orders.find(order => order.orderID == orderID);
-        if(!hasOrder || !req.role == "admin") {
-            let userOrders = req.user.orders;
-            res.json({ userOrders });
+    if(orderId) {
+        const hasOrder = req.user.orders.find(order => order.orderId === orderId);
+        const role = req.role;
+        if(!hasOrder && role !== 'admin') {
+            handleBadRequest(res, `There is no order with the id ${orderId}`)
             return;
         }
 
-        const order = await Order.find({ orderID: orderID });
+        const order = await Order.find({ orderId: orderId });
         res.json({ order });
         return;
     }
 
-    let filteredOrders = [];
-    let orders = await Order.find();
-    orders.forEach(order => {
-        if(order.trace.find(trace => trace.type == traceType)) filteredOrders.push(order);
-        if(order.items.find(item => (item.itemId == itemID) || (item.category == itemCategory))) filteredOrders.push(order);
-        if(order.couponCodes.find(coupon => coupon.code == couponCode)) filteredOrders.push(order);
-        if(order.location.find(loc => loc.city == city)) filteredOrders.push(order);
-    })
+    const orders = await Order.find();
+    const filteredOrders = orders.filter(order => {
+        return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
+            (!itemId || order.items.some(item => item.itemId === itemId)) &&
+            (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
+            (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
+            (!city || order.location.city === city);
+    });
 
     res.json({ filteredOrders })
 })
 
 router.post("/", async(req, res) => {
+    const executor = req.email;
+    const { couponCodes, locationId } = req.body;
     const orderId = newId();
-    const couponCodes = req.body.couponCodes.split(",");
-    const locationId = req.body.locationId;
-    const executor = req.body.executor
     let amount = 0;
     let finalAmount = 0;
 
-    let items = [];
-    let couponData = [];
-
-    const location = req.user.locations.find(loc => loc.locationId == locationId);
+    const location = req.user.locations.find(loc => loc.locationId === locationId);
     if(!location) return handleBadRequest(res, `there is no location with the id ${locationId}`);
 
-    req.user.shoppingCart.forEach(async(item) => {
-        let itemId = item.itemId;
-        const itemData = await Items.findOne({ itemId });
+    const items = [];
+    const couponData = [];
+
+    for (const item of req.user.shoppingCart) {
+        const itemData = await Item.findOne({ itemId: item.itemId });
 
         if(item.quantity > itemData.stock || itemData.deleted) {
             return handleBadRequest(res, `${itemData.name} whether there is not enough in stock or it's been removed`);
         }
 
-        item.push({
-            itemId: itemId,
+        items.push({
+            itemId: item.itemId,
             quantity: item.quantity,
             pricePerItem: itemData.price,
             category: itemData.category,
@@ -85,12 +69,12 @@ router.post("/", async(req, res) => {
 
         amount += itemData.price;
         finalAmount += itemData.price;
-    })
+    }
 
-    couponCodes.forEach(async(code) => {
-        let data = await couponCode.findOne({ code });
+    for (const code of couponCodes.split(",")) {
+        const data = await CouponCode.findOne({ code });
 
-        if(data.expiryDate > new Date() || data.deleted) { //absolute shit, just to know that there will be a expiry check
+        if(data.expiryDate > new Date() || data.deleted) {
             return handleBadRequest(res, `${data.code} whether it's expired or removed`);
         }
 
@@ -101,27 +85,31 @@ router.post("/", async(req, res) => {
             discountType: data.discountType,
             couponType: data.couponType,
             itemId: data.itemId ? data.itemId : 0,
-            maximumBalance: data.maximumBalance ? maximumBalance : 0
+            maximumBalance: data.maximumBalance ? data.maximumBalance : 0
         })
 
-        if(data.discountType == "percentage" && data.couponType == "order") {
+        if(data.discountType === "percentage" && data.couponType === "order") {
             finalAmount -= finalAmount * (data.discount / 100);
-        } else if(data.discountType == "percentage" && data.couponType == "item") {
-            let item = items.find(item => item.itemId == data.itemId);
+        } else if(data.discountType === "percentage" && data.couponType === "item") {
+            const item = items.find(item => item.itemId === data.itemId);
             if(item) finalAmount -= (item.pricePerItem * item.quantity) * (data.discount / 100);
-        } else if(data.discountType == "amount" && data.couponType == "order") {
+        } else if(data.discountType === "amount" && data.couponType === "order") {
             finalAmount -= data.discount;
-        } else if(data.discountType == "amount" && data.couponType == "item") {
-            let item = items.find(item => item.itemId == data.itemId);
+        } else if(data.discountType === "amount" && data.couponType === "item") {
+            const item = items.find(item => item.itemId === data.itemId);
             if(item) finalAmount -= (item.pricePerItem * item.quantity) - (data.discount * item.quantity);
         }
-    })
+    }
 
-    Order.create({
+    if(req.user.balance < finalAmount) return handleBadRequest(res, 'Insufficient funds.');
+
+    req.user.balance -= finalAmount;
+
+    const newOrder = await Order.create({
         orderId: orderId,
         trace: {
             type: "placed",
-            date: new Date().now,
+            date: new Date(),
             executor: executor,
             active: true
         },
@@ -131,10 +119,30 @@ router.post("/", async(req, res) => {
         amount: amount,
         finalAmount: finalAmount
     })
+
+    req.user.orders.push(newOrder);
+    await req.user.save();
+})
+
+router.put("/", async(req, res) => {
+    const { orderId, traceType, executor } = req.body;
+
+    const order = req.user.orders.find(order => order.orderId === orderId);
+    const role = req.role;
+    if(!order || role !== "admin") return handleUnauthorized(res);
+
+    order.trace.push({
+        type: traceType,
+        date: new Date(),
+        executor: executor,
+        active: true
+    })
+
+    req.user.orders.save();
 })
 
 const newId = function(){
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
 module.exports = router;

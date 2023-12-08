@@ -45,9 +45,6 @@ app.use('/api/users', usersRouter);
 const itemsRouter = require('./routes/Items');
 app.use('/api/items', itemsRouter);
 
-const ordersRoute = require('./routes/Order');
-app.use('/api/orders', ordersRoute);
-
 const cartRouter = require('./routes/Cart');
 app.use('/api/cart', cartRouter);
 
