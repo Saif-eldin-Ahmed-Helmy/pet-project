@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
 #root {
+  overflow-x: hidden;
   font-family: 'Montserrat', sans-serif;
   font-style: normal;
   font-weight: normal;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -46,7 +46,7 @@
 }
 
 .main-menu {
-  margin-top: 9%;
+  margin-top: 60px;
 }
 
 .main-menu-container {
@@ -58,10 +58,9 @@
 .main-menu-image {
   width: auto;
   height: auto;
-  margin-left: -30%;
   object-fit: cover;
   background: #1a1a1a;
-  max-width: 99.3vw !important;
+  max-width: 100vw !important;
 }
 
 .main-menu-head {

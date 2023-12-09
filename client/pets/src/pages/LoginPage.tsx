@@ -12,7 +12,9 @@ const LoginPage: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const response = await fetch(`http://localhost:3001/api/users?email=${email}&password=${password}`);
+        const response = await fetch(`http://localhost:3001/api/users?email=${email}&password=${password}`, {
+            credentials: 'include'
+        });
         const data = await response.json();
 
         if (data.error) {
