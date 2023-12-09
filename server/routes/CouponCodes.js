@@ -65,3 +65,5 @@ router.put("/", async(req, res) => {
         handleServerError(res);
     }
 })
+
+module.exports = route;

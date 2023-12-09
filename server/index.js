@@ -54,6 +54,9 @@ app.use('/api/images', imagesRouter);
 const ordersRoute = require('./routes/Orders');
 app.use('/api/orders', ordersRoute);
 
+const couponRoute = require("./routes/CouponCodes");
+app.use('./api/couponCodes', couponRoute);
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
