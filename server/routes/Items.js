@@ -22,15 +22,11 @@ const stringSimilarity = require('string-similarity');
  */
 router.get('/', async (req, res) => {
     try {
-        const limit = req.query.limit;
-        const category = req.query.category;
-        const subCategory = req.query.subCategory;
+        const { limit, category, subCategory, itemId, similarTo } = req.query
         const inStock = req.query.inStock === 'true';
         const priceMin = req.query.priceMin || 0;
         const priceMax = req.query.priceMax || 1000000;
-        const itemId = req.query.itemId;
         const deleted = req.query.deleted === 'true';
-        const similarTo = req.query.similarTo;
 
         if (deleted) {
             if (!req.isAuthenticated() || !req.user) {
