@@ -6,9 +6,9 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-    cloud_name: 'dtvejicte',
-    api_key: '642979794165184',
-    api_secret: 'BiqiNWgLz4zmugJrGefVxcbBHQU',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 

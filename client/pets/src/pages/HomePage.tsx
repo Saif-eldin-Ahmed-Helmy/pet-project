@@ -6,9 +6,11 @@ import {Row} from "react-bootstrap";
 
 const HomePage: React.FC = () => {
     return (
-        <div>
+        <div style={{position: "relative"}}>
             <Container className="main-menu">
+                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <ImageComponent className="main-menu-image" src="/cat-dog-main-menu-image.png" alt="cat" fluid/>
+                </div>
                 <Container className="main-menu-container">
                     <p className="main-menu-head">Pet food & accessories</p>
                     <h2 className="main-menu-subhead">
