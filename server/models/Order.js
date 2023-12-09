@@ -128,6 +128,30 @@ const orderSchema = new mongoose.Schema({
     finalAmount: { // with the discounts
         type: Number,
         required: true
+    },
+    rating: { //the rating given by the user to the order
+        type: Number,
+        default: 0
+    },
+    comment: { //the comment given by the user to the order
+        type: String,
+        default: ''
+    },
+    userRating: { //the rating given by the user to the driver
+        type: Number,
+        default: 0
+    },
+    userComment: { //the comment given by the user to the driver
+        type: String,
+        default: ''
+    },
+    driverRating: { //the rating given by the driver to the user
+        type: Number,
+        default: 0
+    },
+    driverComment: { //the comment given by the driver to the user
+        type: String,
+        default: ''
     }
 })
 

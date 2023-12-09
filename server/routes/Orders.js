@@ -4,7 +4,9 @@ const router = express.Router();
 const Order = require("../models/Order");
 const Item = require("../models/Item");
 const CouponCode = require("../models/CouponCode");
+
 const { handleBadRequest, handleUnauthorized } = require("../utils/errorHandler");
+const { getMilliSeconds, formatTime } = require("../utils/timeUtils");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
@@ -74,7 +76,7 @@ router.post("/", async(req, res) => {
     for (const code of couponCodes.split(",")) {
         const data = await CouponCode.findOne({ code });
 
-        if(data.expiryDate > new Date() || data.deleted) {
+        if(Number(data.expiryDate) > getMilliSeconds() || data.deleted) {
             return handleBadRequest(res, `${data.code} whether it's expired or removed`);
         }
 
@@ -85,19 +87,22 @@ router.post("/", async(req, res) => {
             discountType: data.discountType,
             couponType: data.couponType,
             itemId: data.itemId ? data.itemId : 0,
-            maximumBalance: data.maximumBalance ? data.maximumBalance : 0
+            maximumAmount: data.maximumAmount ? data.maximumAmount : 0
         })
 
         if(data.discountType === "percentage" && data.couponType === "order") {
-            finalAmount -= finalAmount * (data.discount / 100);
+            const discount = finalAmount * (data.discount / 100);
+            finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
         } else if(data.discountType === "percentage" && data.couponType === "item") {
             const item = items.find(item => item.itemId === data.itemId);
-            if(item) finalAmount -= (item.pricePerItem * item.quantity) * (data.discount / 100);
+            const discount = (item.pricePerItem * item.quantity) * (data.discount / 100);
+            if(item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
         } else if(data.discountType === "amount" && data.couponType === "order") {
             finalAmount -= data.discount;
         } else if(data.discountType === "amount" && data.couponType === "item") {
             const item = items.find(item => item.itemId === data.itemId);
-            if(item) finalAmount -= (item.pricePerItem * item.quantity) - (data.discount * item.quantity);
+            const discount = (item.pricePerItem * item.quantity) - (data.discount * item.quantity);
+            if(item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
         }
     }
 
@@ -109,7 +114,7 @@ router.post("/", async(req, res) => {
         orderId: orderId,
         trace: {
             type: "placed",
-            date: new Date(),
+            date: getMilliSeconds(),
             executor: executor,
             active: true
         },
@@ -125,20 +130,39 @@ router.post("/", async(req, res) => {
 })
 
 router.put("/", async(req, res) => {
-    const { orderId, traceType, executor } = req.body;
+    const { orderId, traceType, rating, comment, userRating, userComment, driverRating, driverComment } = req.body;
+    const executor = req.email;
 
-    const order = req.user.orders.find(order => order.orderId === orderId);
-    const role = req.role;
-    if(!order || role !== "admin") return handleUnauthorized(res);
+    const order = await Order.findOne({ orderId });
+    if(!order) return handleBadRequest(res, `no order with this id, ${orderId}`);
 
-    order.trace.push({
-        type: traceType,
-        date: new Date(),
-        executor: executor,
-        active: true
-    })
+    if(traceType) {
+        if(traceType === 'packed' && (req.role === 'packageer' || req.role === 'admin')) {
+            order.trace.push({
+                type: traceType,
+                date: getMilliSeconds(),
+                executor: executor,
+                active: true
+            })
+        }
+    } else if (rating || comment || userRating || userComment) {
+        if((order.trace.find(trace => trace.active === true).type === 'arrived') 
+        && ((req.user.orders.find(order => order.orderId === orderId))
+            && req.role === 'admin')) {
+            order.rating = rating;
+            order.comment = comment;
+            order.userRating = userRating;
+            order.userComment = userComment;
+        }
+    } else if(driverRating || driverComment) {
+        if((order.trace.find(trace => trace.type === 'shipped').executor === req.email)) {
+            order.driverRating = driverRating;
+            order.driverComment = driverComment;
+        }
+    }
 
-    req.user.orders.save();
+    await order.save();
+    return res.json({ order });
 })
 
 const newId = function(){
