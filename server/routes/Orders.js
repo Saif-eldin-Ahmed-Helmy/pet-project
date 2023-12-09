@@ -5,8 +5,8 @@ const Order = require("../models/Order");
 const Item = require("../models/Item");
 const CouponCode = require("../models/CouponCode");
 
-const { handleBadRequest, handleUnauthorized } = require("../utils/errorHandler");
-const { getMilliSeconds, formatTime } = require("../utils/timeUtils");
+const { handleBadRequest } = require("../utils/errorHandler");
+const { getMilliSeconds } = require("../utils/timeUtils");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 
