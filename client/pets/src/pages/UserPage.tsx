@@ -91,7 +91,7 @@ const UserPage: React.FC = () => {
             <ButtonGroup style={{ margin: "20px" }}
                          vertical size="sm">
                 <Button className='account-settings-btn' href="/user/orders" style={{color: "black"}}>
-                    <FaHistory/> Activity History
+                    <FaHistory/> Orders History
                 </Button>
                 <Button className='account-settings-btn' href="/shop/favorites" style={{color: "black"}}>
                     <FaStar /> Favorites
