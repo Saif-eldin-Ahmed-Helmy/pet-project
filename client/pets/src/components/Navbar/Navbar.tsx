@@ -54,7 +54,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                         ))}
                     </Nav>
                     <div>
-                        <a href="/search" className="icon">
+                        <a href="/shop" className="icon">
                             <FaSearch/>
                         </a>
                         <a href="/cart" className="icon">

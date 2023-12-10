@@ -19,7 +19,7 @@ const CheckboxComponent: React.FC<CheckboxProps> = ({ onCheckboxChange, checked 
             type="checkbox"
             checked={isChecked}
             onChange={handleCheckboxChange}
-            style={{ transform: 'scale(2)', color: 'white', border: '1px solid white' }}
+            style={{ transform: 'scale(2)', color: '#f5f5f5', border: '1px solid #f5f5f5' }}
         />
     );
 };

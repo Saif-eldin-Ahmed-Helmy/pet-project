@@ -43,4 +43,10 @@ const itemSchema = new mongoose.Schema({
 
 const Item = mongoose.model('Item', itemSchema);
 
+itemSchema.pre('save', function (next) {
+    const item = this;
+    item.itemId = item.itemId.replace('+', '');
+    next();
+});
+
 module.exports = Item;

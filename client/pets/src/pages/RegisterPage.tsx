@@ -63,12 +63,12 @@ const RegisterPage: React.FC = () => {
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
             <Form style={{width: '50%'}} onSubmit={handleSubmit}>
                 {error && <Alert variant="danger">{error}</Alert>}
-                <Button variant="primary" onClick={handleGoogleLogin} style={{marginBottom: 20, color:'black', backgroundColor: 'white', borderColor: 'black', fontFamily: "sans-serif", fontWeight: 5000}}>
+                <Button variant="primary" onClick={handleGoogleLogin} style={{marginBottom: 20, color:'black', backgroundColor: '#f5f5f5', borderColor: 'black', fontFamily: "sans-serif", fontWeight: 5000}}>
                     <img src="/google_logo.webp" alt="Google logo" style={{width: '20px', marginRight: '10px'}} />
                     Continue with Google
                 </Button>
                 <div className="line" style={{position: 'relative', height: '1px', width: '100%', backgroundColor: 'rgb(224, 224, 224)', marginTop: 10, fontFamily: "sans-serif"}}>
-                    <span style={{backgroundColor: "white", padding: 15, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
+                    <span style={{backgroundColor: "#f5f5f5", padding: 15, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
                         OR
                     </span>
                 </div>

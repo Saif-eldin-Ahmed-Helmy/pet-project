@@ -37,9 +37,6 @@ const AdminItemsPage: React.FC = () => {
         });
         const data = await response.json();
         setProducts(data.items);
-        products.map(product => (
-            console.log(product.itemId)
-        ));
     };
 
     //<Button variant="primary" onClick={() => setShowFilters(!showFilters)}>Toggle Filters</Button>
@@ -57,7 +54,7 @@ const AdminItemsPage: React.FC = () => {
                         <p>Products Listing</p>
                     </h2>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Form className="filter-form" style={{backgroundColor: "white", width: '100%', display: showFilters ? 'flex' : 'none'}}>
+                        <Form className="filter-form" style={{backgroundColor: "#f5f5f5", width: '100%', display: showFilters ? 'flex' : 'none'}}>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                                 <p>Out Of Stock</p>
                                 <CheckboxComponent onCheckboxChange={setShowOutOfStock} />
