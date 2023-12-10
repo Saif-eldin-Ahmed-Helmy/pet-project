@@ -1,17 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
 const CartItem = require('../models/CartItem');
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 const { handleServerError, handleBadRequest } = require('../utils/errorHandler');
+const Item = require("../models/Item");
 
 router.use(verifySession);
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['shoppingCart']));
 
 router.get('/', async (req, res) => {
     try {
-        res.json(req.user.shoppingCart);
+        let items = [];
+        for (const cartItem of req.user.shoppingCart) {
+            const item = await Item.findOne({ itemId: cartItem.itemId });
+            if (!item || item.deleted) {
+                req.user.shoppingCart.pull(cartItem);
+                await CartItem.deleteOne({ _id: cartItem._id });
+            }
+            items.push({ itemId: item.itemId, description: item.description, picture: item.picture, name: item.name, pricePerItem: item.price, quantity: cartItem.quantity });
+        }
+        res.json(items);
     } catch (error) {
         console.error(error);
         handleServerError(res);

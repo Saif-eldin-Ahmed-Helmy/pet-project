@@ -2,7 +2,7 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 import ButtonComponent from '../Button/Button';
 import './ProductCard.css';
-import {Item} from "../../interfaces/item.ts";
+import { Item } from "../../interfaces/item.ts";
 
 interface ProductComponentProps {
     product: Item;
@@ -19,8 +19,9 @@ const ProductCard: React.FC<ProductComponentProps> = ({
                                                           toggleFavorite = () => {},
                                                           enableBuy = true,
                                                           enableFavorite = true,
-    href = `/product/${product.itemId}`
-                                                      }) => {    return (
+                                                          href = `/product/${product.itemId}`
+                                                      }) => {
+    return (
         <Card style={{ width: '18rem' }} className="product-card">
             <a href={href}>
                 <div className="image-container">
@@ -28,8 +29,8 @@ const ProductCard: React.FC<ProductComponentProps> = ({
                     <ButtonComponent className={product.stock > 0 ? 'buy-button' : 'buy-button-ofs'} onClick={() => {}}>{enableBuy ? (product.stock > 0 ? 'Buy' : 'Out of Stock') : 'Edit'}</ButtonComponent> {}
                 </div>
             </a>
-            <Card.Body>
-                <Card.Title>{product.name}</Card.Title>
+            <Card.Body className="product-card-body">
+                <Card.Title className="product-description">{product.name}</Card.Title>
                 <Card.Text style={{color: "gold"}}>
                     EGP {product.price.toFixed(2)}
                 </Card.Text>

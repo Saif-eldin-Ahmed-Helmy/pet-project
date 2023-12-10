@@ -42,91 +42,113 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async(req, res) => {
-    const executor = req.email;
-    const { couponCodes, locationId } = req.body;
-    const orderId = newId();
-    let amount = 0;
-    let finalAmount = 0;
+    try {
+        const executor = req.email;
+        const {paymentMethod, locationId, deliveryInstructions, tip, couponCodes = []} = req.body;
+        const orderId = newId();
+        let amount = 0;
+        let finalAmount = 0;
 
-    const location = req.user.locations.find(loc => loc.locationId === locationId);
-    if(!location) return handleBadRequest(res, `there is no location with the id ${locationId}`);
+        const location = req.user.locations.find(loc => loc.locationId === locationId);
+        if (!location) return handleBadRequest(res, `There is no location with the id ${locationId}`);
 
-    const items = [];
-    const couponData = [];
+        const items = [];
+        const couponData = [];
 
-    for (const item of req.user.shoppingCart) {
-        const itemData = await Item.findOne({ itemId: item.itemId });
+        for (const item of req.user.shoppingCart) {
+            const itemData = await Item.findOne({itemId: item.itemId});
 
-        if(item.quantity > itemData.stock || itemData.deleted) {
-            return handleBadRequest(res, `${itemData.name} whether there is not enough in stock or it's been removed`);
+            if (item.quantity > itemData.stock || itemData.deleted) {
+                return handleBadRequest(res, `There isn't enough stock for ${itemData.name}`);
+            }
+
+            items.push({
+                itemId: item.itemId,
+                name: itemData.name,
+                quantity: item.quantity,
+                pricePerItem: itemData.price,
+                category: itemData.category,
+                subCategory: itemData.subCategory,
+                picture: itemData.picture,
+            });
+
+            amount += itemData.price * item.quantity;
+            finalAmount += itemData.price * item.quantity;
+
+            itemData.stock -= item.quantity;
+            await itemData.save();
         }
 
-        items.push({
-            itemId: item.itemId,
-            quantity: item.quantity,
-            pricePerItem: itemData.price,
-            category: itemData.category,
-            subCategory: itemData.subCategory
+        for (const code of couponCodes) {
+            const data = await CouponCode.findOne({code});
+
+            if (Number(data.expiryDate) > getMilliSeconds() || data.deleted) {
+                return handleBadRequest(res, `Coupon code ${code} is invalid`);
+            }
+
+            couponData.push({
+                code: code,
+                expiryDate: data.expiryDate,
+                discount: data.discount,
+                discountType: data.discountType,
+                couponType: data.couponType,
+                itemId: data.itemId ? data.itemId : 0,
+                maximumAmount: data.maximumAmount ? data.maximumAmount : 0
+            })
+
+            if (data.discountType === "percentage" && data.couponType === "order") {
+                const discount = finalAmount * (data.discount / 100);
+                finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
+            } else if (data.discountType === "percentage" && data.couponType === "item") {
+                const item = items.find(item => item.itemId === data.itemId);
+                const discount = (item.pricePerItem * item.quantity) * (data.discount / 100);
+                if (item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
+            } else if (data.discountType === "amount" && data.couponType === "order") {
+                finalAmount -= data.discount;
+            } else if (data.discountType === "amount" && data.couponType === "item") {
+                const item = items.find(item => item.itemId === data.itemId);
+                const discount = (item.pricePerItem * item.quantity) - (data.discount * item.quantity);
+                if (item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
+            }
+        }
+
+        let cashAmount = 0;
+        if (paymentMethod === 'balance' && req.user.balance < finalAmount) {
+            cashAmount = finalAmount - req.user.balance;
+            finalAmount = req.user.balance;
+        }
+
+        req.user.balance -= finalAmount;
+
+        const newOrder = await Order.create({
+            orderId: orderId,
+            trace: {
+                type: "placed",
+                date: new Date().toISOString(),
+                executor: executor,
+                active: true
+            },
+            date: new Date().toISOString(),
+            items: items,
+            couponCodes: couponData,
+            location: location,
+            amount: amount,
+            finalAmount: finalAmount,
+            cashAmount: cashAmount,
+            paymentMethod: paymentMethod,
+            deliveryInstructions: deliveryInstructions,
+            tip: tip,
         });
 
-        amount += itemData.price;
-        finalAmount += itemData.price;
+        req.user.orders.push(newOrder);
+        req.user.shoppingCart.clear();
+        await req.user.save();
+        res.json({ success: true, order: newOrder });
     }
-
-    for (const code of couponCodes.split(",")) {
-        const data = await CouponCode.findOne({ code });
-
-        if(Number(data.expiryDate) > getMilliSeconds() || data.deleted) {
-            return handleBadRequest(res, `${data.code} whether it's expired or removed`);
-        }
-
-        couponData.push({
-            code: code,
-            expiryDate: data.expiryDate,
-            discount: data.discount,
-            discountType: data.discountType,
-            couponType: data.couponType,
-            itemId: data.itemId ? data.itemId : 0,
-            maximumAmount: data.maximumAmount ? data.maximumAmount : 0
-        })
-
-        if(data.discountType === "percentage" && data.couponType === "order") {
-            const discount = finalAmount * (data.discount / 100);
-            finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
-        } else if(data.discountType === "percentage" && data.couponType === "item") {
-            const item = items.find(item => item.itemId === data.itemId);
-            const discount = (item.pricePerItem * item.quantity) * (data.discount / 100);
-            if(item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
-        } else if(data.discountType === "amount" && data.couponType === "order") {
-            finalAmount -= data.discount;
-        } else if(data.discountType === "amount" && data.couponType === "item") {
-            const item = items.find(item => item.itemId === data.itemId);
-            const discount = (item.pricePerItem * item.quantity) - (data.discount * item.quantity);
-            if(item) finalAmount -= (discount > data.maximumAmount ? data.maximumAmount : discount);
-        }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
     }
-
-    if(req.user.balance < finalAmount) return handleBadRequest(res, 'Insufficient funds.');
-
-    req.user.balance -= finalAmount;
-
-    const newOrder = await Order.create({
-        orderId: orderId,
-        trace: {
-            type: "placed",
-            date: getMilliSeconds(),
-            executor: executor,
-            active: true
-        },
-        items: items,
-        couponCodes: couponData,
-        location: location,
-        amount: amount,
-        finalAmount: finalAmount
-    })
-
-    req.user.orders.push(newOrder);
-    await req.user.save();
 })
 
 router.put("/", async(req, res) => {
@@ -137,16 +159,16 @@ router.put("/", async(req, res) => {
     if(!order) return handleBadRequest(res, `no order with this id, ${orderId}`);
 
     if(traceType) {
-        if(traceType === 'packed' && (req.role === 'packageer' || req.role === 'admin')) {
+        if(traceType === 'packed' && (req.role === 'packager' || req.role === 'admin')) {
             order.trace.push({
                 type: traceType,
-                date: getMilliSeconds(),
+                date: new Date().toISOString(),
                 executor: executor,
                 active: true
             })
         }
     } else if (rating || comment || userRating || userComment) {
-        if((order.trace.find(trace => trace.active === true).type === 'arrived') 
+        if((order.trace.find(trace => trace.active === true).type === 'delivered')
         && ((req.user.orders.find(order => order.orderId === orderId))
             && req.role === 'admin')) {
             order.rating = rating;
@@ -155,7 +177,7 @@ router.put("/", async(req, res) => {
             order.userComment = userComment;
         }
     } else if(driverRating || driverComment) {
-        if((order.trace.find(trace => trace.type === 'shipped').executor === req.email)) {
+        if((order.trace.find(trace => trace.type === 'delivering').executor === req.email)) {
             order.driverRating = driverRating;
             order.driverComment = driverComment;
         }
@@ -164,6 +186,55 @@ router.put("/", async(req, res) => {
     await order.save();
     return res.json({ order });
 })
+
+router.get('/test', async (req, res) => {
+    try {
+        const items = await Item.find({ stock: { $gte: 10 }, deleted: false });
+
+        const orderItems = items.map(item => ({
+            itemId: item.itemId,
+            name: item.name,
+            quantity: 10,
+            pricePerItem: item.price,
+            category: item.category,
+            subCategory: item.subCategory,
+            picture: item.picture
+        }));
+
+        const amount = orderItems.reduce((total, item) => total + (item.quantity * item.pricePerItem), 0);
+
+        const orderTrace = {
+            type: 'placed',
+            date: new Date().toISOString(),
+            executor: 'admin',
+            active: true,
+        };
+
+        const order = new Order({
+            orderId: newId(),
+            date: new Date().toISOString(),
+            items: orderItems,
+            amount: amount,
+            finalAmount: amount,
+            trace: [orderTrace],
+            location: {
+                locationId: '5f9e7b9e6c0b6a2a3c2f1c6e',
+                address: '123 Main St',
+                city: 'New York',
+                state: 'NY',
+                zipCode: '12345',
+                phoneNumber: '1234567890',
+            },
+        });
+
+        await order.save();
+
+        res.json({ success: true, order });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 const newId = function(){
     return Date.now().toString(36) + Math.random().toString(36).slice(2);

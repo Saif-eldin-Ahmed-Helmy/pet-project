@@ -4,7 +4,7 @@ const orderTrace = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['placed', 'packed', 'shipped', 'arrived', 'canceled']
+        enum: ['placed', 'preparing', 'delivering', 'delivered', 'cancelled']
     },
     date: {
         type: String,
@@ -25,6 +25,10 @@ const orderItems = new mongoose.Schema({
         type: String,
         required: true
     },
+    name: {
+        type: String,
+        required: true
+    },
     quantity: {
         type: Number,
         required: true
@@ -40,7 +44,11 @@ const orderItems = new mongoose.Schema({
     subCategory: {
         type: String,
         required: true
-    }
+    },
+    picture: {
+        type: String,
+        required: true
+    },
 })
 
 const couponCodes = new mongoose.Schema({
@@ -52,7 +60,7 @@ const couponCodes = new mongoose.Schema({
         type: String,
         required: true
     },
-    dicount: {
+    discount: {
         type: Number,
         required: true
     },
@@ -79,7 +87,6 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: true,
         lowercase: true,
-        unique: true,
     },
     locationSignature: { // this will be a fingerprint for the location of the user, probably gonna use longitude and latitude, when we get in a group call we can discuss this
         type: String,
@@ -113,9 +120,12 @@ const locationSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
     orderId: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
+    },
+    date: {
+        type: String,
     },
     trace: [orderTrace],
     items: [orderItems],
@@ -152,7 +162,20 @@ const orderSchema = new mongoose.Schema({
     driverComment: { //the comment given by the driver to the user
         type: String,
         default: ''
-    }
+    },
+    tip: {
+        type: Number,
+        default: 0,
+    },
+    deliveryInstructions: {
+        type: String,
+        default: '',
+    },
+    paymentMethod: {
+        type: String,
+        default: 'cash',
+        enum: ['cash', 'balance']
+    },
 })
 
 const Order = mongoose.model('Order', orderSchema);

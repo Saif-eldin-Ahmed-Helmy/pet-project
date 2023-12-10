@@ -15,6 +15,9 @@ import UserPage from "./pages/UserPage.tsx";
 import AccountSettingsPage from "./pages/AccountSettingsPage.tsx";
 import EditLocationPage from "./pages/EditLocationPage.tsx";
 import AddLocationPage from "./pages/AddLocationPage.tsx";
+import OrdersPage from "./pages/OrdersPage.tsx";
+import ShoppingCartPage from "./pages/ShoppingCartPage.tsx";
+import FavoritesPage from "./pages/FavoritesPage.tsx";
 
 function App() {
     return (
@@ -38,6 +41,10 @@ function App() {
                         <Route path="/user/settings" element={<AccountSettingsPage />} />
                         <Route path="/user/add-location" element={<AddLocationPage />} />
                         <Route path="/user/edit-location/:locationId" element={<EditLocationPage />} />
+                        <Route path="/user/orders" element={<OrdersPage />} />
+                        <Route path="/user/orders/track/:orderId" element={<OrdersPage />} />
+                        <Route path="/cart" element={<ShoppingCartPage />} />
+                        <Route path="/shop/favorites" element={<FavoritesPage />} />
                     </Route>
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>

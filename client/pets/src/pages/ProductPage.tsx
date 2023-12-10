@@ -1,28 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Spinner, Button, InputGroup, FormControl, Container, Row, Col} from "react-bootstrap";
+import {Spinner, Button, InputGroup, FormControl, Container} from "react-bootstrap";
 import {Item} from "../interfaces/item.ts";
 import ButtonComponent from "../components/Button/Button.tsx";
-import ProductCard from "../components/ProductCard/ProductCard";
+import ProductsList from "../components/ProductsList/ProductsList.tsx";
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductPage: React.FC = () => {
-    const {navigate} = useNavigate();
+    const navigate = useNavigate();
     const {itemId} = useParams();
     const [item, setItem] = useState<Item | null>(null);
     const [quantity, setQuantity] = useState<number>(1);
-    const [cartItems, setCartItems] = useState<Item[]>([]);
-    const [similarProducts, setSimilarProducts] = useState<Item[]>([]);
+    const [cartItems, setCartItems] = useState<Item[] | null>(null);
+    const [similarProducts, setSimilarProducts] = useState<Item[] | null>(null);
+    const [disableBuyButton, setDisableBuyButton] = useState(true);
 
     useEffect(() => {
-        fetchItem();
         fetchCartItems();
         fetchSimilarProducts();
+        fetchItem();
+
+        const timeoutId = setTimeout(() => {
+            setDisableBuyButton(false);
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
     }, [itemId]);
 
     useEffect(() => {
-        const isInCart = cartItems.find(cartItem => cartItem.itemId === itemId);
-        if (isInCart) {
-            handleSetQuantity();
+        if (cartItems) {
+            const isInCart = cartItems.find(cartItem => cartItem.itemId === itemId);
+            if (isInCart) {
+                handleSetQuantity();
+            }
         }
     }, [quantity]);
 
@@ -49,14 +60,9 @@ const ProductPage: React.FC = () => {
         }
     };
 
-    const handleQuantityChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (quantity === parseInt(event.target.value)) {
-            return;
-        }
-        setQuantity(parseInt(event.target.value));
-    };
-
     const handleBuy = async () => {
+        setCartItems([...cartItems, {itemId, quantity}]);
+
         const response = await fetch(`http://localhost:3001/api/cart`, {
             credentials: 'include',
             method: 'POST',
@@ -64,19 +70,18 @@ const ProductPage: React.FC = () => {
             body: JSON.stringify({itemId, quantity})
         });
         const data = await response.json();
-        if (!data.error) {
-            setCartItems([...cartItems, {itemId, quantity}]);
-        }
-        else {
+        if (data.error) {
+            setCartItems(cartItems);
             navigate('/login');
+        } else {
+            setCartItems([...cartItems, {itemId, quantity}]);
         }
     };
 
     const handleSetQuantity = async () => {
         if (quantity <= 0) {
             await handleRemoveFromBasket();
-        }
-        else {
+        } else {
             const response = await fetch(`http://localhost:3001/api/cart`, {
                 credentials: 'include',
                 method: 'PUT',
@@ -91,23 +96,30 @@ const ProductPage: React.FC = () => {
     }
 
     const handleRemoveFromBasket = async () => {
+        setCartItems(cartItems.filter(cartItem => cartItem.itemId !== itemId));
+        toast.success('Item removed from basket!', {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            autoClose: 2000
+        });
+
         const response = await fetch(`http://localhost:3001/api/cart`, {
             credentials: 'include',
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({itemId})
+            body: JSON.stringify({itemId, removeFromBasket: true})
         });
         const data = await response.json();
         if (data.error) {
+            setCartItems([...cartItems, {itemId, quantity}]);
             navigate('/login');
-        }
-        else {
+        } else {
             setCartItems(cartItems.filter(cartItem => cartItem.itemId !== itemId));
+            setQuantity(1);
         }
     };
 
-    if (!item) {
-        return <div>
+    if (!item || !similarProducts || !cartItems) {
+        return <div style={{marginTop: 150}}>
             <p>Loading... </p>
             <Spinner animation="grow"/>
         </div>
@@ -116,7 +128,14 @@ const ProductPage: React.FC = () => {
     const isInCart = cartItems.find(cartItem => cartItem.itemId === itemId);
 
     return (
-        <div style={{marginTop: 150, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+        <div style={{
+            marginTop: 150,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
+            <ToastContainer/>
             <div style={{width: '40vw'}}>
                 <img src={item.picture} alt={item.name} style={{maxWidth: '100%', maxHeight: '400px'}}/>
                 <h1>{item.name}</h1>
@@ -127,27 +146,21 @@ const ProductPage: React.FC = () => {
                     <InputGroup className="mb-3">
                         <Button variant="outline-secondary"
                                 onClick={() => setQuantity(Math.max(0, quantity - 1))}>-</Button>
-                        <FormControl aria-label="Quantity" value={quantity} onChange={handleQuantityChange}
+                        <FormControl aria-label="Quantity" value={quantity} readOnly={true}
                                      max={item.stock}/>
                         <Button variant="outline-secondary" onClick={() => setQuantity(quantity + 1)}>+</Button>
                     </InputGroup>
                 ) : (
-                    <ButtonComponent onClick={handleBuy}>Buy</ButtonComponent>
+                    <ButtonComponent onClick={handleBuy} disabled={disableBuyButton}>Buy</ButtonComponent>
                 )}
-                {isInCart && <ButtonComponent onClick={handleRemoveFromBasket}>Remove from basket</ButtonComponent>}
+                {isInCart &&
+                    <ButtonComponent onClick={handleRemoveFromBasket} disabled={disableBuyButton}>Remove from
+                        basket</ButtonComponent>}
                 <hr/>
             </div>
             <h2>Similar Products</h2>
             <Container>
-                <Row>
-                    {similarProducts.map(product => (
-                        <Col sm={12} md={6} lg={4} xl={3}>
-                            <ProductCard product={product} enableBuy={true} enableFavorite={true} isFavorited={false}
-                                         toggleFavorite={() => {
-                                         }}/>
-                        </Col>
-                    ))}
-                </Row>
+                <ProductsList products={similarProducts}/>
             </Container>
         </div>
     );

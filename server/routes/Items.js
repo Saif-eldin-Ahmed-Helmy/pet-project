@@ -6,6 +6,7 @@ const { handleUnauthorized, handleBadRequest, handleServerError} = require("../u
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 const stringSimilarity = require('string-similarity');
+const User = require("../models/User");
 
 /**
  * Query options
@@ -22,11 +23,12 @@ const stringSimilarity = require('string-similarity');
  */
 router.get('/', async (req, res) => {
     try {
-        const { limit, category, subCategory, itemId, similarTo } = req.query
+        const { limit = 1000, category, subCategory, itemId, similarTo, page = 1 } = req.query
         const inStock = req.query.inStock === 'true';
         const priceMin = req.query.priceMin || 0;
         const priceMax = req.query.priceMax || 1000000;
         const deleted = req.query.deleted === 'true';
+        const favorites = req.query.favorites === 'true';
 
         if (deleted) {
             if (!req.isAuthenticated() || !req.user) {
@@ -47,17 +49,24 @@ router.get('/', async (req, res) => {
             price: {$gte: priceMin, $lte: priceMax}
         };
 
+        if (favorites) {
+            if (!req.isAuthenticated() || !req.user) {
+                return handleUnauthorized(res);
+            }
+            const user = await User.findOne({email: req.user.email});
+            query.itemId ={$in: user.favorites};
+        }
+
+        const similarItem = await Items.findOne({itemId: similarTo});
         if (similarTo) {
-            const similarItem = await Items.findOne({itemId: similarTo});
             if (similarItem) {
                 query.itemId = {$ne: similarTo};
             }
         }
 
-        let items = await Items.find(query).limit(limit);
+        let items = await Items.find(query);
 
         if (similarTo) {
-            const similarItem = await Items.findOne({itemId: similarTo});
             if (similarItem) {
                 items = items.filter(item => {
                     const similarity = stringSimilarity.compareTwoStrings(similarItem.name, item.name);
@@ -71,8 +80,12 @@ router.get('/', async (req, res) => {
                 });
             }
         }
+        let itemCount = await Items.countDocuments(query);
+        let maxPages = Math.ceil(itemCount / limit);
 
-        res.json({items});
+        items = iitems = items.slice((page - 1) * limit, page * limit);
+
+        res.json({items: items, maxPages: maxPages});
     }
     catch (error) {
         console.error(error);
@@ -86,13 +99,11 @@ router.use(attachUserDataToRequest);
 router.post('/', async (req, res) => {
     try {
         const role = req.role;
-        console.log(role);
         if (role !== 'admin') {
             return handleUnauthorized(res);
         }
 
         const {itemId, name, picture, stock, price, description, category, subCategory, deleted} = req.body;
-        console.log(itemId, name, picture, stock, price, description, category, subCategory, deleted);
 
         const existingItem = await Items.findOne({itemId});
         if (existingItem) {
@@ -118,12 +129,12 @@ router.put('/', async (req, res) => {
 
         const {oldItemId, itemId, name, picture, stock, price, description, category, subCategory, deleted} = req.body;
 
-        const existingItem = await Items.findOne({oldItemId});
+        const existingItem = await Items.findOne({itemId: oldItemId});
         if (!existingItem) {
             return handleItemNotFound(res);
         }
 
-        const updatedItem = await Items.findOneAndUpdate({oldItemId}, {itemId, name, picture, stock, price, description, category, subCategory, deleted});
+        const updatedItem = await Items.findOneAndUpdate({itemId: oldItemId}, {itemId, name, picture, stock, price, description, category, subCategory, deleted});
 
         res.json({updatedItem});
     }

@@ -187,9 +187,11 @@ router.get('/logout', (req, res) => {
             if (err) {
                 return res.status(500).json({error: 'Error occurred while logging out.'});
             }
-            res.clearCookie('connect.sid');
-            res.redirect('http://localhost:5173/login');
+            res.json({ success: true });
         });
+    }
+    else {
+        res.status(401).json({error: 'You are not logged in.'});
     }
 });
 
