@@ -56,7 +56,7 @@ const AdminItemsPage: React.FC = () => {
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Form className="filter-form" style={{backgroundColor: "#f5f5f5", width: '100%', display: showFilters ? 'flex' : 'none'}}>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                <p>Out Of Stock</p>
+                                <p>In Stock</p>
                                 <CheckboxComponent onCheckboxChange={setShowOutOfStock} />
                             </div>
                             <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMinPrice">
