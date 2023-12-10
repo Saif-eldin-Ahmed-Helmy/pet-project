@@ -14,6 +14,20 @@ interface ProductsListProps {
 
 const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true, enableFavorite = true, href = "/product" }) => {
     const [favoriteItems, setFavoriteItems] = useState<string[]>([]);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+
+    useEffect(() => {
+        const checkAuthentication = async () => {
+            const response = await fetch('http://localhost:3001/api/users/session', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            setIsAuthenticated(data.isAuthenticated)
+        };
+
+        checkAuthentication();
+    }, []);
 
     useEffect(() => {
         fetch('http://localhost:3001/api/users/favorites', {
@@ -24,6 +38,13 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true,
     }, []);
 
     const toggleFavorite = (itemId: string) => {
+        if (!isAuthenticated) {
+            toast.error('You must be logged in to favorite items!', {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 2000
+            });
+            return;
+        }
         setFavoriteItems(prevFavorites => {
             if (prevFavorites.includes(itemId)) {
                 toast.success('Item removed from favorites!', {
