@@ -1,9 +1,20 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import {Alert, Modal, Form, ButtonGroup, Button} from "react-bootstrap";
-import { FaHistory, FaStar, FaUserCog, FaLanguage, FaSignOutAlt } from 'react-icons/fa';
+import {Alert, Modal, Form, ButtonGroup, Button, Spinner} from "react-bootstrap";
+import {
+    FaHistory,
+    FaStar,
+    FaUserCog,
+    FaLanguage,
+    FaSignOutAlt,
+    FaDollarSign,
+    FaMoneyBill,
+    FaMoneyBillAlt, FaWaveSquare, FaHandsWash, FaWallet, FaPeace
+} from 'react-icons/fa';
 import ButtonComponent from "../components/Button/Button.tsx";
+import {toast, ToastContainer} from "react-toastify";
+import {IoPersonSharp} from "react-icons/io5";
 
 const UserPage: React.FC = () => {
     const navigate = useNavigate();
@@ -16,6 +27,19 @@ const UserPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [language, setLanguage] = useState(preferredLanguage);
+    const [balance, setBalance] = useState<number | null>(null);
+
+    useEffect(() => {
+        fetchBalance();
+    }, []);
+
+    const fetchBalance = async () => {
+        const response = await fetch('http://localhost:3001/api/users/balance', {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        setBalance(data.balance);
+    };
 
     const handleLogout = async () => {
         const response = await fetch('http://localhost:3001/api/users/logout', {
@@ -29,12 +53,16 @@ const UserPage: React.FC = () => {
             if (authContext) {
                 authContext.setUser(null);
             }
-            navigate('/login');
+            navigate('/');
         }
     };
 
     const handleLanguageChange = async () => {
         setShowModal(false);
+        toast.success(`Language updated to ${language === 'ar' ? 'Arabic' : 'English'}`, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            autoClose: 2000
+        });
         const result = await fetch('http://localhost:3001/api/users/language', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -47,13 +75,22 @@ const UserPage: React.FC = () => {
         }
     };
 
+    if (balance === null) {
+        return <div style={{marginTop: 150}}>
+            <p>Loading... </p>
+            <Spinner animation="grow"/>
+        </div>
+    }
+
     return (
         <div style={{marginTop: 100}}>
+            <ToastContainer/>
             {error && <Alert variant="danger">{error}</Alert>}
             <h1 style={{marginTop: 100}}>{name}</h1>
+            <h3 style={{color: '#1dce3d'}}><FaWallet style={{marginBottom: 4}} /> Balance: {balance}</h3>
             <ButtonGroup style={{ margin: "20px" }}
                          vertical size="sm">
-                <Button className='account-settings-btn' href="/user/history" style={{color: "black"}}>
+                <Button className='account-settings-btn' href="/user/orders" style={{color: "black"}}>
                     <FaHistory/> Activity History
                 </Button>
                 <Button className='account-settings-btn' href="/shop/favorites" style={{color: "black"}}>

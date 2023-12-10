@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Container from "react-bootstrap/Container";
-import {Form, FormControl, DropdownButton, Dropdown, Spinner, InputGroup, Button} from "react-bootstrap";
+import {Form, FormControl, DropdownButton, Dropdown, Spinner, InputGroup} from "react-bootstrap";
 import './ShopPage.css';
 import { useLocation } from 'react-router-dom';
 import CheckboxComponent from "../components/Checkbox/Checkbox.tsx";
@@ -37,7 +37,9 @@ const ShopPage: React.FC = () => {
     }, [showOutOfStock, minPrice, maxPrice, limit, categoryState, subCategoryState, page]);
 
     const fetchProducts = async () => {
-        const response = await fetch(`http://localhost:3001/api/items?priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&page=${page}&category=${categoryState}&subCategory=${subCategoryState}`);
+        const response = await fetch(`http://localhost:3001/api/items?priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&page=${page}&category=${categoryState}&subCategory=${subCategoryState}&favorites=true`, {
+            credentials: 'include'
+        });
         const data = await response.json();
         setProducts(data.items);
         setMaxPage(data.maxPages);
@@ -85,11 +87,7 @@ const ShopPage: React.FC = () => {
                     </h2>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Form className="filter-form"
-                              style={{
-                                  backgroundColor: "#f5f5f5",
-                                  width: '100%',
-                                  display: showFilters ? 'flex' : 'none'
-                              }}>
+                              style={{backgroundColor: "#f5f5f5", width: '100%', display: showFilters ? 'flex' : 'none'}}>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                                 <p>Out Of Stock</p>
                                 <CheckboxComponent onCheckboxChange={setShowOutOfStock}/>
