@@ -16,15 +16,10 @@ router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders'
 
 router.get("/", async (req, res) => {
     const { orderId, traceType, itemId, itemCategory, couponCode, city } = req.query;
-    const itemz = await Item.find();
-    for (const item of itemz) {
-        item.stock += 100;
-        (await item).save();
-    }
+    const role = req.role;
 
     if(orderId) {
         const hasOrder = req.user.orders.find(order => order.orderId === orderId);
-        const role = req.role;
         if(!hasOrder && role !== 'admin') {
             handleBadRequest(res, `There is no order with the id ${orderId}`)
             return;
@@ -35,7 +30,7 @@ router.get("/", async (req, res) => {
         return;
     }
 
-    const orders = await Order.find();
+    const orders = (role === 'admin') ? await Order.find() : req.user.orders;
     const filteredOrders = orders.filter(order => {
         return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
             (!itemId || order.items.some(item => item.itemId === itemId)) &&
