@@ -91,7 +91,7 @@ const ShopPage: React.FC = () => {
                                   display: showFilters ? 'flex' : 'none'
                               }}>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                <p>Out Of Stock</p>
+                                <p>In Stock</p>
                                 <CheckboxComponent onCheckboxChange={setShowOutOfStock}/>
                             </div>
                             <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMinPrice">
