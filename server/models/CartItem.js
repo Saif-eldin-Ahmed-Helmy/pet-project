@@ -4,7 +4,7 @@ const cartItemSchema = new mongoose.Schema({
     itemId: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // todo make sure this doesnt cause a problem if theres multiple users
         lowercase: true,
     },
     quantity: {

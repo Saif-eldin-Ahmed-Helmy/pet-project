@@ -1,3 +1,5 @@
+import {OrderItem} from "./orderItem.ts";
+
 interface OrderTrace {
     type: 'placed' | 'preparing' | 'delivering' | 'delivered' | 'cancelled';
     date: string;
