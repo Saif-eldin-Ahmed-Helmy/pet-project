@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Table, Form, Button, FormControl, Spinner} from 'react-bootstrap';
+import {Table, Form, Button, FormControl, Spinner, Alert} from 'react-bootstrap';
 import { OrderItem } from "../interfaces/orderItem.ts";
 import { Location } from "../interfaces/location.ts";
 import ImageComponent from "../components/Image/Image.tsx";
@@ -24,6 +24,8 @@ const ShoppingCartPage: React.FC = () => {
     const [locationValid, setLocationValid] = useState(true);
     const [tipValid, setTipValid] = useState(true);
     const [balance, setBalance] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (cartItems) {
@@ -104,8 +106,14 @@ const ShoppingCartPage: React.FC = () => {
     const handleCheckout = async () => {
         if (!location) {
             setLocationValid(false);
+            setError('Please select a location');
             return;
         }
+        if (!cartItems || cartItems.length === 0) {
+            setError('Cart is empty');
+            return;
+        }
+        setLoading(true);
         const response = await fetch(`http://localhost:3001/api/orders`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -117,15 +125,17 @@ const ShoppingCartPage: React.FC = () => {
                 promoCode
             }),
             credentials: 'include'
-        });
-
-        if (response.ok) {
-            setCartItems([]);
-            navigate('/orders');
-        }
-        else {
-            // todo handle error
-        }
+        }).then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    setCartItems([]);
+                    navigate('/user/orders');
+                }
+                else {
+                    setError(data.error);
+                }
+            });
+        setLoading(false);
     };
 
     const handleLocationChange = (e: string) => {
@@ -202,6 +212,7 @@ const ShoppingCartPage: React.FC = () => {
             </Table>
             </Container>
             <Container style={{display: 'grid', height: '80vh'}}>
+                {error && <Alert variant="danger">{error}</Alert>}
             <Form.Group controlId="location" className="form-container">
                 <Form.Label>Delivery Location</Form.Label>
                 <Form.Control as="select" value={location} onChange={e => handleLocationChange(e.target.value)} isInvalid={!locationValid}>
@@ -264,7 +275,7 @@ const ShoppingCartPage: React.FC = () => {
                     {deliveryFee === 0 && <h6>Order is above 200, enjoy free delivery!</h6>
                     }
             </Container>
-            <ButtonComponent variant="primary" onClick={handleCheckout}>Checkout</ButtonComponent>
+            <ButtonComponent disabled={loading} variant="primary" onClick={handleCheckout}>{loading ? "Checking out..." : "Checkout"}</ButtonComponent>
         </Container>
         </Container>
     );
