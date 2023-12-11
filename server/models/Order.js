@@ -135,6 +135,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    cashAmount: {
+        type: Number,
+        default: 0
+    },
     finalAmount: { // with the discounts
         type: Number,
         required: true

@@ -9,12 +9,18 @@ const { handleBadRequest } = require("../utils/errorHandler");
 const { getMilliSeconds } = require("../utils/timeUtils");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
+const CartItem = require("../models/CartItem");
 
 router.use(verifySession)
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders', 'shoppingCart']));
 
 router.get("/", async (req, res) => {
     const { orderId, traceType, itemId, itemCategory, couponCode, city } = req.query;
+    const itemz = await Item.find();
+    for (const item of itemz) {
+        item.stock += 100;
+        (await item).save();
+    }
 
     if(orderId) {
         const hasOrder = req.user.orders.find(order => order.orderId === orderId);
@@ -112,13 +118,21 @@ router.post("/", async(req, res) => {
             }
         }
 
-        let cashAmount = 0;
-        if (paymentMethod === 'balance' && req.user.balance < finalAmount) {
-            cashAmount = finalAmount - req.user.balance;
-            finalAmount = req.user.balance;
-        }
+        const deliveryFee = 20;
+        const grandTotal = Number(amount + deliveryFee + tip);
 
-        req.user.balance -= finalAmount;
+        let cashAmount = 0;
+        if (paymentMethod === 'balance') {
+            const grandTotalWithBalance = Number(amount + deliveryFee + tip - Math.min(grandTotal, req.user.balance));
+            cashAmount = grandTotalWithBalance;
+            finalAmount = grandTotal;
+            req.user.balance -= grandTotalWithBalance;
+            console.log('Payment method is balance', cashAmount, finalAmount);
+        }
+        else {
+            cashAmount = grandTotal;
+        }
+        console.log(cashAmount, finalAmount, grandTotal, amount, deliveryFee, tip);
 
         const newOrder = await Order.create({
             orderId: orderId,
@@ -141,7 +155,10 @@ router.post("/", async(req, res) => {
         });
 
         req.user.orders.push(newOrder);
-        req.user.shoppingCart.clear();
+        for (const item of req.user.shoppingCart) {
+            const cartItem = await CartItem.findOneAndDelete({_id: item._id});
+        }
+        req.user.shoppingCart = [];
         await req.user.save();
         res.json({ success: true, order: newOrder });
     }
@@ -210,7 +227,7 @@ router.get('/test', async (req, res) => {
             active: true,
         };
 
-        const order = new Order({
+        const order = Order.create({
             orderId: newId(),
             date: new Date().toISOString(),
             items: orderItems,
@@ -218,16 +235,18 @@ router.get('/test', async (req, res) => {
             finalAmount: amount,
             trace: [orderTrace],
             location: {
-                locationId: '5f9e7b9e6c0b6a2a3c2f1c6e',
-                address: '123 Main St',
-                city: 'New York',
-                state: 'NY',
-                zipCode: '12345',
-                phoneNumber: '1234567890',
+                locationId: '12345',
+                city: 'Nasr City',
+                locationSignature: 'Nasr City, Cairo, Egypt',
+                apartmentNumber: 10,
+                floorNumber: 5,
+                streetName: 'El Nasr Street',
+                phoneNumber: '01154152523',
             },
         });
 
-        await order.save();
+        req.user.orders.push(order);
+        await req.user.save();
 
         res.json({ success: true, order });
     } catch (error) {
