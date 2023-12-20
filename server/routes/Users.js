@@ -7,7 +7,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 //const FacebookStrategy = require('passport-facebook').Strategy;
-const { handleBadRequest, handleUnauthorized, handleServerError, handleUserNotFound} = require('../utils/errorHandler');
+const { handleBadRequest, handleUnauthorized, handleServerError, handleUserNotFound} = require('../handlers/error');
 const {verifySession} = require("../middlewares/auth");
 const {attachUserDataToRequest} = require("../middlewares/attachUserData");
 

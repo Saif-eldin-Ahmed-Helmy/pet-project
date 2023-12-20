@@ -3,7 +3,7 @@ const router = express.Router();
 const CartItem = require('../models/CartItem');
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
-const { handleServerError, handleBadRequest } = require('../utils/errorHandler');
+const { handleServerError, handleBadRequest } = require('../handlers/error');
 const Item = require("../models/Item");
 
 router.use(verifySession);

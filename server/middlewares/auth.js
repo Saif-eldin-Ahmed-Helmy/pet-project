@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { handleUnauthorized } = require('../utils/errorHandler');
+const { handleUnauthorized } = require('../handlers/error');
 
 const verifySession = (req, res, next) => {
     if (!req.isAuthenticated() || !req.user) {
