@@ -4,12 +4,13 @@ const router = express.Router();
 const Order = require("../models/Order");
 const Item = require("../models/Item");
 const CouponCode = require("../models/CouponCode");
+const CartItem = require("../models/CartItem");
 
-const { handleBadRequest } = require("../utils/errorHandler");
+const { handleBadRequest } = require("../handlers/error");
 const { getMilliSeconds } = require("../utils/timeUtils");
+const { newId } = require("../utils/numberUtils");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
-const CartItem = require("../models/CartItem");
 
 router.use(verifySession)
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders', 'shoppingCart']));
@@ -181,7 +182,7 @@ router.put("/", async(req, res) => {
         }
     } else if (rating || comment || userRating || userComment) {
         if((order.trace.find(trace => trace.active === true).type === 'delivered')
-        && ((req.user.orders.find(order => order.orderId === orderId))
+            && ((req.user.orders.find(order => order.orderId === orderId))
             && req.role === 'admin')) {
             order.rating = rating;
             order.comment = comment;
@@ -249,9 +250,5 @@ router.get('/test', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
-const newId = function(){
-    return Date.now().toString(36) + Math.random().toString(36).slice(2);
-}
 
 module.exports = router;
