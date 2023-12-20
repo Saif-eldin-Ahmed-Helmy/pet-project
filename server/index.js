@@ -60,6 +60,9 @@ app.use('/api/orders', ordersRoute);
 const couponRoute = require("./routes/CouponCodes");
 app.use('./api/couponCodes', couponRoute);
 
+const chatsRoute = require("./routes/Chats");
+app.use('/api/chats', chatsRoute);
+
 io.on("connection", (con) => {
     const socket = require("./handlers/socket");
     socket.handleMessages(con);
