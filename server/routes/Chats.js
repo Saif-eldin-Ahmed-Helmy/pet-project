@@ -34,5 +34,51 @@ router.get("/", async(req, res) => {
 });
 
 router.post("/", async(req, res) => {
+    const email = req.body.email || req.email;
+    const type = req.body.type;
 
+    const newChat = await Chat.create({
+        sessionId: newId(),
+        userLog: {
+            email: email,
+            action: 'created',
+            executor: req.email,
+            date: getMilliSeconds()
+        },
+        type: type
+    });
+
+    const user = await User.findOne({ email });
+    user.chats.push(newChat);
+    await user.save();
+
+    res.json({ newChat });
 })
+
+router.put("/", async(req, res) => {
+    const { sessionId, email, type, action } = req.body;
+    const chat = await Chat.findOne({ sessionId });
+    let user;
+
+    if(email != null) {
+        user = await User.findOne({ email });
+
+        chat.userLog.push({
+            email: email,
+            action: action,
+            executor: req.email,
+            date: getMilliSeconds()
+        })
+
+        action == 'added' ? user.chats.push(chat) : user.chats.splice(user.chats.findIndex(c => c._id === chat._id), 1)
+    }
+
+    if(type != null) chat.type = type;
+
+    await chat.save();
+    if(user != null) await user.save();
+
+    res.json({ chat });
+})
+
+module.exports = router;
