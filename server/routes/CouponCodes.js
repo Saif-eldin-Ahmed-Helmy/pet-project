@@ -4,8 +4,7 @@ const router = express.Router();
 const CouponCode = require("../models/CouponCode");
 const Item = require("../models/Item");
 
-const { handleBadRequest, handleUnauthorized, handleServerError } = require("../utils/errorHandler");
-const { getMilliSeconds } = require("../utils/timeUtils");
+const { handleBadRequest, handleUnauthorized, handleServerError } = require("../handlers/error");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 

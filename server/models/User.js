@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         default: 'user',
-        enum: ['user', 'driver', 'packageer', 'admin'],
+        enum: ['user', 'driver', 'packageer', 'admin', 'support', 'doctor'],
     },
     password: {
         type: String,
@@ -77,6 +77,10 @@ const userSchema = new mongoose.Schema({
     shoppingCart: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'CartItem',
+    },
+    chats: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Chat',
     },
     balance: {
         type: Number,

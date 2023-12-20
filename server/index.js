@@ -1,25 +1,28 @@
 require('dotenv').config();
-const express = require('express');
-const app = express();
-const port = 3001;
-const connectToDatabase = require('./config/database');
-const cookieParser = require('cookie-parser');
-const passport = require('passport');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const cors = require('cors');
+const express = require('express'),
+    app = express(),
+    server = require("node:http").createServer(app),
+    { Server } = require("socket.io"),
+    cookieParser = require('cookie-parser'),
+    passport = require('passport'),
+    session = require('express-session'),
+    MongoStore = require('connect-mongo'),
+    cors = require('cors'),
 
-const corsOptions = {
-    origin: 'http://localhost:5173',
-    credentials: true,
-};
+    port = 3001,
+    
+    connectToDatabase = require('./config/database'),
+    mongooseConnectionPromise = connectToDatabase();
 
-app.use(cors(corsOptions));
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+        credentials: true,    
+    }
+});
 
 app.use(express.json());
 app.use(cookieParser());
-
-const mongooseConnectionPromise = connectToDatabase();
 
 app.use(
     session({
@@ -57,6 +60,11 @@ app.use('/api/orders', ordersRoute);
 const couponRoute = require("./routes/CouponCodes");
 app.use('./api/couponCodes', couponRoute);
 
-app.listen(port, () => {
+io.on("connection", (con) => {
+    const socket = require("./handlers/socket");
+    socket.handleMessages(con);
+})
+
+server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

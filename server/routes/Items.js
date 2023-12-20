@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Items = require("../models/Item");
-const { handleUnauthorized, handleBadRequest, handleServerError} = require("../utils/errorHandler");
+const { handleUnauthorized, handleBadRequest, handleServerError} = require("../handlers/error");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 const stringSimilarity = require('string-similarity');
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
                 query.itemId = {$ne: similarTo};
             }
         }
-
+        
         let items = await Items.find(query);
 
         if (similarTo) {

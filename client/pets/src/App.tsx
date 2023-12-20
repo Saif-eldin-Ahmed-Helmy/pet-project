@@ -1,4 +1,5 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import io from 'socket.io-client';
 import HomePage from './pages/HomePage';
 import Layout from "./pages/Layout.tsx";
 import './App.css';
@@ -18,6 +19,8 @@ import AddLocationPage from "./pages/AddLocationPage.tsx";
 import OrdersPage from "./pages/OrdersPage.tsx";
 import ShoppingCartPage from "./pages/ShoppingCartPage.tsx";
 import FavoritesPage from "./pages/FavoritesPage.tsx";
+
+const socket = io("http://localhost:3001").connect();
 
 function App() {
     return (
