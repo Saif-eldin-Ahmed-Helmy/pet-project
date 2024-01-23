@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const { handleUnauthorized } = require('../handlers/error');
 
 const verifySession = (req, res, next) => {
