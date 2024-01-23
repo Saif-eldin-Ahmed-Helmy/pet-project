@@ -35,7 +35,7 @@ function inputValidation(sessionId, email, message, update_message, callback) {
     if(message.trim().length === 0) {
         return callback("Message connot be empty");
     }
-    if(message.trim().length > 500) {
+    if(message.trim().length > 500 || update_message.trim().length > 500) {
         return callback("Message is too long, maximum is 500 characters");
     }
 }
@@ -62,7 +62,7 @@ export function run(socket) {
     })
     socket.on("send_message", async(message, sessionId, callback) => {
         try {
-            inputValidation(sessionId, socket.email, message, null, callback);
+            await inputValidation(sessionId, socket.email, message, null, callback);
             const user = await Users.findOne({ email: socket.email });
     
             if(!user.chats.includes(sessionId)) {
@@ -72,6 +72,7 @@ export function run(socket) {
             const chat = user.chats.find(chat => chat.sessionId == sessionId);
             chat.messages.push({
                 Id: newId,
+                sender: socket.email,
                 content: message,
                 log: {
                     to: message,
@@ -93,7 +94,7 @@ export function run(socket) {
     })
     socket.on("update_message", async(messageId, updated_message, sessionId, callback) => {
         try {
-            inputValidation(sessionId, email, null, updated_message, callback);
+            await inputValidation(sessionId, email, null, updated_message, callback);
             const user = await Users.findOne({ email: socket.email });
 
             if(!user.chats.includes(sessionId)) {
@@ -105,6 +106,8 @@ export function run(socket) {
             if(!message) {
                 callback("Message not found");
             }
+
+            if(message.sender != socket.email) return callback("Unauthorized Connection");
     
             const old_message = message.log.find(log => log.active == true);
             if(old_message) old_message.active = false;
