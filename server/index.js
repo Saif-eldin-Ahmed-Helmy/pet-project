@@ -21,6 +21,9 @@ const io = new Server(server, {
     }
 });
 
+const chatIo = io.of("/chat");
+const chatHandler = require("./handlers/chat");
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -42,31 +45,34 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const usersRouter = require('./routes/Users');
-app.use('/api/users', usersRouter);
+const routeNames = ['Cart', 'Chats', 'CouponCodes', 'Images', 'Items', 'Orders', 'Users'];
+routeNames.forEach(routeName => {
+    const route = require(`./routes/${routeName}`);
+    app.use(`/api/${routeName.toLowerCase()}`, route);
+});
 
-const itemsRouter = require('./routes/Items');
-app.use('/api/items', itemsRouter);
+// const usersRouter = require('./routes/Users');
+// app.use('/api/users', usersRouter);
 
-const cartRouter = require('./routes/Cart');
-app.use('/api/cart', cartRouter);
+// const itemsRouter = require('./routes/Items');
+// app.use('/api/items', itemsRouter);
 
-const imagesRouter = require('./routes/Images');
-app.use('/api/images', imagesRouter);
+// const cartRouter = require('./routes/Cart');
+// app.use('/api/cart', cartRouter);
 
-const ordersRoute = require('./routes/Orders');
-app.use('/api/orders', ordersRoute);
+// const imagesRouter = require('./routes/Images');
+// app.use('/api/images', imagesRouter);
 
-const couponRoute = require("./routes/CouponCodes");
-app.use('./api/couponCodes', couponRoute);
+// const ordersRoute = require('./routes/Orders');
+// app.use('/api/orders', ordersRoute);
 
-const chatsRoute = require("./routes/Chats");
-app.use('/api/chats', chatsRoute);
+// const couponRoute = require("./routes/CouponCodes");
+// app.use('./api/couponCodes', couponRoute);
 
-io.on("connection", (con) => {
-    const socket = require("./handlers/socket");
-    socket.handleMessages(con);
-})
+// const chatsRoute = require("./routes/Chats");
+// app.use('/api/chats', chatsRoute);
+
+chatHandler(userIo);
 
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
