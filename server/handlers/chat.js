@@ -33,7 +33,7 @@ function inputValidation(sessionId, email, message, update_message, callback) {
         return callback("Invalid message");
     }
     if(message.trim().length === 0) {
-        return callback("Message connot be empty");
+        return callback("Message cannot be empty");
     }
     if(message.trim().length > 500 || update_message.trim().length > 500) {
         return callback("Message is too long, maximum is 500 characters");
