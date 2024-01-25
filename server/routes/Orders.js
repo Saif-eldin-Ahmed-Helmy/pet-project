@@ -115,7 +115,7 @@ router.post("/", async(req, res) => {
         }
 
         const deliveryFee = 20;
-        const grandTotal = Number(amount + deliveryFee + tip);
+        const grandTotal = Number(amount + deliveryFee + (String(tip).startsWith('-') ? 0 : Number(tip)));
 
         let cashAmount = 0;
         if (paymentMethod === 'balance') {
