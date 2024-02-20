@@ -47,7 +47,7 @@ export function run(socket) {
                 const { email, name, role } = socket.handshake.auth;
                 const user = await Users.findOne(({ email }));
     
-                if(!(user.name == name && user.role == role)) {
+                if(!(user.name == name || user.role == role)) {
                     return next(new Error("Unauthorized Connection"));
                 }
     
@@ -56,9 +56,10 @@ export function run(socket) {
                 next();    
             } catch(error) {
                 console.error(error);
-                return next(new Error("Error while handshaking"));
+                return next(new Error("Error during handshaking"));
             }
-        }
+        } else
+            return next(new Error("Error during handshaking"));
     })
     socket.on("send_message", async(message, sessionId, callback) => {
         try {
