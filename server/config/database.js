@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
-async function main() {
+async function connect() {
     await mongoose.connect(process.env.MONGODB_URI);
 }
 
-module.exports = main;
+function getClient() {
+    return mongoose.connection.getClient();
+}
+
+module.exports = [connect, getClient];

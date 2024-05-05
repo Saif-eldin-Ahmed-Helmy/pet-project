@@ -1,7 +1,7 @@
 import {OrderItem} from "./orderItem.ts";
 
 interface OrderTrace {
-    type: 'placed' | 'preparing' | 'delivering' | 'delivered' | 'cancelled';
+    type: 'placed' | 'preparing' | 'prepared' | 'delivering' | 'delivered' | 'cancelled';
     date: string;
     executor: string;
     active: boolean;
@@ -24,7 +24,9 @@ export interface Order {
     items: OrderItem[];
     couponCodes: CouponCode[];
     location: Location;
+    tip: number;
     amount: number;
+    cashAmount: number;
     finalAmount: number;
     rating: number;
     comment: string;

@@ -12,13 +12,23 @@ router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['shoppin
 router.get('/', async (req, res) => {
     try {
         let items = [];
+        console.log(req.user.shoppingCart);
         for (const cartItem of req.user.shoppingCart) {
             const item = await Item.findOne({ itemId: cartItem.itemId });
             if (!item || item.deleted) {
                 req.user.shoppingCart.pull(cartItem);
                 await CartItem.deleteOne({ _id: cartItem._id });
             }
-            items.push({ itemId: item.itemId, description: item.description, picture: item.picture, name: item.name, pricePerItem: item.price, quantity: cartItem.quantity });
+            else {
+                items.push({
+                    itemId: item.itemId,
+                    description: item.description,
+                    picture: item.picture,
+                    name: item.name,
+                    pricePerItem: item.price,
+                    quantity: cartItem.quantity
+                });
+            }
         }
         res.json(items);
     } catch (error) {

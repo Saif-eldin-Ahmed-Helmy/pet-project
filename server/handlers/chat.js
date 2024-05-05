@@ -40,20 +40,20 @@ function inputValidation(sessionId, email, message, update_message, callback) {
     }
 }
 
-export function run(socket) {
+function run(socket) {
     socket.use(async (socket, next) => {
         if(socket.handshake.auth) {
             try {
-                const { email, name, role } = socket.handshake.auth;
+                const { email, name, role } = socket.handshake.auth; // have to change it to JWT or whatever you use to save sessions
                 const user = await Users.findOne(({ email }));
-    
+
                 if(!(user.name == name || user.role == role)) {
                     return next(new Error("Unauthorized Connection"));
                 }
-    
+
                 socket.email = email;
                 socket.name = name;
-                next();    
+                next();
             } catch(error) {
                 console.error(error);
                 return next(new Error("Error during handshaking"));
@@ -65,11 +65,11 @@ export function run(socket) {
         try {
             await inputValidation(sessionId, socket.email, message, null, callback);
             const user = await Users.findOne({ email: socket.email });
-    
+
             if(!user.chats.includes(sessionId)) {
                 callback("Unauthorized Connection");
             }
-    
+
             const chat = user.chats.find(chat => chat.sessionId == sessionId);
             chat.messages.push({
                 Id: newId,
@@ -86,8 +86,8 @@ export function run(socket) {
             await handleTransaction(chat, user, callback);
 
             socket.to(sessionId).emit('new_message', user.name, getMilliSeconds());
-    
-            callback('ok');    
+
+            callback('ok');
         } catch (error) {
             console.error("Error while sending a new message with socket", error);
             return callback(new Error("Error while sending the message"));
@@ -101,7 +101,7 @@ export function run(socket) {
             if(!user.chats.includes(sessionId)) {
                 callback("Unauthorized Connection");
             }
-    
+
             const chat = user.chats.find(chat => chat.sessionId == sessionId);
             const message = chat.messages.find(message => message.Id == messageId);
             if(!message) {
@@ -109,10 +109,10 @@ export function run(socket) {
             }
 
             if(message.sender != socket.email) return callback("Unauthorized Connection");
-    
+
             const old_message = message.log.find(log => log.active == true);
             if(old_message) old_message.active = false;
-    
+
             message.content = updated_message;
             message.log.push({
                 from: old_message.content,
@@ -121,11 +121,11 @@ export function run(socket) {
                 executor: user.email,
                 date: getMilliSeconds(),
             })
-    
+
             await handleTransaction(chat, user, callback);
 
             socket.to(sessionId).emit('update_message', messageId, updated_message, getMilliSeconds());
-    
+
             callback('ok')
         } catch (error) {
             console.error("Error while updating a message with socket", error);
@@ -133,3 +133,5 @@ export function run(socket) {
         }
     })
 }
+
+module.exports = run;

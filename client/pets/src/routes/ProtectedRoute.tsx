@@ -2,6 +2,7 @@ import { Outlet, Navigate } from 'react-router-dom'
 import React, {useEffect, useState} from "react";
 import {Spinner} from "react-bootstrap";
 import {AuthContext} from "../context/AuthContext";
+import {useTranslation} from "react-i18next";
 
 interface ProtectedRouteProps {
     role?: string;
@@ -12,7 +13,8 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigateTo = '/user', isAuth = true }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [user, setUser] = useState<any>(null);
-
+    const [preferredLanguage, setPreferredLanguage] = useState<string>('en');
+    const {t} = useTranslation();
 
     useEffect(() => {
         const checkAuthentication = async () => {
@@ -22,6 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigate
             const data = await response.json();
             setIsAuthenticated(data.isAuthenticated && (role != 'user' ? (data.role == 'admin' || data.role === role) : true));
             setUser(data);
+            setPreferredLanguage(data.preferredLanguage);
         };
 
         checkAuthentication();
@@ -29,13 +32,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigate
 
     if (isAuthenticated === null) {
         return <div style={{marginTop: 150}}>
-            <p>Loading... </p>
+            <p>{t('loading')} </p>
             <Spinner animation="grow"/>
         </div>
     }
     return(
         (isAuth ? isAuthenticated : !isAuthenticated) ?
-            <AuthContext.Provider value={{ user, setUser }}>
+            <AuthContext.Provider value={{ user, setUser, preferredLanguage, setPreferredLanguage }}>
                 <Outlet/>
             </AuthContext.Provider>
             : <Navigate to={navigateTo}/>
