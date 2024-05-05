@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Container from "react-bootstrap/Container";
-import {Form, FormControl, DropdownButton, Dropdown, Spinner, InputGroup, Button} from "react-bootstrap";
+import {Form, FormControl, DropdownButton, Dropdown, Spinner, InputGroup} from "react-bootstrap";
 import './ShopPage.css';
 import { useLocation } from 'react-router-dom';
 import CheckboxComponent from "../components/Checkbox/Checkbox.tsx";
 import {Item} from "../interfaces/item.ts";
 import ProductsList from "../components/ProductsList/ProductsList.tsx";
 import {BsSearch} from "react-icons/bs";
+import { useTranslation } from 'react-i18next';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
 }
 
 const ShopPage: React.FC = () => {
+    const { t } = useTranslation();
     const [page, setPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
     const [products, setProducts] = useState<Item[] | null>(null);
@@ -45,7 +47,7 @@ const ShopPage: React.FC = () => {
 
     if (!products) {
         return <div style={{marginTop: 150}}>
-            <p>Loading... </p>
+            <p>{t('loading')} </p>
             <Spinner animation="grow"/>
         </div>
     }
@@ -73,15 +75,15 @@ const ShopPage: React.FC = () => {
 
     return (
         <div>
-            <Container className="shop-menu" style={{marginTop: 150}}>
+            <Container className="shop-menu" style={{marginTop: 20}}>
                 <Container className="shop-menu-container">
                     <h2 className="shop-menu-subhead">
                         <p>
-                            {categoryState === 'cats' ? 'FOR CATS' : categoryState === 'dogs' ? 'FOR DOGS' : 'FOR YOUR PET'}
+                            {t(categoryState === 'cats' ? 'forCats' : categoryState === 'dogs' ? 'forDogs' : 'forYourPet')}
                         </p>
                     </h2>
                     <h2 className="shop-menu-description" style={{fontSize: 20, fontFamily: "sans-serif"}}>
-                        <p>Make your pet happy!</p>
+                        <p>{t('makeYourPetHappy')}</p>
                     </h2>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <Form className="filter-form"
@@ -91,40 +93,40 @@ const ShopPage: React.FC = () => {
                                   display: showFilters ? 'flex' : 'none'
                               }}>
                             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                <p>In Stock</p>
+                                <p>{t('inStock')}</p>
                                 <CheckboxComponent onCheckboxChange={setShowOutOfStock}/>
                             </div>
                             <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMinPrice">
-                                <Form.Label>Min Price</Form.Label>
+                                <Form.Label>{t('minPrice')}</Form.Label>
                                 <FormControl type="number" value={minPrice}
                                              onChange={e => setMinPrice(e.target.value ? parseFloat(e.target.value) : 0)}/>
                             </Form.Group>
                             <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formMaxPrice">
-                                <Form.Label>Max Price</Form.Label>
+                                <Form.Label>{t('maxPrice')}</Form.Label>
                                 <FormControl type="number" value={maxPrice}
                                              onChange={e => setMaxPrice(e.target.value ? parseFloat(e.target.value) : 0)}/>
                             </Form.Group>
-                            <Form.Group style={{marginLeft: 10, width: '5%'}} controlId="formLimit">
-                                <Form.Label>Limit</Form.Label>
+                            <Form.Group style={{marginLeft: 10, width: '10%'}} controlId="formLimit">
+                                <Form.Label>{t('limit')}</Form.Label>
                                 <FormControl type="number" value={limit}
                                              onChange={e => setLimit(e.target.value ? parseInt(e.target.value) : 0)}/>
                             </Form.Group>
-                            <div style={{
+                            <div className="category-container" style={{
                                 marginLeft: 20,
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center'
                             }}>
-                                <p>Category</p>
+                                <p>{t('category')}</p>
                                 <DropdownButton
                                     style={{top: -10}}
                                     id="dropdown-basic-button"
-                                    title={categoryState === '' ? 'All' : categoryState === 'cats' ? 'Cats' : 'Dogs'}
+                                    title={categoryState === '' ? t('all') : categoryState === 'cats' ? t('cats') : t('dogs')}
                                     onSelect={(selectedKey: any) => setCategoryState(selectedKey)}
                                 >
-                                    <Dropdown.Item eventKey="">All</Dropdown.Item>
-                                    <Dropdown.Item eventKey="cats">Cats</Dropdown.Item>
-                                    <Dropdown.Item eventKey="dogs">Dogs</Dropdown.Item>
+                                    <Dropdown.Item eventKey="">{t('all')}</Dropdown.Item>
+                                    <Dropdown.Item eventKey="cats">{t('cats')}</Dropdown.Item>
+                                    <Dropdown.Item eventKey="dogs">{t('dogs')}</Dropdown.Item>
                                 </DropdownButton>
                             </div>
 
@@ -135,16 +137,16 @@ const ShopPage: React.FC = () => {
                                 flexDirection: 'column',
                                 alignItems: 'center'
                             }}>
-                                <p>Sub Category</p>
+                                <p>{t('subCategory')}</p>
                                 <DropdownButton
                                     style={{top: -10}}
                                     id="dropdown-basic-button"
-                                    title={subCategoryState === '' ? 'All' : subCategoryState === 'food' ? 'Food' : 'Accessories'}
+                                    title={subCategoryState === '' ? t('all') : subCategoryState === 'food' ? t('food') : t('accessories')}
                                     onSelect={(selectedKey: any) => setSubCategoryState(selectedKey)}
                                 >
-                                    <Dropdown.Item eventKey="">All</Dropdown.Item>
-                                    <Dropdown.Item eventKey="food">Food</Dropdown.Item>
-                                    <Dropdown.Item eventKey="accessories">Accessories</Dropdown.Item>
+                                    <Dropdown.Item eventKey="">{t('all')}</Dropdown.Item>
+                                    <Dropdown.Item eventKey="food">{t('food')}</Dropdown.Item>
+                                    <Dropdown.Item eventKey="accessories">{t('accessories')}</Dropdown.Item>
                                 </DropdownButton>
                             </div>
 
@@ -155,7 +157,7 @@ const ShopPage: React.FC = () => {
                                 flexDirection: 'column',
                                 alignItems: 'center'
                             }}>
-                                <p>Page</p>
+                                <p>{t('page')}</p>
                                 <DropdownButton
                                     style={{top: -10}}
                                     id="dropdown-basic-button"
@@ -163,17 +165,17 @@ const ShopPage: React.FC = () => {
                                     onSelect={(selectedKey: any) => setPage(selectedKey)}
                                 >
                                     {maxPage > 0 && [...Array(maxPage).keys()].map(i => (
-                                        <Dropdown.Item eventKey={i + 1}>{i + 1}</Dropdown.Item>
+                                        <Dropdown.Item key={i} eventKey={i + 1}>{i + 1}</Dropdown.Item>
                                     ))}
                                 </DropdownButton>
                             </div>
                             <Form.Group controlId="formSearch">
                                 <InputGroup className="mb-3">
-                                    <Form.Label>Search for a product</Form.Label>
+                                    <Form.Label>{t('searchForProduct')}</Form.Label>
                                     <InputGroup>
                                         <FormControl
-                                            placeholder="Search"
-                                            aria-label="Search"
+                                            placeholder={t('search')}
+                                            aria-label={t('search')}
                                             aria-describedby="basic-addon2"
                                             value={searchTerm}
                                             onChange={handleSearchChange}
