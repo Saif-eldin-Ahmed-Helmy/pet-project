@@ -89,7 +89,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true,
             <ToastContainer/>
             <Row>
                 {products.map(product => (
-                    <Col sm={12} md={6} lg={4} xl={3}>
+                    <Col sm={12} md={6} lg={4} xl={3} key={product.itemId}>
                         <ProductCard
                             key={product.itemId}
                             product={product}

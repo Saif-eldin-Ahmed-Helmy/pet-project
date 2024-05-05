@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Container from "react-bootstrap/Container";
-import {Row, Col, Form, FormControl, DropdownButton, Dropdown} from "react-bootstrap";
+import {Row, Col, Form, FormControl, DropdownButton, Dropdown, Spinner} from "react-bootstrap";
 import ProductCard from '../../components/ProductCard/ProductCard';
 import '../ShopPage.css';
 import { useLocation } from 'react-router-dom';
@@ -13,7 +13,7 @@ const useQuery = () => {
 }
 
 const AdminItemsPage: React.FC = () => {
-    const [products, setProducts] = useState<Item[]>([]);
+    const [products, setProducts] = useState<Item[] | null>(null);
     const [showOutOfStock, setShowOutOfStock] = useState(true);
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(0);
@@ -23,9 +23,6 @@ const AdminItemsPage: React.FC = () => {
     const [categoryState, setCategoryState] = useState(category || '');
     const [subCategoryState, setSubCategoryState] = useState(subCategory || '');
     const showFilters = true;
-    const availableProducts = products.filter(product => !product.deleted && product.stock > 0);
-    const outOfStockProducts = products.filter(product => !product.deleted && product.stock === 0);
-    const deletedProducts = products.filter(product => product.deleted);
 
     useEffect(() => {
         fetchProducts();
@@ -39,11 +36,22 @@ const AdminItemsPage: React.FC = () => {
         setProducts(data.items);
     };
 
+    if (!products) {
+        return <div style={{marginTop: 150}}>
+            <p>Loading... </p>
+            <Spinner animation="grow"/>
+        </div>
+    }
+
+    const availableProducts = products.filter(product => !product.deleted && product.stock > 0);
+    const outOfStockProducts = products.filter(product => !product.deleted && product.stock === 0);
+    const deletedProducts = products.filter(product => product.deleted);
+
     //<Button variant="primary" onClick={() => setShowFilters(!showFilters)}>Toggle Filters</Button>
 
     return (
         <div>
-            <Container className="shop-menu" style={{marginTop: 150}}>
+            <Container className="shop-menu" style={{marginTop: 20}}>
                 <Container className="shop-menu-container">
                     <h2 className="shop-menu-subhead">
                         <p>

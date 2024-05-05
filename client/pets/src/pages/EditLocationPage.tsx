@@ -56,7 +56,7 @@ const EditLocationPage: React.FC = () => {
     }
 
     return (
-        <Form style={{marginTop: 150}} onSubmit={handleSubmit}>
+        <Form style={{marginTop: 20}} onSubmit={handleSubmit}>
             <a href="/user/settings">
                 <ButtonComponent>
                     Go Back

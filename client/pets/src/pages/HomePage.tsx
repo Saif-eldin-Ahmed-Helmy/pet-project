@@ -2,27 +2,28 @@ import React from 'react';
 import Container from "react-bootstrap/Container";
 import ImageComponent from "../components/Image/Image.tsx";
 import ButtonComponent from "../components/Button/Button.tsx";
-import {Row} from "react-bootstrap";
+import {Col, Row} from "react-bootstrap";
+import {useTranslation} from "react-i18next";
 
 const HomePage: React.FC = () => {
+    const {t} = useTranslation();
+
     return (
         <Container className='flex flex-col flex-1' style={{position: "relative"}}>
-            <Container className="main-menu">
+            <div className="position-relative">
                 <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                     <ImageComponent className="main-menu-image" src="/cat-dog-main-menu-image.png" alt="cat" fluid/>
                 </div>
                 <Container className="main-menu-container">
-                    <p className="main-menu-head">Pet food & accessories</p>
-                    <h2 className="main-menu-subhead">
-                        <p>EVERYTHING YOUR</p>
-                        <p>PET NEEDS!</p>
-                    </h2>
+                    <ul className="main-menu-head">{t('petFoodAccessories')}</ul>
+                    <ul className="main-menu-subhead">{t('everythingYourPetNeeds')}</ul>
                     <a href="/shop">
-                        <ButtonComponent className="main-menu-button" variant="primary" size="lg">Shop
-                            Now</ButtonComponent>
+                        <ButtonComponent className="main-menu-button" variant="primary" size="lg">
+                            {t('shopNow')}
+                        </ButtonComponent>
                     </a>
                 </Container>
-            </Container>
+            </div>
             <div className="line" style={{
                 position: 'relative',
                 height: '2px',
@@ -32,56 +33,56 @@ const HomePage: React.FC = () => {
                 fontFamily: "sans-serif"
             }}>
             </div>
-            <div className="container" style={{marginTop: 10}}>
-                <Row style={{marginRight: 40}}>
-                    <div className="col-xs-4 col-sm-2 px-md-0">
+            <Container style={{marginTop: 10}}>
+                <Row className="mx-0">
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/shop?category=cats">
                                 <div className="icon">
                                     <svg height="150" width="150" viewBox="0 0 24 24" fill="none"
                                          xmlns="http://www.w3.org/2000/svg">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
                                             <path
                                                 d="M19.9801 9.0625L20.7301 9.06545V9.0625H19.9801ZM4.01995 9.0625H3.26994L3.26995 9.06545L4.01995 9.0625ZM19.0993 10.6602L18.5268 11.1447L18.6114 11.2447L18.725 11.3101L19.0993 10.6602ZM18.8279 9.39546C18.494 9.15031 18.0246 9.22224 17.7795 9.55611C17.5343 9.88999 17.6063 10.3594 17.9401 10.6045L18.8279 9.39546ZM4.01994 15L3.26994 15V15H4.01994ZM6.05987 10.6045C6.39375 10.3594 6.46568 9.88999 6.22053 9.55612C5.97538 9.22224 5.50598 9.15031 5.1721 9.39546L6.05987 10.6045ZM12 5.65636C11.2279 5.65636 10.7904 5.69743 10.4437 5.74003C10.1041 5.78176 9.93161 5.8125 9.60601 5.8125V7.3125C10.0465 7.3125 10.3308 7.26518 10.6266 7.22883C10.9153 7.19336 11.2918 7.15636 12 7.15636V5.65636ZM12 7.15636C12.7083 7.15636 13.0847 7.19336 13.3734 7.22883C13.6692 7.26518 13.9536 7.3125 14.394 7.3125V5.8125C14.0684 5.8125 13.896 5.78176 13.5563 5.74003C13.2097 5.69743 12.7721 5.65636 12 5.65636V7.15636ZM14.394 7.3125C14.6069 7.3125 14.8057 7.25192 14.9494 7.19867C15.1051 7.14099 15.2662 7.06473 15.4208 6.98509C15.7257 6.82803 16.0797 6.61814 16.4042 6.43125C16.7431 6.23612 17.064 6.0575 17.3512 5.92771C17.6589 5.78868 17.8349 5.75011 17.9053 5.75011V4.25011C17.4968 4.25011 17.0743 4.40685 16.7336 4.56076C16.3725 4.72392 15.9951 4.9359 15.6557 5.13136C15.3019 5.33508 14.9976 5.51578 14.7338 5.65167C14.6041 5.7185 14.5034 5.7643 14.4284 5.79206C14.3415 5.82426 14.3408 5.8125 14.394 5.8125V7.3125ZM17.9053 5.75011C18.2495 5.75011 18.58 5.85266 18.8122 6.0527C19.0237 6.23486 19.2301 6.56231 19.2301 7.18761H20.7301C20.7301 6.18792 20.3778 5.42162 19.7913 4.91628C19.2255 4.42882 18.5186 4.25011 17.9053 4.25011V5.75011ZM19.2301 7.18761V9.0625H20.7301V7.18761H19.2301ZM9.60601 5.8125C9.65925 5.8125 9.65855 5.82426 9.57164 5.79206C9.49668 5.7643 9.39595 5.71849 9.26624 5.65166C9.00249 5.51576 8.69813 5.33504 8.34437 5.13132C8.00493 4.93584 7.62754 4.72384 7.26643 4.56067C6.92577 4.40675 6.5032 4.25 6.09476 4.25V5.75C6.16512 5.75 6.34105 5.78856 6.64878 5.92761C6.93605 6.05741 7.25693 6.23603 7.5958 6.43118C7.92035 6.61808 8.27434 6.82799 8.57919 6.98506C8.73377 7.06471 8.89488 7.14098 9.05059 7.19866C9.19436 7.25191 9.39317 7.3125 9.60601 7.3125V5.8125ZM6.09476 4.25C5.48139 4.25 4.77453 4.42871 4.20872 4.91616C3.62216 5.4215 3.26995 6.18781 3.26995 7.1875H4.76995C4.76995 6.56219 4.97634 6.23475 5.18778 6.05259C5.41998 5.85254 5.75053 5.75 6.09476 5.75V4.25ZM3.26995 7.1875V9.0625H4.76995V7.1875H3.26995ZM12 20.75C13.431 20.75 15.5401 20.4654 17.3209 19.6462C19.1035 18.8262 20.7301 17.3734 20.7301 15H19.2301C19.2301 16.5328 18.2232 17.58 16.694 18.2835C15.1631 18.9877 13.2822 19.25 12 19.25V20.75ZM19.6719 10.1758C19.437 9.89818 19.1575 9.63749 18.8279 9.39546L17.9401 10.6045C18.1808 10.7813 18.3726 10.9625 18.5268 11.1447L19.6719 10.1758ZM19.2301 9.05955C19.2293 9.25778 19.1888 9.67007 19.0916 9.95501C19.0374 10.1139 19.0062 10.1101 19.0627 10.0649C19.1075 10.0289 19.1902 9.98403 19.3002 9.97847C19.4051 9.97317 19.468 10.007 19.4737 10.0103L18.725 11.3101C18.9057 11.4142 19.1272 11.4891 19.3759 11.4766C19.6297 11.4637 19.8412 11.3633 20.0013 11.2349C20.2881 11.0048 20.4331 10.6686 20.5113 10.4392C20.679 9.94758 20.7289 9.35941 20.7301 9.06545L19.2301 9.05955ZM12 19.25C10.7178 19.25 8.83685 18.9877 7.30594 18.2835C5.7768 17.5801 4.76994 16.5328 4.76994 15H3.26994C3.26994 17.3734 4.89649 18.8262 6.67907 19.6462C8.45988 20.4654 10.5689 20.75 12 20.75V19.25ZM4.76994 15C4.76994 14.2119 4.71349 13.5629 4.7889 12.8724C4.85939 12.227 5.04214 11.6541 5.47321 11.1447L4.32811 10.1758C3.64728 10.9804 3.38966 11.8682 3.29777 12.7095C3.2108 13.5058 3.26994 14.3696 3.26994 15L4.76994 15ZM5.47321 11.1447C5.62738 10.9625 5.81916 10.7813 6.05987 10.6045L5.1721 9.39546C4.84248 9.63749 4.56299 9.89818 4.32811 10.1758L5.47321 11.1447ZM3.26995 9.06545C3.27111 9.35941 3.32101 9.94757 3.48871 10.4392C3.56694 10.6686 3.71186 11.0048 3.99873 11.2349C4.15878 11.3633 4.3703 11.4637 4.62412 11.4766C4.87277 11.4891 5.0943 11.4142 5.27501 11.3101L4.52631 10.0103C4.53204 10.007 4.59487 9.97317 4.69976 9.97847C4.80981 9.98403 4.89252 10.0289 4.93734 10.0649C4.99376 10.1101 4.96261 10.1139 4.9084 9.95501C4.81121 9.67007 4.77072 9.25778 4.76994 9.05955L3.26995 9.06545Z"
-                                                fill="#1C274C"></path>
+                                                fill="#000000"></path>
                                             <path
                                                 d="M12.826 16C12.826 16.1726 12.465 16.3125 12.0196 16.3125C11.5742 16.3125 11.2131 16.1726 11.2131 16C11.2131 15.8274 11.5742 15.6875 12.0196 15.6875C12.465 15.6875 12.826 15.8274 12.826 16Z"
-                                                stroke="#1C274C" stroke-width="1.5"></path>
+                                                stroke="#000000" strokeWidth="1.5"></path>
                                             <path
                                                 d="M15.5 13.5938C15.5 14.0252 15.2834 14.375 15.0161 14.375C14.7489 14.375 14.5323 14.0252 14.5323 13.5938C14.5323 13.1623 14.7489 12.8125 15.0161 12.8125C15.2834 12.8125 15.5 13.1623 15.5 13.5938Z"
-                                                stroke="#1C274C" stroke-width="1.5"></path>
+                                                stroke="#000000" strokeWidth="1.5"></path>
                                             <path
                                                 d="M9.5 13.5938C9.5 14.0252 9.28336 14.375 9.01613 14.375C8.74889 14.375 8.53226 14.0252 8.53226 13.5938C8.53226 13.1623 8.74889 12.8125 9.01613 12.8125C9.28336 12.8125 9.5 13.1623 9.5 13.5938Z"
-                                                stroke="#1C274C" stroke-width="1.5"></path>
+                                                stroke="#000000" strokeWidth="1.5"></path>
                                             <path d="M22.0004 15.4688C21.5165 15.1562 19.4197 14.375 18.6133 14.375"
-                                                  stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path>
+                                                  stroke="#000000" strokeWidth="1.5" strokeLinecap="round"></path>
                                             <path d="M20.3871 17.9688C19.9033 17.6562 18.7742 16.875 17.9678 16.875"
-                                                  stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path>
+                                                  stroke="#000000" strokeWidth="1.5" strokeLinecap="round"></path>
                                             <path d="M2 15.4688C2.48387 15.1562 4.58065 14.375 5.3871 14.375"
-                                                  stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path>
+                                                  stroke="#000000" strokeWidth="1.5" strokeLinecap="round"></path>
                                             <path d="M3.61279 17.9688C4.09667 17.6562 5.2257 16.875 6.03215 16.875"
-                                                  stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path>
+                                                  stroke="#000000" strokeWidth="1.5" strokeLinecap="round"></path>
                                         </g>
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Cats
+                                    {t('cats')}
                                 </p>
                             </a>
                         </div>
-                    </div>
-                    <div className="col-xs-4 col-sm-1 px-md-0 mt-5">
+                    </Col>
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/shop?category=cats&subCategory=food">
                                 <div className="icon">
                                     <svg fill="#000000" height="80px" width="80px" version="1.1" id="Layer_1"
                                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.001 512.001">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
                                             <g>
                                                 <g>
@@ -114,7 +115,7 @@ const HomePage: React.FC = () => {
                                                 </g>
                                             </g>
                                             <g>
-                                                <g>
+                                            <g>
                                                     <path
                                                         d="M272.616,376.406c-2.42-0.489-5.202-0.736-8.27-0.736c-14.333,0-36.773,5.523-39.845,20.736 c-1.644,8.137,2.897,17.028,12.786,25.035c7.262,5.88,16.603,10.619,23.795,12.072c1.908,0.385,3.857,0.581,5.791,0.581 c13.796,0,25.795-9.827,28.53-23.366C298.583,394.982,288.361,379.587,272.616,376.406z M279.979,407.611 c-1.258,6.227-6.77,10.747-13.107,10.747c-0.891,0-1.791-0.09-2.676-0.27c-4.003-0.809-11.131-4.117-17.008-8.876 c-5.774-4.675-7.52-8.425-7.265-9.69c0.633-3.131,12.066-8.117,24.422-8.117c2.521,0,4.195,0.232,5.155,0.425 C276.741,393.292,281.441,400.372,279.979,407.611z"></path>
                                                 </g>
@@ -123,20 +124,20 @@ const HomePage: React.FC = () => {
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Cat Food
+                                    {t('catFood')}
                                 </p>
                             </a>
                         </div>
-                    </div>
-                    <div className="col-xs-4 col-sm-2 px-md-0 mt-5">
+                    </Col>
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/shop?category=cats&subCategory=accessories">
                                 <div className="icon">
-                                    <svg fill="#000000" height="80px" width="80x" version="1.1" id="Layer_1"
+                                    <svg fill="#000000" height="80px" width="80px" version="1.1" id="Layer_1"
                                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
                                             <g>
                                                 <g>
@@ -148,22 +149,20 @@ const HomePage: React.FC = () => {
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Cat Accessories
+                                    {t('catAccessories')}
                                 </p>
                             </a>
                         </div>
-                    </div>
-                    <div className="col-xs-4 col-sm-2 px-md-0 mt-5">
-                    </div>
-                    <div className="col-xs-4 col-sm-2 px-md-0 mt-5">
+                    </Col>
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/shop?category=dogs&subCategory=accessories">
                                 <div className="icon">
                                     <svg fill="#000000" height="80px" width="80px" version="1.1" id="Layer_1"
                                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.001 512.001">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
                                             <g>
                                                 <g>
@@ -199,20 +198,20 @@ const HomePage: React.FC = () => {
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Dog Accessories
+                                    {t('dogAccessories')}
                                 </p>
                             </a>
                         </div>
-                    </div>
-                    <div className="col-xs-4 col-sm-1 px-md-0 mt-5">
+                    </Col>
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/dogs/shop?category=dogs&subCategory=food">
                                 <div className="icon">
                                     <svg fill="#000000" height="80px" width="80px" version="1.1" id="Layer_1"
                                          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.001 512.001">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
                                             <g>
                                                 <g>
@@ -254,33 +253,33 @@ const HomePage: React.FC = () => {
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Dog Food
+                                    {t('dogFood')}
                                 </p>
                             </a>
                         </div>
-                    </div>
-                    <div className="col-xs-4 col-sm-2 px-md-0 mt-3 mr-100">
+                    </Col>
+                    <Col xs={6} sm={4} md={2} lg={2} xl={2} className="px-1 mt-3 mt-sm-0">
                         <div className="logo_item item_icon">
                             <a href="/shop?category=dogs">
                                 <div className="icon">
                                     <svg height="120" width="120" viewBox="0 0 24 24" fill="none"
                                          xmlns="http://www.w3.org/2000/svg">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                           stroke-linejoin="round"></g>
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                           strokeLinejoin="round"></g>
                                         <g id="SVGRepo_iconCarrier">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                            <path fillRule="evenodd" clipRule="evenodd"
                                                   d="M3.15452 1.01195C5.11987 1.32041 7.17569 2.2474 8.72607 3.49603C9.75381 3.17407 10.8558 2.99995 12 2.99995C13.1519 2.99995 14.261 3.17641 15.2946 3.5025C16.882 2.27488 18.8427 1.31337 20.8354 1.01339C21.2596 0.95092 21.7008 1.16534 21.8945 1.55273C22.6719 3.38958 22.6983 5.57987 22.2202 7.49248L22.2128 7.52213C22.0847 8.03536 21.9191 8.69868 21.3876 8.92182C21.7827 9.89315 22 10.9466 22 12.0526C22 14.825 20.8618 17.6774 19.8412 20.2348L19.8412 20.2348L19.7379 20.4936C19.1182 22.0486 17.7316 23.1196 16.125 23.418L13.8549 23.8397C13.1549 23.9697 12.4562 23.7172 12 23.2082C11.5438 23.7172 10.8452 23.9697 10.1452 23.8397L7.87506 23.418C6.26852 23.1196 4.88189 22.0486 4.26214 20.4936L4.15891 20.2348C3.13833 17.6774 2.00004 14.825 2.00004 12.0526C2.00004 10.9466 2.21737 9.89315 2.6125 8.92182C2.08046 8.69845 1.91916 8.05124 1.7909 7.53658L1.7799 7.49248C1.32311 5.66527 1.23531 3.2968 2.10561 1.55273C2.29827 1.16741 2.72906 0.945855 3.15452 1.01195ZM6.58478 4.44052C5.45516 5.10067 4.47474 5.9652 3.71373 6.98132C3.41572 5.76461 3.41236 4.41153 3.67496 3.18754C4.68842 3.48029 5.68018 3.89536 6.58478 4.44052ZM20.2863 6.98133C19.5303 5.97184 18.5577 5.11195 17.4374 4.45347C18.3364 3.9005 19.3043 3.45749 20.3223 3.17455C20.5884 4.40199 20.5853 5.76068 20.2863 6.98133ZM8.85364 5.56694C9.81678 5.20285 10.8797 4.99995 12 4.99995C13.1204 4.99995 14.1833 5.20285 15.1464 5.56694C18.0554 6.66661 20 9.1982 20 12.0526C20 14.4676 18.9891 16.9876 18.0863 19.238L18.0862 19.2382C18.0167 19.4115 17.9478 19.5832 17.8801 19.7531C17.5291 20.6338 16.731 21.2712 15.7597 21.4516L13.4896 21.8733L12.912 20.5896C12.7505 20.2307 12.3935 19.9999 12 19.9999C11.6065 19.9999 11.2496 20.2307 11.0881 20.5896L10.5104 21.8733L8.24033 21.4516C7.26908 21.2712 6.471 20.6338 6.12001 19.7531C6.05237 19.5834 5.98357 19.4119 5.91414 19.2388L5.91395 19.2384L5.91381 19.238C5.01102 16.9876 4.00004 14.4676 4.00004 12.0526C4.00004 9.1982 5.94472 6.66661 8.85364 5.56694ZM10.5 15.9999C10.1212 15.9999 9.77497 16.2139 9.60557 16.5527C9.43618 16.8915 9.47274 17.2969 9.7 17.5999L11.2 19.5999C11.3889 19.8517 11.6852 19.9999 12 19.9999C12.3148 19.9999 12.6111 19.8517 12.8 19.5999L14.3 17.5999C14.5273 17.2969 14.5638 16.8915 14.3944 16.5527C14.225 16.2139 13.8788 15.9999 13.5 15.9999H10.5ZM9.62134 11.1212C9.62134 11.9497 8.94977 12.6212 8.12134 12.6212C7.29291 12.6212 6.62134 11.9497 6.62134 11.1212C6.62134 10.2928 7.29291 9.62125 8.12134 9.62125C8.94977 9.62125 9.62134 10.2928 9.62134 11.1212ZM16 12.4999C16.8284 12.4999 17.5 11.8284 17.5 10.9999C17.5 10.1715 16.8284 9.49994 16 9.49994C15.1716 9.49994 14.5 10.1715 14.5 10.9999C14.5 11.8284 15.1716 12.4999 16 12.4999Z"
                                                   fill="#000000"></path>
                                         </g>
                                     </svg>
                                 </div>
                                 <p style={{color: "black"}}>
-                                    Dogs
+                                    {t('dogs')}
                                 </p>
                             </a>
                         </div>
-                    </div>
+                    </Col>
                 </Row>
                 <div className="line" style={{
                     position: 'relative',
@@ -291,7 +290,7 @@ const HomePage: React.FC = () => {
                     fontFamily: "sans-serif"
                 }}>
                 </div>
-            </div>
+            </Container>
         </Container>
     );
 };

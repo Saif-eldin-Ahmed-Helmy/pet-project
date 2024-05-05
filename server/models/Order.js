@@ -4,7 +4,7 @@ const orderTrace = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['placed', 'preparing', 'delivering', 'delivered', 'cancelled']
+        enum: ['placed', 'preparing', 'prepared', 'delivering', 'delivered', 'cancelled']
     },
     date: {
         type: String,

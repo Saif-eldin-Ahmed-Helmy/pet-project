@@ -58,6 +58,9 @@ const ProductPage: React.FC = () => {
             setCartItems(data);
             setQuantity(data.find(cartItem => cartItem.itemId === itemId)?.quantity || 1);
         }
+        else {
+            setCartItems([]);
+        }
     };
 
     const handleBuy = async () => {
@@ -129,7 +132,7 @@ const ProductPage: React.FC = () => {
 
     return (
         <div style={{
-            marginTop: 150,
+            marginTop: 10,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

@@ -6,7 +6,7 @@ const Item = require("../models/Item");
 const CouponCode = require("../models/CouponCode");
 const CartItem = require("../models/CartItem");
 
-const { handleBadRequest } = require("../handlers/error");
+const { handleBadRequest, handleServerError} = require("../handlers/error");
 const { getMilliSeconds } = require("../utils/timeUtils");
 const { newId } = require("../utils/numberUtils");
 const { verifySession } = require('../middlewares/auth');
@@ -16,31 +16,37 @@ router.use(verifySession)
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders', 'shoppingCart']));
 
 router.get("/", async (req, res) => {
-    const { orderId, traceType, itemId, itemCategory, couponCode, city } = req.query;
-    const role = req.role;
+  try {
+      const {orderId, traceType, itemId, itemCategory, couponCode, city} = req.query;
+      const role = req.role;
 
-    if(orderId) {
-        const hasOrder = req.user.orders.find(order => order.orderId === orderId);
-        if(!hasOrder && role !== 'admin') {
-            handleBadRequest(res, `There is no order with the id ${orderId}`)
-            return;
-        }
+      if (orderId) {
+          const hasOrder = req.user.orders.find(order => order.orderId === orderId);
+          if (!hasOrder && role !== 'admin') {
+              handleBadRequest(res, `There is no order with the id ${orderId}`)
+              return;
+          }
 
-        const order = await Order.find({ orderId: orderId });
-        res.json({ order });
-        return;
+          const order = await Order.find({orderId: orderId});
+          res.json({order});
+          return;
+      }
+
+      const orders = (role === 'admin') ? await Order.find() : req.user.orders;
+      const filteredOrders = orders.filter(order => {
+          return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
+              (!itemId || order.items.some(item => item.itemId === itemId)) &&
+              (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
+              (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
+              (!city || order.location.city === city);
+      });
+
+      res.json({filteredOrders});
+  }
+    catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
-
-    const orders = (role === 'admin') ? await Order.find() : req.user.orders;
-    const filteredOrders = orders.filter(order => {
-        return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
-            (!itemId || order.items.some(item => item.itemId === itemId)) &&
-            (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
-            (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
-            (!city || order.location.city === city);
-    });
-
-    res.json({ filteredOrders })
 })
 
 router.post("/", async(req, res) => {
@@ -114,8 +120,8 @@ router.post("/", async(req, res) => {
             }
         }
 
-        const deliveryFee = 20;
-        const grandTotal = Number(amount + deliveryFee + (String(tip).startsWith('-') ? 0 : Number(tip)));
+        const deliveryFee = amount < 200 ? 20 : 0;
+        const grandTotal = Number(amount + deliveryFee + tip);
 
         let cashAmount = 0;
         if (paymentMethod === 'balance') {
@@ -160,45 +166,101 @@ router.post("/", async(req, res) => {
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        handleServerError(res);
     }
 })
 
 router.put("/", async(req, res) => {
-    const { orderId, traceType, rating, comment, userRating, userComment, driverRating, driverComment } = req.body;
-    const executor = req.email;
+    try {
+        const {orderId, traceType, rating, comment, userRating, userComment, driverRating, driverComment} = req.body;
+        const executor = req.email;
 
-    const order = await Order.findOne({ orderId });
-    if(!order) return handleBadRequest(res, `no order with this id, ${orderId}`);
+        const order = await Order.findOne({orderId});
+        if (!order) return handleBadRequest(res, `no order with this id, ${orderId}`);
 
-    if(traceType) {
-        if(traceType === 'packed' && (req.role === 'packager' || req.role === 'admin')) {
-            order.trace.push({
-                type: traceType,
-                date: new Date().toISOString(),
-                executor: executor,
-                active: true
-            })
+        if (traceType) {
+            if (traceType === 'packed' && (req.role === 'packager' || req.role === 'admin')) {
+                order.trace.push({
+                    type: traceType,
+                    date: new Date().toISOString(),
+                    executor: executor,
+                    active: true
+                })
+            }
+        } else if (rating || comment || userRating || userComment) {
+            if ((order.trace.find(trace => trace.active === true).type === 'delivered')
+                && ((req.user.orders.find(order => order.orderId === orderId))
+                    && req.role === 'admin')) {
+                order.rating = rating;
+                order.comment = comment;
+                order.userRating = userRating;
+                order.userComment = userComment;
+            }
+        } else if (driverRating || driverComment) {
+            if ((order.trace.find(trace => trace.type === 'delivering').executor === req.email)) {
+                order.driverRating = driverRating;
+                order.driverComment = driverComment;
+            }
         }
-    } else if (rating || comment || userRating || userComment) {
-        if((order.trace.find(trace => trace.active === true).type === 'delivered')
-            && ((req.user.orders.find(order => order.orderId === orderId))
-            && req.role === 'admin')) {
-            order.rating = rating;
-            order.comment = comment;
-            order.userRating = userRating;
-            order.userComment = userComment;
-        }
-    } else if(driverRating || driverComment) {
-        if((order.trace.find(trace => trace.type === 'delivering').executor === req.email)) {
-            order.driverRating = driverRating;
-            order.driverComment = driverComment;
-        }
+
+        await order.save();
+        return res.json({order});
     }
-
-    await order.save();
-    return res.json({ order });
+    catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
 })
+
+router.post('/reorder', async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        const order = req.user.orders.find(order => order.orderId === orderId);
+        if(!order) {
+            handleBadRequest(res, `There is no order with the id ${orderId}`)
+            return;
+        }
+
+        const orderItems = order.items.map(item => ({
+            itemId: item.itemId,
+            name: item.name,
+            quantity: item.quantity,
+            pricePerItem: item.pricePerItem,
+            category: item.category,
+            subCategory: item.subCategory,
+            picture: item.picture
+        }));
+
+        const cartItems = orderItems.map(item => ({
+            itemId: item.itemId,
+            quantity: item.quantity,
+        }));
+
+        for (const item of cartItems) {
+            const existingItem = req.user.shoppingCart.find(cartItem => cartItem.itemId === item.itemId);
+            if (existingItem) {
+                existingItem.quantity += item.quantity || 1;
+                await existingItem.save();
+            } else {
+                const newItem = await CartItem.create({ itemId: item.itemId, quantity: item.quantity || 1 });
+                req.user.shoppingCart.push(newItem);
+            }
+        }
+
+        await req.user.save();
+
+        res.json({ success: true, cartItems });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.get('/trace', async (req, res) => {
+
+});
 
 router.get('/test', async (req, res) => {
     try {

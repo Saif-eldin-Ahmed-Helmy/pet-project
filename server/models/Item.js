@@ -45,7 +45,10 @@ const Item = mongoose.model('Item', itemSchema);
 
 itemSchema.pre('save', function (next) {
     const item = this;
-    item.itemId = item.itemId.replace('+', '');
+    item.itemId = item.itemId
+        .replace('+', '-')
+        .replace(' ', '-')
+        .replace('/', '-');
     next();
 });
 

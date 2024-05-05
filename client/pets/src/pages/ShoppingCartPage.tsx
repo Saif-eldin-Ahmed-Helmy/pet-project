@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import ButtonComponent from "../components/Button/Button.tsx";
 import {useNavigate} from "react-router-dom";
 import {FaMoneyBill, FaWallet} from "react-icons/fa";
+import {useTranslation} from "react-i18next";
 
 const ShoppingCartPage: React.FC = () => {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const ShoppingCartPage: React.FC = () => {
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (cartItems) {
@@ -73,6 +75,13 @@ const ShoppingCartPage: React.FC = () => {
             .then(data => setBalance(data.balance));
     }, []);
 
+    if (!cartItems) {
+        return <div style={{marginTop: 150}}>
+            <p>{t('loading')} </p>
+            <Spinner animation="grow"/>
+        </div>
+    }
+
     const handleQuantityChange = async (itemId: string, quantity: number) => {
         const response = await fetch(`http://localhost:3001/api/cart`, {
             method: 'PUT',
@@ -114,7 +123,7 @@ const ShoppingCartPage: React.FC = () => {
             return;
         }
         setLoading(true);
-        const response = await fetch(`http://localhost:3001/api/orders`, {
+        await fetch(`http://localhost:3001/api/orders`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -167,116 +176,109 @@ const ShoppingCartPage: React.FC = () => {
         }
     };
 
-    if (!cartItems) {
-        return <div style={{marginTop: 150}}>
-            <p>Loading... </p>
-            <Spinner animation="grow"/>
-        </div>
-    }
-
     const finalTip = (tip !== 'custom' ? parseFloat(tip) : Number(customTip));
     const grandTotal = Number(subTotal + deliveryFee - discount + finalTip);
     const grandTotalWithBalance = Number(subTotal + deliveryFee - discount + finalTip - Math.min(grandTotal, balance));
 
 
     return (
-        <Container style={{width: '100%', margin: 'auto', marginTop: 100, display: 'flex'}}>
+        <Container style={{width: '100%', margin: 'auto', marginTop: 20, display: 'flex'}}>
             <Container>
-            <Table striped bordered hover className="form-container">
-                <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {cartItems.map(item => (
-                    <tr key={item.itemId}>
-                        <td>
-                            <ImageComponent src={item.picture} alt={item.itemId} className="cart-item-image"/>
-                            <p>{item.name}</p>
-                        </td>
-                        <td>
-                            <Form.Control type="number" value={item.quantity}
-                                          onChange={e => handleQuantityChange(item.itemId, Number(e.target.value))}/>
-                        </td>
-                        <td>{item.quantity * item.pricePerItem} EGP</td>
-                        <td>
-                            <Button variant="danger" onClick={() => handleRemoveItem(item.itemId)}>Remove</Button>
-                        </td>
+                <Table striped bordered hover className="form-container">
+                    <thead>
+                    <tr>
+                        <th>{t('item')}</th>
+                        <th>{t('quantity')}</th>
+                        <th>{t('price')}</th>
+                        <th>{t('actions')}</th>
                     </tr>
-                ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                    {cartItems.map(item => (
+                        <tr key={item.itemId}>
+                            <td>
+                                <ImageComponent src={item.picture} alt={item.itemId} className="cart-item-image"/>
+                                <p>{item.name}</p>
+                            </td>
+                            <td>
+                                <Form.Control type="number" value={item.quantity}
+                                              onChange={e => handleQuantityChange(item.itemId, Number(e.target.value))}/>
+                            </td>
+                            <td>{item.quantity * item.pricePerItem} {t('egp')}</td>
+                            <td>
+                                <Button variant="danger" onClick={() => handleRemoveItem(item.itemId)}>{t('remove')}</Button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </Table>
             </Container>
             <Container style={{display: 'grid', height: '80vh'}}>
                 {error && <Alert variant="danger">{error}</Alert>}
-            <Form.Group controlId="location" className="form-container">
-                <Form.Label>Delivery Location</Form.Label>
-                <Form.Control as="select" value={location} onChange={e => handleLocationChange(e.target.value)} isInvalid={!locationValid}>
-                    {locations.map(loc => (
-                        <option key={loc.locationId} value={loc.locationId}>{loc.locationId.split(' ')
-                            .map((s: string) => s.charAt(0).toUpperCase() + s.substring(1))
-                            .join(' ')}</option>
-                    ))}
-                    <option value="Add Location">Add Location</option>
-                </Form.Control>
-                <Form.Control.Feedback type="invalid">Please select a location.</Form.Control.Feedback>
-            </Form.Group>
+                <Form.Group controlId="location" className="form-container">
+                    <Form.Label>{t('deliveryLocation')}</Form.Label>
+                    <Form.Control as="select" value={location} onChange={e => handleLocationChange(e.target.value)} isInvalid={!locationValid}>
+                        {locations.map(loc => (
+                            <option key={loc.locationId} value={loc.locationId}>{loc.locationId.split(' ')
+                                .map((s: string) => s.charAt(0).toUpperCase() + s.substring(1))
+                                .join(' ')}</option>
+                        ))}
+                        <option value="Add Location">Add Location</option>
+                    </Form.Control>
+                    <Form.Control.Feedback type="invalid">Please select a location.</Form.Control.Feedback>
+                </Form.Group>
                 <Form.Group controlId="deliveryInstructions" className="form-container">
-                <Form.Label>Delivery Instructions</Form.Label>
-                <Form.Control type="text" placeholder="E.g. Please call me when you arrive" value={deliveryInstructions}
-                              onChange={e => setDeliveryInstructions(e.target.value)}/>
-            </Form.Group>
-            <Form.Group controlId="tip" className="form-container">
-                <Form.Label>Say thanks with a tip</Form.Label>
-                <p>The entire tip goes to the driver</p>
-                <Container>
-                    <Button style={{backgroundColor: tip === '5' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '5'} onClick={() => handleTipChange('5')}>5 EGP</Button>
-                    <Button style={{backgroundColor: tip === '10' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '10'} onClick={() => handleTipChange('10')}>10 EGP</Button>
-                    <Button style={{backgroundColor: tip === '20' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '20'} onClick={() => handleTipChange('20')}>20 EGP</Button>
-                    <Button style={{backgroundColor: tip === 'custom' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === 'custom'} onClick={() => handleTipChange('custom')}>Custom</Button>
-                    {tip === 'custom' &&
-                        <FormControl style={{marginTop: 10, marginBottom: 10}} placeholder="" type="number" value={customTip} onChange={handleCustomTipChange} isInvalid={!tipValid}/>
-                    }
-                    <Form.Control.Feedback type="invalid">Tip cannot exceed 100.</Form.Control.Feedback>
-                </Container>
-            </Form.Group>
-            <Form.Group controlId="promoCode" className="form-container">
-                <Form.Label>Promo Code</Form.Label>
-                <Form.Control type="text" value={promoCode} onChange={handlePromoCodeChange}/>
-            </Form.Group>
-            <Form.Group controlId="paymentMethod" className="form-container">
-                <Form.Label>Payment Method</Form.Label>
-                <Form.Control as="select" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-                    <option value="cash"><FaMoneyBill/>Cash</option>
-                    <option value="balance"><FaWallet/>Balance</option>
-                </Form.Control>
-            </Form.Group>
+                    <Form.Label>{t('deliveryInstructions')}</Form.Label>
+                    <Form.Control type="text" placeholder={t('instructionsPlaceholder')} value={deliveryInstructions}
+                                  onChange={e => setDeliveryInstructions(e.target.value)}/>
+                </Form.Group>
+                <Form.Group controlId="tip" className="form-container">
+                    <Form.Label>{t('sayThanksWithATip')}</Form.Label>
+                    <p>{t('entireTipGoesToDriver')}</p>
+                    <Container>
+                        <Button style={{backgroundColor: tip === '5' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '5'} onClick={() => handleTipChange('5')}>5 EGP</Button>
+                        <Button style={{backgroundColor: tip === '10' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '10'} onClick={() => handleTipChange('10')}>10 EGP</Button>
+                        <Button style={{backgroundColor: tip === '20' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === '20'} onClick={() => handleTipChange('20')}>20 EGP</Button>
+                        <Button style={{backgroundColor: tip === 'custom' ? '#037ba6' : '#82e50f', borderColor: 'green'}} variant="primary" active={tip === 'custom'} onClick={() => handleTipChange('custom')}>Custom</Button>
+                        {tip === 'custom' &&
+                            <FormControl style={{marginTop: 10, marginBottom: 10}} placeholder="" type="number" value={customTip} onChange={handleCustomTipChange} isInvalid={!tipValid}/>
+                        }
+                        <Form.Control.Feedback type="invalid">Tip cannot exceed 100.</Form.Control.Feedback>
+                    </Container>
+                </Form.Group>
+                <Form.Group controlId="promoCode" className="form-container">
+                    <Form.Label>{t('promoCode')}</Form.Label>
+                    <Form.Control type="text" value={promoCode} onChange={handlePromoCodeChange}/>
+                </Form.Group>
+                <Form.Group controlId="paymentMethod" className="form-container">
+                    <Form.Label>{t('paymentMethod')}</Form.Label>
+                    <Form.Control as="select" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
+                        <option value="cash"><FaMoneyBill/>{t('cash')}</option>
+                        <option value="balance"><FaWallet/>{t('balance')}</option>
+                    </Form.Control>
+                </Form.Group>
                 <Container className="form-container">
-                <h6>Subtotal: {subTotal} EGP</h6>
-                <h6>Delivery Fee: {deliveryFee} EGP</h6>
-                    {paymentMethod === 'balance' && <h6>Balance: -{Math.min(grandTotal, balance)} EGP</h6>}
-                {tip !== '0' && <h6>Tip: {finalTip} EGP</h6>}
-                {discount > 0 && <h6>Discount: -{discount} EGP</h6>}
-                <h4>Grand Total: {paymentMethod === 'balance' ? grandTotalWithBalance : grandTotal} EGP</h4>
+                    <h6>{t('subTotal')}: {subTotal} {t('egp')}</h6>
+                    <h6>{t('deliveryFee')}: {deliveryFee} {t('egp')}</h6>
+                    {paymentMethod === 'balance' && <h6>{t('balance')}: -{Math.min(grandTotal, balance)} {t('egp')}</h6>}
+                    {tip !== '0' && <h6>{t('tip')}: {finalTip} {t('egp')}</h6>}
+                    {discount > 0 && <h6>{t('discount')}: -{discount} {t('egp')}</h6>}
+                    <h4>{t('grandTotal')}: {paymentMethod === 'balance' ? grandTotalWithBalance : grandTotal} {t('egp')}</h4>
                     {paymentMethod === 'balance' && balance < grandTotal && (
                         <>
-                            <h6>Payment Method: Cash + Balance</h6>
+                            <h6>{t('paymentMethod')}: {t('cash')} + {t('balance')}</h6>
                         </>
                     )}
                     {paymentMethod === 'balance' && balance >= grandTotal && (
                         <>
-                            <h6>Payment Method: Balance</h6>
+                            <h6>{t('paymentMethod')}: {t('balance')}</h6>
                         </>
                     )}
-                    {deliveryFee === 0 && <h6>Order is above 200, enjoy free delivery!</h6>
+                    {deliveryFee === 0 && <h6>{t('orderAbove200')}</h6>
                     }
+                </Container>
+                <ButtonComponent disabled={loading} variant="primary" onClick={handleCheckout}>{loading ? t('checkingOut') : t('checkout')}</ButtonComponent>
             </Container>
-            <ButtonComponent disabled={loading} variant="primary" onClick={handleCheckout}>{loading ? "Checking out..." : "Checkout"}</ButtonComponent>
-        </Container>
         </Container>
     );
 };

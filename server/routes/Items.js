@@ -23,6 +23,14 @@ const User = require("../models/User");
  */
 router.get('/', async (req, res) => {
     try {
+
+        await Items.find({}).then(items => {
+              items.forEach(item => {
+                  item.itemId = item.itemId.replace(/[^\w\d-]/g, '-');
+                  item.save();
+              });
+        });
+
         const { limit = 1000, category, subCategory, itemId, similarTo, page = 1 } = req.query
         const inStock = req.query.inStock === 'true';
         const priceMin = req.query.priceMin || 0;

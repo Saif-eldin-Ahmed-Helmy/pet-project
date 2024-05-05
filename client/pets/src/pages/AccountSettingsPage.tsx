@@ -62,7 +62,7 @@ const AccountSettingsPage: React.FC = () => {
 
     return (
         <div>
-            <h1 style={{marginTop: 100}}>Account Settings</h1>
+            <h1 style={{marginTop: 30}}>Account Settings</h1>
             {error && <Alert variant="danger">{error}</Alert>}
             <h2>Locations</h2>
             {locations.length === 0 && <p>You don't have any locations saved<br/>Start by adding a location!</p>}

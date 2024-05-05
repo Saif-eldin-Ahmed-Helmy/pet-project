@@ -8,25 +8,34 @@ import {
     FaUserCog,
     FaLanguage,
     FaSignOutAlt,
-    FaDollarSign,
-    FaMoneyBill,
-    FaMoneyBillAlt, FaWaveSquare, FaHandsWash, FaWallet, FaPeace
+    FaWallet
 } from 'react-icons/fa';
 import ButtonComponent from "../components/Button/Button.tsx";
 import {toast, ToastContainer} from "react-toastify";
-import {IoPersonSharp} from "react-icons/io5";
+import { useTranslation } from 'react-i18next';
+import {LanguageContext} from "../context/LanguageContext.tsx";
 
 const UserPage: React.FC = () => {
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
+    const { t, i18n } = useTranslation();
 
-    const email = authContext?.user?.email;
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+        setLanguage(lng);
+    };
+
     const name = authContext?.user?.name;
     const preferredLanguage = authContext?.user?.preferredLanguage || 'en';
+    const { language, setLanguage } = useContext(LanguageContext);
+    useEffect(() => {
+        if (preferredLanguage !== language) {
+            setLanguage(preferredLanguage);
+        }
+    }, []);
 
     const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
-    const [language, setLanguage] = useState(preferredLanguage);
     const [balance, setBalance] = useState<number | null>(null);
 
     useEffect(() => {
@@ -59,7 +68,7 @@ const UserPage: React.FC = () => {
 
     const handleLanguageChange = async () => {
         setShowModal(false);
-        toast.success(`Language updated to ${language === 'ar' ? 'Arabic' : 'English'}`, {
+        toast.success(t('languageUpdated', { language: language === 'ar' ? t('arabic') : t('english') }), {
             position: toast.POSITION.BOTTOM_RIGHT,
             autoClose: 2000
         });
@@ -77,57 +86,57 @@ const UserPage: React.FC = () => {
 
     if (balance === null) {
         return <div style={{marginTop: 150}}>
-            <p>Loading... </p>
+            <p>{t('loading')} </p>
             <Spinner animation="grow"/>
         </div>
     }
 
     return (
-        <div style={{marginTop: 100}}>
+        <div style={{marginTop: 100, direction: language === 'ar' ? 'rtl' : 'ltr'}}>
             <ToastContainer/>
             {error && <Alert variant="danger">{error}</Alert>}
-            <h1 style={{marginTop: 100}}>{name}</h1>
-            <h3 style={{color: '#1dce3d'}}><FaWallet style={{marginBottom: 4}} /> Balance: {balance}</h3>
+            <h1 style={{marginTop: 100}}>{t('name')}: {name}</h1>
+            <h3 style={{color: '#1dce3d'}}><FaWallet style={{marginBottom: 4}} /> {t('balance')}: {balance}</h3>
             <ButtonGroup style={{ margin: "20px" }}
                          vertical size="sm">
-                <Button className='account-settings-btn' href="/user/orders" style={{color: "black"}}>
-                    <FaHistory/> Orders History
+                <Button className={`account-settings-btn ${language === 'ar' ? 'arabic' : ''}`} href="/user/orders" style={{color: "black"}}>
+                    <FaHistory/> {t('ordersHistory')}
                 </Button>
-                <Button className='account-settings-btn' href="/shop/favorites" style={{color: "black"}}>
-                    <FaStar /> Favorites
+                <Button className={`account-settings-btn ${language === 'ar' ? 'arabic' : ''}`} href="/shop/favorites" style={{color: "black"}}>
+                    <FaStar /> {t('favorites')}
                 </Button>
-                <Button className='account-settings-btn' href="/user/settings" style={{color: "black"}}>
-                    <FaUserCog /> Account Settings
+                <Button className={`account-settings-btn ${language === 'ar' ? 'arabic' : ''}`} href="/user/settings" style={{color: "black"}}>
+                    <FaUserCog /> {t('accountSettings')}
                 </Button>
-                <Button onClick={() => setShowModal(true)} className='account-settings-btn' style={{color: "black"}}>
-                    <FaLanguage /> Language
+                <Button onClick={() => setShowModal(true)} className={`account-settings-btn ${language === 'ar' ? 'arabic' : ''}`} style={{color: "black"}}>
+                    <FaLanguage /> {t('language')}
                 </Button>
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered className="language-modal">
-                    <Modal.Header closeButton>
-                        <Modal.Title>Change Language</Modal.Title>
+                    <Modal.Header closeButton onClick={() => changeLanguage(language === 'en' ? 'ar' : 'en')}>
+                        <Modal.Title>{t('changeLanguage')}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form.Check
                             type="radio"
                             id="english"
-                            label="English"
+                            label={t('english')}
                             checked={language === 'en'}
-                            onChange={() => setLanguage('en')}
+                            onChange={() => changeLanguage('en')}
                         />
                         <Form.Check
                             type="radio"
                             id="arabic"
-                            label="Arabic"
+                            label={t('arabic')}
                             checked={language === 'ar'}
-                            onChange={() => setLanguage('ar')}
+                            onChange={() => changeLanguage('ar')}
                         />
                     </Modal.Body>
                     <Modal.Footer>
-                        <ButtonComponent onClick={handleLanguageChange}>Update Language</ButtonComponent>
+                        <ButtonComponent onClick={handleLanguageChange}>{t('updateLanguage')}</ButtonComponent>
                     </Modal.Footer>
                 </Modal>
-                <Button onClick={handleLogout} className='account-settings-btn' style={{color: "black"}}>
-                    <FaSignOutAlt /> Logout
+                <Button onClick={handleLogout} className={`account-settings-btn ${language === 'ar' ? 'arabic' : ''}`} style={{color: "black"}}>
+                    <FaSignOutAlt /> {t('logout')}
                 </Button>
             </ButtonGroup>
         </div>

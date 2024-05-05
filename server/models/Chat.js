@@ -62,6 +62,9 @@ const message = new mongoose.Schema({
         type: String,
         required: true
     },
+    isAI: {
+        type: Boolean
+    },
     content: {
         type: String,
         required: true
@@ -82,7 +85,7 @@ const chat = new mongoose.Schema({
     messages: [message],
     type: {
         type: String,
-        enum: ['support', 'doctor']
+        enum: ['support', 'doctor', 'ai']
     }
 })
 

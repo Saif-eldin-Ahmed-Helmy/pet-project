@@ -175,7 +175,7 @@ passport.deserializeUser(async (email, done) => {
 router.get('/session', (req, res) => {
     if (req.isAuthenticated()) {
         const userEmail = req.user ? req.user : null;
-        res.json({ isAuthenticated: true, email: userEmail.email, role: userEmail.role, name: userEmail.name });
+        res.json({ isAuthenticated: true, email: userEmail.email, role: userEmail.role, name: userEmail.name, preferredLanguage: userEmail.preferredLanguage });
     } else {
         res.json({ isAuthenticated: false });
     }

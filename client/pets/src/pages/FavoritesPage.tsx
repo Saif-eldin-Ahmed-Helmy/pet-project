@@ -75,7 +75,7 @@ const ShopPage: React.FC = () => {
 
     return (
         <div>
-            <Container className="shop-menu" style={{marginTop: 150}}>
+            <Container className="shop-menu" style={{marginTop: 20}}>
                 <Container className="shop-menu-container">
                     <h2 className="shop-menu-subhead">
                         <p>

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import ButtonComponent from '../Button/Button';
 import './ProductCard.css';
 import { Item } from "../../interfaces/item.ts";
+import Confetti from 'react-confetti';
 
 interface ProductComponentProps {
     product: Item;
@@ -21,8 +22,20 @@ const ProductCard: React.FC<ProductComponentProps> = ({
                                                           enableFavorite = true,
                                                           href = `/product/${product.itemId}`
                                                       }) => {
+    const [showConfetti, setShowConfetti] = useState(false);
+
+    const handleClick = () => {
+        if (!isFavorited) {
+            setShowConfetti(true);
+            setTimeout(() => {
+                setShowConfetti(false);
+            }, 2000);
+        }
+        toggleFavorite();
+    };
+
     return (
-        <Card style={{ width: '18rem' }} className="product-card">
+        <Card className="product-card">
             <a href={href}>
                 <div className="image-container">
                     <Card.Img variant="top" src={product.picture} />
@@ -34,9 +47,13 @@ const ProductCard: React.FC<ProductComponentProps> = ({
                 <Card.Text style={{color: "gold"}}>
                     EGP {product.price.toFixed(2)}
                 </Card.Text>
-                {enableFavorite && <ButtonComponent variant="link" className={`favorite-button ${isFavorited ? 'heart-red' : 'heart-gray'}`} onClick={toggleFavorite}>
-                    {isFavorited ? '❤️' : '🤍'}
-                </ButtonComponent>}
+                {enableFavorite &&
+                    <div className="confetti-container">
+                        {showConfetti && <Confetti recycle={false} width={500} height={500} style={{width: '100%', height: '100%'}} />}
+                    <ButtonComponent variant="link" className={`favorite-button ${isFavorited ? 'heart-red' : 'heart-gray'}`} onClick={handleClick}>
+                        {isFavorited ? '❤️' : '🤍'}
+                    </ButtonComponent>
+                    </div>}
             </Card.Body>
         </Card>
     );
