@@ -19,6 +19,9 @@ import OrdersPage from "./pages/OrdersPage.tsx";
 import ShoppingCartPage from "./pages/ShoppingCartPage.tsx";
 import FavoritesPage from "./pages/FavoritesPage.tsx";
 import './i18n';
+import DashboardPage from "./pages/admins/DashboardPage.tsx";
+import ChatPage from "./pages/ChatPage.tsx";
+import StatisticsPage from "./pages/admins/StatisticsPage.tsx";
 
 //const socket = io("http://localhost:3001").connect();
 
@@ -35,6 +38,8 @@ function App() {
                     <Route path="/shop" element={<ShopPage />} />
                     <Route path="/product/:itemId" element={<ProductPage />} />
                     <Route element={<ProtectedRoute role='admin'/>}>
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/statistics" element={<StatisticsPage />} />
                         <Route path="/admin/items" element={<AdminItemsPage />} />
                         <Route path="/admin/edit-item/:itemId" element={<EditItemPage />} />
                         <Route path="/admin/add-item" element={<AddItemPage />} />
@@ -48,6 +53,7 @@ function App() {
                         <Route path="/user/orders/track/:orderId" element={<OrdersPage />} />
                         <Route path="/cart" element={<ShoppingCartPage />} />
                         <Route path="/shop/favorites" element={<FavoritesPage />} />
+                        <Route path="/chat" element={<ChatPage/>} />
                     </Route>
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>

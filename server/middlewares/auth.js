@@ -12,4 +12,11 @@ const verifySession = (req, res, next) => {
     next();
 };
 
-module.exports = { verifySession };
+const requireAdminRole = (req, res, next) => {
+    if (req.role !== 'admin') {
+        return res.status(403).json({ error: 'User does not have the required role.' });
+    }
+    next();
+};
+
+module.exports = { verifySession, requireAdminRole };
