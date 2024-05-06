@@ -138,6 +138,7 @@ router.post("/", async(req, res) => {
 
         const newOrder = await Order.create({
             orderId: orderId,
+            userEmail: req.user.email,
             trace: {
                 type: "placed",
                 date: new Date().toISOString(),
@@ -287,6 +288,7 @@ router.get('/test', async (req, res) => {
 
         const order = Order.create({
             orderId: newId(),
+            userEmail: 'admin@gmail.com',
             date: new Date().toISOString(),
             items: orderItems,
             amount: amount,

@@ -1,0 +1,19 @@
+.dashboard-navbar {
+    width: 20%; /* Adjust the width as needed */
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    background-color: #F5F5F5;
+    color: black;
+    padding: 20px;
+    border-right: 2px solid #DAA520;
+}
+
+.dashboard-navbar .nav-link {
+    color: black;
+    margin-bottom: 1rem;
+}
+
+.dashboard-navbar .nav-link:hover {
+    color: #DAA520; /* Goldish color on hover */
+}

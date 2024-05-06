@@ -73,3 +73,9 @@ server.listen(port, () => {
 
  const ordersRoute = require('./routes/Orders');
  app.use('/api/orders', ordersRoute);
+
+ const analysisRoute = require('./routes/Analysis');
+ app.use('/api/analysis', analysisRoute);
+
+ const chatsRouter = require('./routes/Chats');
+ app.use('/api/chats', chatsRouter);

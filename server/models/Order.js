@@ -124,6 +124,10 @@ const orderSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    userEmail: {
+        type: String,
+        required: true
+    },
     date: {
         type: String,
     },

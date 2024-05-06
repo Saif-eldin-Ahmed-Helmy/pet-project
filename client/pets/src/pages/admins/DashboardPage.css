@@ -1,0 +1,20 @@
+#page-content-wrapper {
+    margin-left: 20%;
+    padding: 20px;
+}
+
+.value-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.value-container h1 {
+    font-size: 2em;
+    margin-bottom: 0;
+}
+
+.value-container span {
+    display: block;
+    font-size: 1em;
+    text-transform: uppercase;
+}
