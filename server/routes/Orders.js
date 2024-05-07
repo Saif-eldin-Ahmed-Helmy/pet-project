@@ -259,6 +259,41 @@ router.post('/reorder', async (req, res) => {
     }
 });
 
+router.post('/rate', async (req, res) => {
+    try {
+        const { orderId, rating } = req.body;
+
+        if(0 > rating || rating > 5) {
+            handleBadRequest(res, `Your generosity is beautiful, but the maximum is 5.`);
+            return;
+        }
+
+        const order = req.user.orders.find(order => order.orderId == orderId);
+        if(!order) {
+            handleBadRequest(res, `There is no order with the id ${orderId}`);
+            return;
+        }
+
+        if(!order.trace.find(trace => trace.active === true).type === 'delivered') {
+            handleBadRequest(res, `You can't rate this order yet.`);
+            return;
+        }
+
+        if(order.rating != "") {
+            handleBadRequest(res, `You can't rate the same order twice.`);
+            return;
+        }
+
+        order.rating = rating;
+
+        await order.save();
+        return res.json({order});
+    } catch(error) {
+        console.error(error);
+        handleServerError(res);
+    }
+})
+
 router.get('/trace', async (req, res) => {
 
 });
