@@ -27,9 +27,10 @@ interface NavbarProps {
     brand: { href: string; label: string; logo?: string };
     links: NavItem[];
     dropdown: DropdownMenu[];
+    isLoggedIn?: boolean;
 }
 
-const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
+const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown, isLoggedIn }) => {
     const [show, setShow] = useState(false);
 
     return (
@@ -99,7 +100,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                         <FaShoppingCart/>
                     </a>
                     <a href="/user" className="icon">
-                        <FaUser/>
+                        <FaUser color={isLoggedIn ? "#1DCE3D" : "black"} />
                     </a>
                 </div>
             </Container>

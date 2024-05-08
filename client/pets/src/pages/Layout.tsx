@@ -5,12 +5,15 @@ import Container from "react-bootstrap/Container";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {LanguageContext} from "../context/LanguageContext.tsx";
 import { useTranslation } from 'react-i18next';
+import {AuthContext} from "../context/AuthContext.tsx";
 
 const queryClient = new QueryClient();
 
 const Layout: React.FC = () => {
     const [language, setLanguage] = useState(localStorage.getItem('i18nextLng') || 'en');
     const { t } = useTranslation();
+    const authContext = React.useContext(AuthContext);
+    const { user } = authContext;
 
     useEffect(() => {
         const newLanguage = localStorage.getItem('i18nextLng') || 'en';
@@ -24,6 +27,10 @@ const Layout: React.FC = () => {
                 brand={{href: "/", label: t("brand"), logo: "/logo.png"}}
                 links={[
                     {href: "/", label: t("home")},
+                    ...(user?.role === 'admin' ? [
+                        {href: "/admin/items", label: t("admin")},
+                        {href: "/dashboard", label: t("dashboard")}
+                    ] : [])
                 ]}
                 dropdown={[
                     {
@@ -43,6 +50,7 @@ const Layout: React.FC = () => {
                         ],
                     }
                 ]}
+                isLoggedIn={user && user.isAuthenticated}
             />
             <LanguageContext.Provider value={{ language, setLanguage }}>
                 <QueryClientProvider client={queryClient}>
