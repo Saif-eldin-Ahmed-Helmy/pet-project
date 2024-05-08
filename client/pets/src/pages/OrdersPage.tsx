@@ -121,7 +121,7 @@ const OrdersPage: React.FC = () => {
     }
 
     return (
-        <div style={{marginTop: 100}}>
+        <div style={{marginTop: 50}}>
             <h1>{t('ordersHistory')}</h1>
             {orders.length === 0 && <p>You have no orders<br/>start by making an order now!</p>}
             {orders && orders.map(order => {

@@ -1,25 +1,5 @@
 const mongoose = require("mongoose");
 
-const userLog = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true
-    },
-    action: {
-        type: String,
-        enum: ['create', 'added', 'removed'],
-        required: true
-    },
-    executor: {
-        type: String,
-        required: true
-    },
-    date: {
-        type: String,
-        required: true
-    }
-})
-
 const messageLog = new mongoose.Schema({
     from: { // the first message
         type: String,
@@ -54,7 +34,11 @@ const messageLog = new mongoose.Schema({
 })
 
 const message = new mongoose.Schema({
-    Id: {
+    id: {
+        type: String,
+        required: true
+    },
+    date: {
         type: String,
         required: true
     },
@@ -81,11 +65,23 @@ const chat = new mongoose.Schema({
         type: String,
         required: true
     },
-    userLog: [userLog],
+    status: {
+        type: String,
+        enum: ['active', 'handled'],
+        default: 'active'
+    },
+    participants: {
+        type: [String],
+        required: true
+    },
     messages: [message],
     type: {
         type: String,
-        enum: ['support', 'doctor', 'ai']
+        enum: ['support', 'vet', 'ai']
+    },
+    date: {
+        type: String,
+        required: true
     }
 })
 

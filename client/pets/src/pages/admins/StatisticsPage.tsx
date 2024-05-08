@@ -103,7 +103,7 @@ const StatisticsPage = () => {
                         <Col sm={6} md={3}>
                             <Card className="value-container">
                                 <Card.Body>
-                                    <h3>E£ {statisticsData.allTimeSales.toFixed(1)}</h3>
+                                    <h4>E£ {statisticsData.allTimeSales.toFixed(1)}</h4>
                                     <span className="text-uppercase">All Time Sales</span>
                                 </Card.Body>
                             </Card>
@@ -111,7 +111,7 @@ const StatisticsPage = () => {
                         <Col sm={6} md={3}>
                             <Card className="value-container">
                                 <Card.Body>
-                                    <h3>E£ {statisticsData.yearToDate.toFixed(1)}</h3>
+                                    <h4>E£ {statisticsData.yearToDate.toFixed(1)}</h4>
                                     <span className="text-uppercase">Year To Date</span>
                                 </Card.Body>
                             </Card>
@@ -119,7 +119,7 @@ const StatisticsPage = () => {
                         <Col sm={6} md={3}>
                             <Card className="value-container">
                                 <Card.Body>
-                                    <h3>E£ {statisticsData.monthToDate.toFixed(1)}</h3>
+                                    <h4>E£ {statisticsData.monthToDate.toFixed(1)}</h4>
                                     <span className="text-uppercase">Month To Date</span>
                                 </Card.Body>
                             </Card>
@@ -127,7 +127,7 @@ const StatisticsPage = () => {
                         <Col sm={6} md={3}>
                             <Card className="value-container">
                                 <Card.Body>
-                                    <h3>E£ {statisticsData.today.toFixed(1)}</h3>
+                                    <h4>E£ {statisticsData.today.toFixed(1)}</h4>
                                     <span className="text-uppercase">Today</span>
                                 </Card.Body>
                             </Card>
@@ -169,7 +169,7 @@ const StatisticsPage = () => {
                                     <Row>
                                         <Col className="d-flex align-items-center">Popular Items</Col>
                                         <Col className="d-flex justify-content-end">
-                                            <Button variant="secondary">View More</Button>
+                                            <Button href="http://localhost:5173/items" variant="secondary">View More</Button>
                                         </Col>
                                     </Row>
                                 </Card.Header>
@@ -201,7 +201,7 @@ const StatisticsPage = () => {
                                     <Row>
                                         <Col className="d-flex align-items-center">Popular Categories</Col>
                                         <Col className="d-flex justify-content-end">
-                                            <Button variant="secondary">View More</Button>
+                                            <Button href="http://localhost:5173/categories" variant="secondary">View More</Button>
                                         </Col>
                                     </Row>
                                 </Card.Header>

@@ -126,7 +126,7 @@ const DashboardPage = () => {
                                     <Row>
                                         <Col className="d-flex align-items-center">Sales Overview</Col>
                                         <Col className="d-flex justify-content-end">
-                                            <Button variant="secondary">View More</Button>
+                                            <Button href="http://localhost:5173/statistics" variant="secondary">View More</Button>
                                         </Col>
                                     </Row>
                                 </Card.Header>
@@ -143,7 +143,7 @@ const DashboardPage = () => {
                                     <Row>
                                         <Col className="d-flex align-items-center">Recent Payments</Col>
                                         <Col className="d-flex justify-content-end">
-                                            <Button variant="secondary">View More</Button>
+                                            <Button href="http://localhost:5173/payments" variant="secondary">View More</Button>
                                         </Col>
                                     </Row>
                                 </Card.Header>
@@ -161,7 +161,7 @@ const DashboardPage = () => {
                                         {dashboardData.recentPayments.map((payment, index) => (
                                             <tr key={index}>
                                                 <td>{payment.email}</td>
-                                                <td>{format(new Date(payment.date), currentYear === new Date(payment.date).getFullYear() ? 'MMMM do' : 'yyyy, MMMM do')}</td>
+                                                <td>{format(new Date(payment.date), 'yyyy, MMMM do')}</td>
                                                 <td>{payment.itemsCount}</td>
                                                 <td>E£ {payment.value}</td>
                                             </tr>

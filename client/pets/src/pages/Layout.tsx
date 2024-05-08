@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {LanguageContext} from "../context/LanguageContext.tsx";
 import { useTranslation } from 'react-i18next';
+import ChatModal from "../components/ChatModal/ChatModal.tsx";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +45,6 @@ const Layout: React.FC = () => {
                     }
                 ]}
             />
-
             <LanguageContext.Provider value={{ language, setLanguage }}>
                 <QueryClientProvider client={queryClient}>
                     <Outlet />

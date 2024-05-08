@@ -1,0 +1,12 @@
+#page-content-wrapper {
+    margin-left: 20%;
+    padding: 20px;
+}
+
+.deleted-item {
+    background-color: #f8d7da !important;
+}
+
+.deleted-item-text {
+    color: #ff1e00 !important;
+}

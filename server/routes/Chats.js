@@ -8,32 +8,171 @@ const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 router.use(verifySession);
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['chats']));
 
-router.get('/', async (req, res) => {
-    const chats = await Chat.find({ participants: req.email });
-    res.json(chats);
-});
+router.get('/vet', async (req, res) => {
+    const { role } = req.user;
+    const page = Number(req.query.page) || 1;
+    const chatsPerPage = Number(req.query.chatsPerPage) || 10;
+    const skip = (page - 1) * chatsPerPage;
+    const email = req.query.email;
+    const status = req.query.status || 'active';
 
-router.get('/:chatId', async (req, res) => {
-    const chat = await Chat.findById(req.params.chatId);
-    if (!chat) {
-        return res.status(404).json({ error: 'Chat not found.' });
+    let query = { type: 'vet', status };
+    if (email && email.length > 0) {
+        query.participants = { $in: [email] };
     }
-    res.json(chat.messages);
+
+    if (role === 'doctor' || role === 'admin') {
+        const chats = await Chat.find(query).skip(skip).limit(chatsPerPage);
+        const totalChats = await Chat.countDocuments(query);
+        res.json({ chats, maxPages: Math.ceil(totalChats / chatsPerPage) });
+    } else if (role === 'user') {
+        let userChat = await Chat.findOne({ participants: req.user.email, type: 'vet' });
+        if (!userChat) {
+            userChat = await Chat.create({
+                sessionId: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                participants: [req.user.email],
+                type: 'vet',
+                messages: [],
+                date: new Date().toISOString()
+            });
+        }
+        res.json(userChat);
+    } else {
+        res.status(403).json({ error: 'Unauthorized' });
+    }
 });
 
-router.post('/:chatId', async (req, res) => {
-    const chat = await Chat.findById(req.params.chatId);
+router.post('/vet/send', async (req, res) => {
+    const { id, text, sessionId } = req.body;
+    const chat = await Chat.findOne({ sessionId });
     if (!chat) {
-        return res.status(404).json({ error: 'Chat not found.' });
+        res.status(404).json({ error: 'Chat not found.' });
+        return;
     }
     const message = {
-        text: req.body.text,
-        sender: req.email,
-        time: new Date()
+        id: id || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+        sender: req.user.email,
+        content: text,
+        log: [], // Assuming no log for the message
+        deleted: false, // Assuming the message is not deleted
+        date: new Date().toISOString()
     };
     chat.messages.push(message);
-    await chat.save();
-    res.json(chat);
+    chat.status = 'active'; // Set the status of the chat to 'active'
+    try {
+        await chat.save();
+        for (const participant of chat.participants) {
+            global.io.to(participant).emit('new-message', { sessionId, message });
+        }
+        global.io.to('vet').emit('new-message', { sessionId, message });
+        res.json(chat);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while saving the chat.' });
+    }
+});
+
+router.post('/vet/handle', async (req, res) => {
+    const { sessionId } = req.body;
+    const chat = await Chat.findOne({ sessionId });
+    if (!chat) {
+        res.status(404).json({ error: 'Chat not found.' });
+        return;
+    }
+    chat.status = 'handled'; // Set the status of the chat to 'handled'
+    try {
+        await chat.save();
+        res.json(chat);
+        global.io.to('vet').emit('chat-handled', { sessionId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while saving the chat.' });
+    }
+});
+
+
+
+router.get('/support', async (req, res) => {
+    const { role } = req.user;
+    const page = Number(req.query.page) || 1;
+    const chatsPerPage = Number(req.query.chatsPerPage) || 10;
+    const skip = (page - 1) * chatsPerPage;
+    const email = req.query.email;
+    const status = req.query.status || 'active';
+
+    let query = { type: 'support', status };
+    if (email && email.length > 0) {
+        query.participants = { $in: [email] };
+    }
+
+    if (role === 'doctor' || role === 'admin') {
+        const chats = await Chat.find(query).skip(skip).limit(chatsPerPage);
+        const totalChats = await Chat.countDocuments(query);
+        res.json({ chats, maxPages: Math.ceil(totalChats / chatsPerPage) });
+    } else if (role === 'user') {
+        let userChat = await Chat.findOne({ participants: req.user.email, type: 'support' });
+        if (!userChat) {
+            userChat = await Chat.create({
+                sessionId: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                participants: [req.user.email],
+                type: 'support',
+                messages: [],
+                date: new Date().toISOString()
+            });
+        }
+        console.log(userChat);
+        res.json(userChat);
+    } else {
+        res.status(403).json({ error: 'Unauthorized' });
+    }
+});
+
+router.post('/support/send', async (req, res) => {
+    const { id, text, sessionId } = req.body;
+    const chat = await Chat.findOne({ sessionId });
+    if (!chat) {
+        res.status(404).json({ error: 'Chat not found.' });
+        return;
+    }
+    const message = {
+        id: id || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+        sender: req.user.email,
+        content: text,
+        log: [], // Assuming no log for the message
+        deleted: false, // Assuming the message is not deleted
+        date: new Date().toISOString()
+    };
+    chat.messages.push(message);
+    chat.status = 'active'; // Set the status of the chat to 'active'
+    try {
+        await chat.save();
+        for (const participant of chat.participants) {
+            global.io.to(participant).emit('new-message', { sessionId, message });
+        }
+        global.io.to('support').emit('new-message', { sessionId, message });
+        res.json(chat);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while saving the chat.' });
+    }
+});
+
+router.post('/support/handle', async (req, res) => {
+    const { sessionId } = req.body;
+    const chat = await Chat.findOne({ sessionId });
+    if (!chat) {
+        res.status(404).json({ error: 'Chat not found.' });
+        return;
+    }
+    chat.status = 'handled'; // Set the status of the chat to 'handled'
+    try {
+        await chat.save();
+        res.json(chat);
+        global.io.to('support').emit('chat-handled', { sessionId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while saving the chat.' });
+    }
 });
 
 module.exports = router;

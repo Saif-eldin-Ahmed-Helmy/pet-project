@@ -12,8 +12,24 @@
 .dashboard-navbar .nav-link {
     color: black;
     margin-bottom: 1rem;
+    text-align: left; /* align text to the left */
 }
 
 .dashboard-navbar .nav-link:hover {
     color: #DAA520; /* Goldish color on hover */
+}
+
+.dashboard-navbar .nav-link.active {
+    border: 1px solid #DAA520; /* add a border around the active link */
+    position: relative; /* needed for the pseudo-element */
+}
+
+.dashboard-navbar .nav-link.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 5px;
+    background-color: #DAA520; /* gold color */
 }

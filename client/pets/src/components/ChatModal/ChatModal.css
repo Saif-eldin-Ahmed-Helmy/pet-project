@@ -1,0 +1,51 @@
+.chat-logo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: yellow;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-modal {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 350px; /* Increased width */
+    height: 480px; /* Increased height */
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: auto;
+    padding: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+
+    /* Custom scrollbar styles */
+    scrollbar-width: thin;
+    scrollbar-color: #000000 transparent;
+}
+
+.chat-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-modal::-webkit-scrollbar-thumb {
+    background-color: #ffb300;
+    border-radius: 10px;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}

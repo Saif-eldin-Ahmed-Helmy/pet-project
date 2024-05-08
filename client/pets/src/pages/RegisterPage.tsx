@@ -37,8 +37,8 @@ const RegisterPage: React.FC = () => {
         }
 
         if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)) {
-            setError(t('passwordMustBeAtLeast8CharactersLong'));
-            return;
+           // setError(t('passwordMustBeAtLeast8CharactersLong'));
+           // return;
         }
 
         const name = firstName.trim().charAt(0).toUpperCase() + firstName.trim().slice(1) + ' '
