@@ -4,7 +4,6 @@ import ButtonComponent from "../components/Button/Button.tsx";
 
 const AddLocationPage: React.FC = () => {
     const [locationId, setLocationId] = useState('');
-    const [locationSignature, setLocationSignature] = useState('');
     const [apartmentNumber, setApartmentNumber] = useState('');
     const [floorNumber, setFloorNumber] = useState(0);
     const [streetName, setStreetName] = useState('');
@@ -20,7 +19,7 @@ const AddLocationPage: React.FC = () => {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ locationId, locationSignature, apartmentNumber, floorNumber, streetName, city, phoneNumber })
+            body: JSON.stringify({ locationId, apartmentNumber, floorNumber, streetName, city, phoneNumber })
         });
 
         if (response.ok) {

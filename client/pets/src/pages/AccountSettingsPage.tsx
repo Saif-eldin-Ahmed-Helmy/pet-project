@@ -22,19 +22,6 @@ const AccountSettingsPage: React.FC = () => {
         }
     };
 
-    const handleDeleteLocation = async (locationId: string) => {
-        const response = await fetch(`http://localhost:3001/api/users/locations?locationId=${locationId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-        const data = await response.json();
-        if (data.error) {
-            setError(data.error);
-        } else {
-            fetchLocations();
-        }
-    };
-
     const handleAddLocation = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);

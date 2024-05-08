@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, Card, Container, Row, Col, Button } from 'react-bootstrap';
 import {
     Chart as ChartJS,
@@ -14,6 +14,8 @@ import { Line } from 'react-chartjs-2';
 import DashboardNavbar from '../../components/DashboardNavbar/DashboardNavbar';
 import './DashboardPage.css';
 import { format } from 'date-fns';
+import {Sale} from "../../interfaces/sale.ts";
+import {Payment} from "../../interfaces/payment.ts";
 
 ChartJS.register(
     CategoryScale,
@@ -26,7 +28,13 @@ ChartJS.register(
 );
 
 const DashboardPage = () => {
-    const [dashboardData, setDashboardData] = useState({
+    const [dashboardData, setDashboardData] = useState<{
+        todaysRevenue: number,
+        thisMonthsRevenue: number,
+        thisMonthsAvgPayment: number,
+        salesOverview: Sale[],
+        recentPayments: Payment[]
+    }>({
         todaysRevenue: 0,
         thisMonthsRevenue: 0,
         thisMonthsAvgPayment: 0,
@@ -41,7 +49,7 @@ const DashboardPage = () => {
             .then(response => response.json())
             .then(data => {
                 const salesOverview = Array(10).fill(0);
-                data.salesOverview.forEach((sale, index) => {
+                data.salesOverview.forEach((sale: Sale, index: number) => {
                     salesOverview[index] = sale.value;
                     console.log(index, sale);
                 });
@@ -50,8 +58,6 @@ const DashboardPage = () => {
             })
             .catch(error => console.error(error));
     }, []);
-
-    const currentYear = new Date().getFullYear();
 
     const options = {
         responsive: true,
@@ -62,7 +68,7 @@ const DashboardPage = () => {
         },
         plugins: {
             legend: {
-                position: 'top',
+                position: 'top' as const,
             },
             title: {
                 display: true,

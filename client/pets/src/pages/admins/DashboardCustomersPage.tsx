@@ -3,12 +3,13 @@ import { Table, Container, Row, Col, Form, FormControl, InputGroup, DropdownButt
 import DashboardNavbar from '../../components/DashboardNavbar/DashboardNavbar';
 import { BsSearch } from "react-icons/bs";
 import './DashboardCustomersPage.css';
+import {Customer} from "../../interfaces/customer.ts";
 
 const DashboardCustomersPage: React.FC = () => {
-    const [customers, setCustomers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const [customers, setCustomers] = useState<Customer[]>([]);
 
     useEffect(() => {
         fetchCustomers();
@@ -18,7 +19,7 @@ const DashboardCustomersPage: React.FC = () => {
         const response = await fetch(`http://localhost:3001/api/analysis/customers?page=${page}`, {
             credentials: 'include'
         });
-        const data = await response.json();
+        const data: { customers: Customer[], maxPages: number } = await response.json();
         setCustomers(data.customers);
         setMaxPage(data.maxPages);
     };
@@ -27,7 +28,7 @@ const DashboardCustomersPage: React.FC = () => {
         setSearchTerm(event.target.value);
     };
 
-    let filteredCustomers = customers;
+    let filteredCustomers: Customer[] = customers;
 
     if (searchTerm) {
         filteredCustomers = customers.filter(customer => {

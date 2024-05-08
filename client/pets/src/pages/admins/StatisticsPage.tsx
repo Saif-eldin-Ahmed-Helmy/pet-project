@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Table, Card, Container, Row, Col, Button, Form } from 'react-bootstrap';
 import {
     Chart as ChartJS,
@@ -14,6 +14,9 @@ import { Line } from 'react-chartjs-2';
 import DashboardNavbar from '../../components/DashboardNavbar/DashboardNavbar';
 import './StatisicsPage.css';
 import { format } from 'date-fns';
+import {Sale} from "../../interfaces/sale.ts";
+import {Item} from "../../interfaces/item.ts";
+import {Customer} from "../../interfaces/customer.ts";
 
 ChartJS.register(
     CategoryScale,
@@ -26,7 +29,16 @@ ChartJS.register(
 );
 
 const StatisticsPage = () => {
-    const [statisticsData, setStatisticsData] = useState({
+    const [statisticsData, setStatisticsData] = useState<{
+        allTimeSales: number,
+        yearToDate: number,
+        monthToDate: number,
+        today: number,
+        popularItems: Item[],
+        popularCategories: Item[],
+        popularCustomers: Customer[],
+        salesOverview: Sale[]
+    }>({
         allTimeSales: 0,
         yearToDate: 0,
         monthToDate: 0,
@@ -65,7 +77,7 @@ const StatisticsPage = () => {
             },
             tooltip: {
                 callbacks: {
-                    label: function(context) {
+                    label: function(context: { dataIndex: number }) {
                         const labelIndex = context.dataIndex;
                         const selectedPoint = statisticsData.salesOverview[labelIndex];
                         return `Value: ${selectedPoint.value}, To: ${format(new Date(selectedPoint.toDate), 'MMM do')}`;

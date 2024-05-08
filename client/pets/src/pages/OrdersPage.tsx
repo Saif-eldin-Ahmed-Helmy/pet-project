@@ -64,11 +64,6 @@ const OrdersPage: React.FC = () => {
         setShowRatingModal(false);
     };
 
-    const handleOpenReportModal = (order: Order) => {
-        setSelectedOrder(order);
-        setShowReportModal(true);
-    };
-
     const handleCloseReportModal = () => {
         setShowReportModal(false);
     };

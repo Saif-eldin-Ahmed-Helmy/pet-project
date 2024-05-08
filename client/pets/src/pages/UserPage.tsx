@@ -15,6 +15,11 @@ import {toast, ToastContainer} from "react-toastify";
 import { useTranslation } from 'react-i18next';
 import {LanguageContext} from "../context/LanguageContext.tsx";
 
+interface LanguageContextProps {
+    language: string;
+    setLanguage: (language: string) => void;
+}
+
 const UserPage: React.FC = () => {
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
@@ -27,7 +32,8 @@ const UserPage: React.FC = () => {
 
     const name = authContext?.user?.name;
     const preferredLanguage = authContext?.user?.preferredLanguage || 'en';
-    const { language, setLanguage } = useContext(LanguageContext);
+    const languageContext = useContext(LanguageContext);
+    const { language, setLanguage } = languageContext as LanguageContextProps;
     useEffect(() => {
         if (preferredLanguage !== language) {
             setLanguage(preferredLanguage);

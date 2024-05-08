@@ -3,14 +3,16 @@ import {Table, Container, Row, Col, Form, FormControl, InputGroup, DropdownButto
 import DashboardNavbar from '../../components/DashboardNavbar/DashboardNavbar';
 import { BsSearch } from "react-icons/bs";
 import './DashboardItemsPage.css';
+import { Item } from "../../interfaces/item.ts";
+// @ts-ignore
 import stringSimilarity from "string-similarity";
 
 const DashboardItemsPage: React.FC = () => {
-    const [items, setItems] = useState([]);
-    const [showDeleted, setShowDeleted] = useState(false);
+    const [items, setItems] = useState<Item[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const showDeleted = false;
 
     useEffect(() => {
         fetchItems();
@@ -29,7 +31,7 @@ const DashboardItemsPage: React.FC = () => {
         setSearchTerm(event.target.value);
     };
 
-    let filteredItems = items;
+    let filteredItems: Item[] = items;
 
     if (searchTerm) {
         filteredItems = items.filter(item => {

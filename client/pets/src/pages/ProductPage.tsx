@@ -30,7 +30,7 @@ const ProductPage: React.FC = () => {
 
     useEffect(() => {
         if (cartItems) {
-            const isInCart = cartItems.find(cartItem => cartItem.itemId === itemId);
+            const isInCart = cartItems.find((cartItem: Item) => cartItem.itemId === itemId);
             if (isInCart) {
                 handleSetQuantity();
             }
@@ -56,7 +56,7 @@ const ProductPage: React.FC = () => {
         const data = await response.json();
         if (!data.error) {
             setCartItems(data);
-            setQuantity(data.find(cartItem => cartItem.itemId === itemId)?.quantity || 1);
+            setQuantity(data.find((cartItem: Item) => cartItem.itemId === itemId)?.quantity || 1);
         }
         else {
             setCartItems([]);
@@ -64,7 +64,7 @@ const ProductPage: React.FC = () => {
     };
 
     const handleBuy = async () => {
-        setCartItems([...cartItems, {itemId, quantity}]);
+        setCartItems([...(cartItems || []), {itemId, quantity}]);
 
         const response = await fetch(`http://localhost:3001/api/cart`, {
             credentials: 'include',
@@ -77,7 +77,7 @@ const ProductPage: React.FC = () => {
             setCartItems(cartItems);
             navigate('/login');
         } else {
-            setCartItems([...cartItems, {itemId, quantity}]);
+            setCartItems([...(cartItems || []), {itemId, quantity}]);
         }
     };
 
@@ -99,7 +99,7 @@ const ProductPage: React.FC = () => {
     }
 
     const handleRemoveFromBasket = async () => {
-        setCartItems(cartItems.filter(cartItem => cartItem.itemId !== itemId));
+        setCartItems((cartItems || []).filter((cartItem: Item) => cartItem.itemId !== itemId));
         toast.success('Item removed from basket!', {
             position: toast.POSITION.BOTTOM_RIGHT,
             autoClose: 2000
@@ -113,10 +113,10 @@ const ProductPage: React.FC = () => {
         });
         const data = await response.json();
         if (data.error) {
-            setCartItems([...cartItems, {itemId, quantity}]);
+            setCartItems([...(cartItems || []), {itemId, quantity}]);
             navigate('/login');
         } else {
-            setCartItems(cartItems.filter(cartItem => cartItem.itemId !== itemId));
+            setCartItems((cartItems || []).filter((cartItem: Item) => cartItem.itemId !== itemId));
             setQuantity(1);
         }
     };
@@ -128,7 +128,7 @@ const ProductPage: React.FC = () => {
         </div>
     }
 
-    const isInCart = cartItems.find(cartItem => cartItem.itemId === itemId);
+    const isInCart = cartItems.find((cartItem: Item) => cartItem.itemId === itemId);
 
     return (
         <div style={{

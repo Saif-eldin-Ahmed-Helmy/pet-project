@@ -88,17 +88,14 @@
     box-shadow: 0 0 10px #ffb300;
 }
 
-.support-btn {
+.support-chat-button {
     background-color: #ffb300 !important;
-}
-.support-btn.page-item.active .page-link {
-    background-color: #ffb300;
-    border-color: #ffb300;
 }
 
 .support-search-button {
     background-color: #f5f5f5 !important;
 }
+
 .support-search-button:hover {
     background-color: #919191 !important;
 }
