@@ -35,7 +35,7 @@ function VetChatPage() {
     };
 
     useEffect(() => {
-        socket.current = io('http://localhost:3001', { withCredentials: true });
+        socket.current = io('https://pet-ssq2.onrender.com', { withCredentials: true });
 
         const onConnect = () => {
             console.log("connected");
@@ -91,7 +91,7 @@ function VetChatPage() {
     }, [role, currentPage]);
 
     function fetchChats() {
-        fetch(`http://localhost:3001/api/chats/vet?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
+        fetch(`https://pet-ssq2.onrender.com/api/chats/vet?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -131,7 +131,7 @@ function VetChatPage() {
         };
         setActiveChat(prevChat => ({ ...prevChat!, messages: [...prevChat!.messages, optimisticMessage] }));
         setNewMessage('');
-        const response = await fetch('http://localhost:3001/api/chats/vet/send', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/vet/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ function VetChatPage() {
     };
 
     const handleMarkAsHandled = async () => {
-        const response = await fetch('http://localhost:3001/api/chats/vet/handle', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/vet/handle', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

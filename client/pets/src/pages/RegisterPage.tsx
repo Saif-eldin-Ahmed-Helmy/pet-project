@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
 
         const name = firstName.trim().charAt(0).toUpperCase() + firstName.trim().slice(1) + ' '
             + lastName.trim().charAt(0).toUpperCase() + lastName.trim().slice(1);
-        const response = await fetch('http://localhost:3001/api/users', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password, gender, dateOfBirth })
@@ -59,7 +59,7 @@ const RegisterPage: React.FC = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:3001/api/users/google';
+        window.location.href = 'https://pet-ssq2.onrender.com/api/users/google';
     };
 
     return (

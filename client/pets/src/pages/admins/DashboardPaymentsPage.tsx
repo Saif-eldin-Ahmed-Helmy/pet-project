@@ -17,7 +17,7 @@ const DashboardPaymentsPage: React.FC = () => {
     }, [page]);
 
     const fetchPayments = async () => {
-        const response = await fetch(`http://localhost:3001/api/analysis/payments?page=${page}`, {
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/analysis/payments?page=${page}`, {
             credentials: 'include'
         });
         const data = await response.json();
@@ -42,7 +42,7 @@ const DashboardPaymentsPage: React.FC = () => {
     return (
         <Container fluid>
             <Row className="justify-content-center">
-                <Col xs={2} id="sidebar-wrapper">
+                <Col xs={10} id="sidebar-wrapper">
                     <DashboardNavbar />
                 </Col>
                 <Col xs={10} id="page-content-wrapper">

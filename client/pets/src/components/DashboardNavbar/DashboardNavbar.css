@@ -33,3 +33,14 @@
     width: 5px;
     background-color: #DAA520; /* gold color */
 }
+
+.menu-button {
+    color: black !important;
+    border: 1px solid gray; /* Add a border around the container */
+    padding: 10px; /* Add some padding to create a box effect */
+    display: inline-block; /* Needed to apply padding and border */
+}
+
+.offcanvas .nav-link {
+    color: black; /* Change the text color to black */
+}

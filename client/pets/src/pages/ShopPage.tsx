@@ -39,7 +39,7 @@ const ShopPage: React.FC = () => {
     }, [showOutOfStock, minPrice, maxPrice, limit, categoryState, subCategoryState, page]);
 
     const fetchProducts = async () => {
-        const response = await fetch(`http://localhost:3001/api/items?priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&page=${page}&category=${categoryState}&subCategory=${subCategoryState}`);
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/items?priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&limit=${limit}&page=${page}&category=${categoryState}&subCategory=${subCategoryState}`);
         const data = await response.json();
         setProducts(data.items);
         setMaxPage(data.maxPages);

@@ -91,6 +91,13 @@ body {
   font-size:calc(8px + 1.2vw) !important;
 }
 
+@media screen and (max-width: 992px) {
+  .main-menu-button {
+    display: none !important;
+  }
+}
+
+
 .main-menu-button:hover {
   color: #f5f5f5 !important;
   background-color: gold !important;

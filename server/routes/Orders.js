@@ -16,38 +16,59 @@ router.use(verifySession)
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['orders', 'shoppingCart']));
 
 router.get("/", async (req, res) => {
-  try {
-      const {orderId, traceType, itemId, itemCategory, couponCode, city} = req.query;
-      const role = req.role;
+    try {
+        const {orderId, traceType, itemId, itemCategory, couponCode, city, page = 1, limit = 10} = req.query;
+        const role = req.role;
 
-      if (orderId) {
-          const hasOrder = req.user.orders.find(order => order.orderId === orderId);
-          if (!hasOrder && role !== 'admin') {
-              handleBadRequest(res, `There is no order with the id ${orderId}`)
-              return;
-          }
+        if (orderId) {
+            const hasOrder = req.user.orders.find(order => order.orderId === orderId);
+            if (!hasOrder && role !== 'admin') {
+                handleBadRequest(res, `There is no order with the id ${orderId}`)
+                return;
+            }
 
-          const order = await Order.find({orderId: orderId});
-          res.json({order});
-          return;
-      }
+            const order = await Order.find({orderId: orderId});
+            res.json({order});
+            return;
+        }
 
-      const orders = (role === 'admin') ? await Order.find() : req.user.orders;
-      const filteredOrders = orders.filter(order => {
-          return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
-              (!itemId || order.items.some(item => item.itemId === itemId)) &&
-              (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
-              (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
-              (!city || order.location.city === city);
-      });
+        const ordersQuery = (role === 'admin' || role === 'packager' || role === 'driver') ? Order.find() : Order.find({ userEmail: req.user.email });
+        let orders = await ordersQuery
+            .skip((Number(page) - 1) * Number(limit))
+            .limit(Number(limit));
 
-      res.json({filteredOrders});
-  }
-    catch (error) {
+        let filteredOrders = orders.filter(order => {
+            return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
+                (!itemId || order.items.some(item => item.itemId === itemId)) &&
+                (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
+                (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
+                (!city || order.location.city === city);
+        });
+
+        filteredOrders = filteredOrders.map(order => {
+            const lastTrace = order.trace[order.trace.length - 1];
+            return {
+                orderId: order.orderId,
+                userEmail: order.userEmail,
+                status: lastTrace.type,
+                date: order.date,
+                amount: order.amount,
+                finalAmount: order.finalAmount,
+                rating: order.rating,
+                items: order.items,
+                trace: order.trace,
+            };
+        });
+
+        const totalOrders = await Order.countDocuments();
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        res.json({filteredOrders, totalPages});
+    } catch (error) {
         console.error(error);
         handleServerError(res);
     }
-})
+});
 
 router.post("/", async(req, res) => {
     try {
