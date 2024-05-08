@@ -104,5 +104,7 @@
   "promoCode": "Promo Code",
   "checkingOut": "Checking Out...",
   "orderAbove200": "Order above 200, enjoy free delivery!",
-  "deliveryFee": "Delivery Fee"
+  "deliveryFee": "Delivery Fee",
+  "admin": "ADMIN",
+  "dashboard": "DASHBOARD"
 }

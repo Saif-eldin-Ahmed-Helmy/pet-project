@@ -139,6 +139,9 @@ const OrdersPage: React.FC = () => {
                                 <Card.Title>{count} Items</Card.Title>
                                 <Card.Text>
                                     Total Cost: {order.finalAmount.toFixed(2)}<br/>
+                                    {order.cashAmount > 0 && (
+                                        <>Cash Amount: {order.cashAmount.toFixed(2)}<br/></>
+                                    )}
                                     Order Date: {new Date(order.date).toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short' })}<br/>
                                     Order
                                     Status: {order.trace.length > 0 ? order.trace[order.trace.length - 1].type.charAt(0).toUpperCase() + order.trace[order.trace.length - 1].type.slice(1) : 'N/A'}
