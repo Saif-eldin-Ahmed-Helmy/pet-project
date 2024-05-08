@@ -53,7 +53,7 @@ const AddItemPage: React.FC = () => {
         }
 
         const item = { itemId, name, picture, stock, price, description, category, subCategory, deleted };
-        const response = await fetch('http://localhost:3001/api/items', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/items', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -75,7 +75,7 @@ const AddItemPage: React.FC = () => {
         const formData = new FormData();
         formData.append('image', file);
 
-        const response = await fetch('http://localhost:3001/api/images/upload', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/images/upload', {
             method: 'POST',
             body: formData
         });

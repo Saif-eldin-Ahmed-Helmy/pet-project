@@ -8,6 +8,7 @@ import ButtonComponent from "../components/Button/Button.tsx";
 import {useNavigate} from "react-router-dom";
 import {FaMoneyBill, FaWallet} from "react-icons/fa";
 import {useTranslation} from "react-i18next";
+import './ShoppingCartPage.css';
 
 const ShoppingCartPage: React.FC = () => {
     const navigate = useNavigate();
@@ -43,7 +44,7 @@ const ShoppingCartPage: React.FC = () => {
     }, [cartItems]);
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/cart', {
+        fetch('https://pet-ssq2.onrender.com/api/cart', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -53,7 +54,7 @@ const ShoppingCartPage: React.FC = () => {
                 setSubTotal(subtotal);
             });
 
-        fetch('http://localhost:3001/api/users/locations', {
+        fetch('https://pet-ssq2.onrender.com/api/users/locations', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -68,7 +69,7 @@ const ShoppingCartPage: React.FC = () => {
     }, [promoCode]);
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/users/balance', {
+        fetch('https://pet-ssq2.onrender.com/api/users/balance', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -83,7 +84,7 @@ const ShoppingCartPage: React.FC = () => {
     }
 
     const handleQuantityChange = async (itemId: string, quantity: number) => {
-        const response = await fetch(`http://localhost:3001/api/cart`, {
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({itemId, quantity}),
@@ -96,7 +97,7 @@ const ShoppingCartPage: React.FC = () => {
     };
 
     const handleRemoveItem = async (itemId: string) => {
-        const response = await fetch(`http://localhost:3001/api/cart`, {
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({itemId, removeFromBasket: true}),
@@ -123,7 +124,7 @@ const ShoppingCartPage: React.FC = () => {
             return;
         }
         setLoading(true);
-        await fetch(`http://localhost:3001/api/orders`, {
+        await fetch(`https://pet-ssq2.onrender.com/api/orders`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -182,8 +183,8 @@ const ShoppingCartPage: React.FC = () => {
 
 
     return (
-        <Container style={{width: '100%', margin: 'auto', marginTop: 20, display: 'flex'}}>
-            <Container>
+        <Container style={{ width: '100%', margin: 'auto', marginTop: 20, display: 'flex' }} className="shopping-cart-container">
+            <Container className="table-container">
                 <Table striped bordered hover className="form-container">
                     <thead>
                     <tr>

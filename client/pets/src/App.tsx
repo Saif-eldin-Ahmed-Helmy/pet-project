@@ -26,8 +26,10 @@ import DashboardCustomersPage from "./pages/admins/DashboardCustomersPage.tsx";
 import DashboardPaymentsPage from "./pages/admins/DashboardPaymentsPage.tsx";
 import VetChatPage from "./pages/VetChatPage.tsx";
 import SupportChatPage from "./pages/SupportChatPage.tsx";
+import React from "react";
+import PackagerPage from "./pages/admins/PackagerPage.tsx";
 
-//const socket = io("http://localhost:3001").connect();
+//const socket = io("https://pet-ssq2.onrender.com").connect();
 
 function App() {
     return (
@@ -51,6 +53,9 @@ function App() {
                         <Route path="/admin/items" element={<AdminItemsPage />} />
                         <Route path="/admin/edit-item/:itemId" element={<EditItemPage />} />
                         <Route path="/admin/add-item" element={<AddItemPage />} />
+                    </Route>
+                    <Route element={<ProtectedRoute role='package'/>}>
+                        <Route path="/package" element={<PackagerPage />} />
                     </Route>
                     <Route element={<ProtectedRoute navigateTo="/login"/>}>
                         <Route path="/user" element={<UserPage />} />

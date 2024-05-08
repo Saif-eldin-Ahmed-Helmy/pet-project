@@ -23,7 +23,7 @@ const EditItemPage: React.FC = () => {
         const formData = new FormData();
         formData.append('image', file);
 
-        const response = await fetch('http://localhost:3001/api/images/upload', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/images/upload', {
             method: 'POST',
             body: formData
         });
@@ -35,7 +35,7 @@ const EditItemPage: React.FC = () => {
     };
 
     const fetchItem = async () => {
-        const response = await fetch(`http://localhost:3001/api/items?deleted=true&itemId=${itemId}`, {
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/items?deleted=true&itemId=${itemId}`, {
             credentials: 'include'
         });
         const data = await response.json();
@@ -79,7 +79,7 @@ const EditItemPage: React.FC = () => {
                 setFormErrors(errors => ({ ...errors, subCategory: 'Sub Category is required' }));
                 return;
             }
-            const response = await fetch(`http://localhost:3001/api/items/`, {
+            const response = await fetch(`https://pet-ssq2.onrender.com/api/items/`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

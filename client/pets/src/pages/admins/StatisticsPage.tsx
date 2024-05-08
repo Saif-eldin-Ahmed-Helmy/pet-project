@@ -52,7 +52,7 @@ const StatisticsPage = () => {
     const [toDate, setToDate] = useState(new Date());
 
     const handleGenerateClick = () => {
-        fetch(`http://localhost:3001/api/analysis/statistics?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
+        fetch(`https://pet-ssq2.onrender.com/api/analysis/statistics?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -107,7 +107,7 @@ const StatisticsPage = () => {
     return (
         <Container fluid>
             <Row className="justify-content-center">
-                <Col xs={2} id="sidebar-wrapper">
+                <Col xs={10} id="sidebar-wrapper">
                     <DashboardNavbar />
                 </Col>
                 <Col xs={10} id="page-content-wrapper">

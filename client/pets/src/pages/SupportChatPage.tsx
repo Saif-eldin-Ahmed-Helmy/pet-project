@@ -35,7 +35,7 @@ function SupportChatPage() {
     };
 
     useEffect(() => {
-        socket.current = io('http://localhost:3001', { withCredentials: true });
+        socket.current = io('https://pet-ssq2.onrender.com', { withCredentials: true });
 
         const onConnect = () => {
             console.log("connected");
@@ -91,7 +91,7 @@ function SupportChatPage() {
     }, [role, currentPage]);
 
     function fetchChats() {
-        fetch(`http://localhost:3001/api/chats/support?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
+        fetch(`https://pet-ssq2.onrender.com/api/chats/support?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -131,7 +131,7 @@ function SupportChatPage() {
         };
         setActiveChat(prevChat => ({ ...prevChat!, messages: [...prevChat!.messages, optimisticMessage] }));
         setNewMessage('');
-        const response = await fetch('http://localhost:3001/api/chats/support/send', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/support/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ function SupportChatPage() {
     };
 
     const handleMarkAsHandled = async () => {
-        const response = await fetch('http://localhost:3001/api/chats/support/handle', {
+        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/support/handle', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
