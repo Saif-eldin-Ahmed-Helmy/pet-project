@@ -13,7 +13,7 @@ const Layout: React.FC = () => {
     const [language, setLanguage] = useState(localStorage.getItem('i18nextLng') || 'en');
     const { t } = useTranslation();
     const authContext = React.useContext(AuthContext);
-    const { user } = authContext;
+    const { user } = authContext || {};
 
     useEffect(() => {
         const newLanguage = localStorage.getItem('i18nextLng') || 'en';
