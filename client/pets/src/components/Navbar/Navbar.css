@@ -36,6 +36,13 @@
     color: #1a1a1a;
 }
 
+.offcanvas .icon {
+    margin: 0 10px; /* Slightly less space between the icons */
+    font-size: 150%; /* Slightly smaller icons */
+    display: inline-block;
+    color: #1a1a1a;
+}
+
 @media (max-width: 1000px) {
     .navbar .logo {
         width: 20%;

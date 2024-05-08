@@ -18,7 +18,7 @@ interface CouponCode {
 }
 
 export interface Order {
-    orderId: number;
+    orderId: string;
     date: string;
     trace: OrderTrace[];
     items: OrderItem[];
@@ -34,4 +34,6 @@ export interface Order {
     userComment: string;
     driverRating: number;
     driverComment: string;
+    userEmail: string;
+    status: 'placed' | 'preparing' | 'prepared' | 'delivering' | 'delivered' | 'cancelled';
 }

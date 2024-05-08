@@ -43,7 +43,7 @@ const DashboardPage = () => {
     });
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/analysis/dashboard', {
+        fetch('https://pet-ssq2.onrender.com/api/analysis/dashboard', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -95,7 +95,7 @@ const DashboardPage = () => {
     return (
         <Container fluid>
             <Row className="justify-content-center">
-                <Col xs={2} id="sidebar-wrapper">
+                <Col xs={10} id="sidebar-wrapper">
                     <DashboardNavbar />
                 </Col>
                 <Col xs={10} id="page-content-wrapper">

@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
             return;
         }
 
-        const response = await fetch(`http://localhost:3001/api/users?email=${email}&password=${password}`, {
+        const response = await fetch(`https://pet-ssq2.onrender.com/api/users?email=${email}&password=${password}`, {
             credentials: 'include'
         });
         const data = await response.json();
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:3001/api/users/google';
+        window.location.href = 'https://pet-ssq2.onrender.com/api/users/google';
     };
 
     return (

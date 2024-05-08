@@ -60,6 +60,23 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown, isLogg
                         ))}
                     </Nav>
                 </Navbar.Collapse>
+                <div className="d-none d-lg-block">
+                    <a href="/vet" className="icon">
+                        <FaUserDoctor/>
+                    </a>
+                    <a href="/support" className="icon">
+                        <MdContactSupport/>
+                    </a>
+                    <a href="/shop" className="icon">
+                        <FaSearch/>
+                    </a>
+                    <a href="/cart" className="icon">
+                        <FaShoppingCart/>
+                    </a>
+                    <a href="/user" className="icon">
+                        <FaUser color={isLoggedIn ? "#1DCE3D" : "black"} />
+                    </a>
+                </div>
                 <Offcanvas show={show} onHide={() => setShow(false)} placement="end" id="offcanvasNavbar" className="d-lg-none">
                     <Offcanvas.Header closeButton>
                         <Offcanvas.Title>{brand.label}</Offcanvas.Title>
@@ -84,25 +101,25 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown, isLogg
                                 </NavDropdown>
                             ))}
                         </Nav>
+                        <div>
+                            <a href="/vet" className="icon">
+                                <FaUserDoctor/>
+                            </a>
+                            <a href="/support" className="icon">
+                                <MdContactSupport/>
+                            </a>
+                            <a href="/shop" className="icon">
+                                <FaSearch/>
+                            </a>
+                            <a href="/cart" className="icon">
+                                <FaShoppingCart/>
+                            </a>
+                            <a href="/user" className="icon">
+                                <FaUser color={isLoggedIn ? "#1DCE3D" : "black"} />
+                            </a>
+                        </div>
                     </Offcanvas.Body>
                 </Offcanvas>
-                <div>
-                    <a href="/vet" className="icon">
-                        <FaUserDoctor/>
-                    </a>
-                    <a href="/support" className="icon">
-                        <MdContactSupport/>
-                    </a>
-                    <a href="/shop" className="icon">
-                        <FaSearch/>
-                    </a>
-                    <a href="/cart" className="icon">
-                        <FaShoppingCart/>
-                    </a>
-                    <a href="/user" className="icon">
-                        <FaUser color={isLoggedIn ? "#1DCE3D" : "black"} />
-                    </a>
-                </div>
             </Container>
         </Navbar>
     );

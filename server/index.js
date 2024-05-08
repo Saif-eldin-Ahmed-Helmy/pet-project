@@ -13,7 +13,7 @@ const server = require("http").createServer(app);
 const wrap = (expressMiddleWare) => (socket, next) => expressMiddleWare(socket.request, {}, next);
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:3001', 'http://localhost:3000'],
+    origin: ['http://localhost:5173', 'https://pet-ssq2.onrender.com', 'http://localhost:3000'],
     credentials: true,
 };
 const io = new Server(server,{
