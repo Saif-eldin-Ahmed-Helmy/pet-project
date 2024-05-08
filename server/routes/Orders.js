@@ -121,19 +121,20 @@ router.post("/", async(req, res) => {
         }
 
         const deliveryFee = amount < 200 ? 20 : 0;
-        const grandTotal = Number(amount + deliveryFee + tip);
+        let grandTotal = Number(amount + deliveryFee + tip);
 
         let cashAmount = 0;
         if (paymentMethod === 'balance') {
-            const grandTotalWithBalance = Number(amount + deliveryFee + tip - Math.min(grandTotal, req.user.balance));
-            cashAmount = grandTotalWithBalance;
-            finalAmount = grandTotal;
-            req.user.balance -= grandTotalWithBalance;
+            const balanceToUse = Math.min(grandTotal, req.user.balance);
+            req.user.balance -= balanceToUse;
+            grandTotal -= balanceToUse;
+            cashAmount = grandTotal;
             console.log('Payment method is balance', cashAmount, finalAmount);
         }
         else {
             cashAmount = grandTotal;
         }
+        finalAmount = amount + deliveryFee + tip;
         console.log(cashAmount, finalAmount, grandTotal, amount, deliveryFee, tip);
 
         const newOrder = await Order.create({

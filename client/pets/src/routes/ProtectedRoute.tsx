@@ -8,15 +8,23 @@ interface ProtectedRouteProps {
     role?: string;
     navigateTo?: string;
     isAuth?: boolean;
+    redirect?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigateTo = '/user', isAuth = true }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigateTo = '/user', isAuth = true, redirect = true }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [user, setUser] = useState<any>(null);
     const [preferredLanguage, setPreferredLanguage] = useState<string>('en');
     const {t} = useTranslation();
+    const authContext = React.useContext(AuthContext);
 
     useEffect(() => {
+        if (authContext && authContext.user) {
+            setIsAuthenticated(authContext.user.isAuthenticated && (role != 'user' ? (authContext.user.role == 'admin' || authContext.user.role === role) : true));
+            setUser(authContext.user);
+            setPreferredLanguage(authContext.user.preferredLanguage);
+            return;
+        }
         const checkAuthentication = async () => {
             const response = await fetch('http://localhost:3001/api/users/session', {
                 credentials: 'include'
@@ -37,7 +45,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigate
         </div>
     }
     return(
-        (isAuth ? isAuthenticated : !isAuthenticated) ?
+        (isAuth ? isAuthenticated : !isAuthenticated) || !redirect ?
             <AuthContext.Provider value={{ user, setUser, preferredLanguage, setPreferredLanguage }}>
                 <Outlet/>
             </AuthContext.Provider>

@@ -33,6 +33,7 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route element={<ProtectedRoute redirect={false}/>}>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<HomePage />} />
                     <Route element={<ProtectedRoute navigateTo="/user" isAuth={false}/>}>
@@ -64,6 +65,7 @@ function App() {
                         <Route path="/support" element={<SupportChatPage/>} />
                     </Route>
                     <Route path="*" element={<NotFoundPage />} />
+                </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
