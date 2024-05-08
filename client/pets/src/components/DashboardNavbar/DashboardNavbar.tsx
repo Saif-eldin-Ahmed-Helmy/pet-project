@@ -1,4 +1,3 @@
-import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { FaChartLine, FaRegChartBar, FaBox, FaUsers, FaCreditCard } from 'react-icons/fa';

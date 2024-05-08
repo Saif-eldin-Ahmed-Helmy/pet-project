@@ -20,7 +20,6 @@ import ShoppingCartPage from "./pages/ShoppingCartPage.tsx";
 import FavoritesPage from "./pages/FavoritesPage.tsx";
 import './i18n';
 import DashboardPage from "./pages/admins/DashboardPage.tsx";
-import ChatPage from "./pages/ChatPage.tsx";
 import StatisticsPage from "./pages/admins/StatisticsPage.tsx";
 import DashboardItemsPage from "./pages/admins/DashboardItemsPage.tsx";
 import DashboardCustomersPage from "./pages/admins/DashboardCustomersPage.tsx";
