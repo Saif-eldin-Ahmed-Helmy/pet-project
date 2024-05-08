@@ -1,0 +1,155 @@
+.support-chat-container {
+    margin-top: 20px;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.support-chat-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.support-col-md-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+}
+
+.support-col-md-8 {
+    flex: 0 0 auto;
+    width: 66.66666667%;
+}
+
+.support-input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.support-input-group .form-control {
+    flex: 1;
+}
+
+.support-list-group {
+    margin-top: 20px;
+}
+
+.support-list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.support-time, .support-preview {
+    color: #7a7a7a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.support-list-group-item.active {
+    background-color: #ffb300 !important;
+    color: #fff;
+}
+
+.support-card {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.support-card-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f5;
+}
+
+.support-card-body {
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.support-card-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #ddd;
+    background-color: #f5f5f5;
+}
+
+.support-list-group-item.active .support-time, .support-list-group-item.active .support-preview {
+    color: #e3e3e3; /* Very slightly gray */
+}
+
+.support-input-group .form-control:focus {
+    box-shadow: 0 0 10px #ffb300;
+}
+
+.support-btn {
+    background-color: #ffb300 !important;
+}
+.support-btn.page-item.active .page-link {
+    background-color: #ffb300;
+    border-color: #ffb300;
+}
+
+.support-search-button {
+    background-color: #f5f5f5 !important;
+}
+.support-search-button:hover {
+    background-color: #919191 !important;
+}
+
+.support-pagination .page-item.active .page-link {
+    background-color: #ffb300;
+    border-color: #ffb300;
+}
+
+.support-chat-message.sent {
+    text-align: right;
+}
+
+.support-chat-message.received {
+    text-align: left;
+}
+
+.support-chat-input {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    margin-top: auto;
+}
+
+.support-chat-input > textarea {
+    width: 100%;
+    height: 60px;
+    resize: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.support-message-bubble {
+    padding: 5px; /* Reduced padding */
+    border-radius: 15px;
+    margin: 5px 0; /* Reduced margin */
+    display: inline-block; /* Added this line */
+    font-size: 0.8em; /* Reduced font size */
+}
+
+.support-message-bubble.received {
+    background-color: rgb(255, 179, 0);
+    color: #f5f5f5;
+}
+
+.support-message-bubble.sent {
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.support-chat-message {
+    margin: 5px 0; /* Reduced margin */
+}

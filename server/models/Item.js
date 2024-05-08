@@ -48,6 +48,7 @@ itemSchema.pre('save', function (next) {
     item.itemId = item.itemId
         .replace('+', '-')
         .replace(' ', '-')
+        .replace('\'', '-')
         .replace('/', '-');
     next();
 });

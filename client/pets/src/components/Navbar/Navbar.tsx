@@ -6,6 +6,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
+import {FaUserDoctor} from "react-icons/fa6";
+import {MdContactSupport} from "react-icons/md";
 
 interface NavItem {
     href: string;
@@ -84,6 +86,12 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown }) => {
                     </Offcanvas.Body>
                 </Offcanvas>
                 <div>
+                    <a href="/vet" className="icon">
+                        <FaUserDoctor/>
+                    </a>
+                    <a href="/support" className="icon">
+                        <MdContactSupport/>
+                    </a>
                     <a href="/shop" className="icon">
                         <FaSearch/>
                     </a>
