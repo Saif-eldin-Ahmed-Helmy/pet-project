@@ -53,12 +53,12 @@ router.post('/vet/send', async (req, res) => {
         id: id || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         sender: req.user.email,
         content: text,
-        log: [], // Assuming no log for the message
-        deleted: false, // Assuming the message is not deleted
+        log: [],
+        deleted: false,
         date: new Date().toISOString()
     };
     chat.messages.push(message);
-    chat.status = 'active'; // Set the status of the chat to 'active'
+    chat.status = 'active';
     try {
         await chat.save();
         for (const participant of chat.participants) {
@@ -79,7 +79,7 @@ router.post('/vet/handle', async (req, res) => {
         res.status(404).json({ error: 'Chat not found.' });
         return;
     }
-    chat.status = 'handled'; // Set the status of the chat to 'handled'
+    chat.status = 'handled';
     try {
         await chat.save();
         res.json(chat);
@@ -138,12 +138,12 @@ router.post('/support/send', async (req, res) => {
         id: id || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         sender: req.user.email,
         content: text,
-        log: [], // Assuming no log for the message
-        deleted: false, // Assuming the message is not deleted
+        log: [],
+        deleted: false,
         date: new Date().toISOString()
     };
     chat.messages.push(message);
-    chat.status = 'active'; // Set the status of the chat to 'active'
+    chat.status = 'active';
     try {
         await chat.save();
         for (const participant of chat.participants) {
@@ -164,7 +164,7 @@ router.post('/support/handle', async (req, res) => {
         res.status(404).json({ error: 'Chat not found.' });
         return;
     }
-    chat.status = 'handled'; // Set the status of the chat to 'handled'
+    chat.status = 'handled';
     try {
         await chat.save();
         res.json(chat);
