@@ -9,4 +9,6 @@ export interface Item {
     category: string;
     subCategory: string;
     deleted: boolean;
+    purchases: number;
+    value: number;
 }

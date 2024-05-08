@@ -3,10 +3,11 @@ import { Table, Container, Row, Col, Form, FormControl, InputGroup, DropdownButt
 import DashboardNavbar from '../../components/DashboardNavbar/DashboardNavbar';
 import { BsSearch } from "react-icons/bs";
 import './DashboardPaymentsPage.css';
-import {format} from "date-fns";
+import { format } from "date-fns";
+import { Payment } from "../../interfaces/payment.ts";
 
 const DashboardPaymentsPage: React.FC = () => {
-    const [payments, setPayments] = useState([]);
+    const [payments, setPayments] = useState<Payment[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
@@ -28,10 +29,10 @@ const DashboardPaymentsPage: React.FC = () => {
         setSearchTerm(event.target.value);
     };
 
-    let filteredPayments = payments;
+    let filteredPayments = payments || [];
 
     if (searchTerm) {
-        filteredPayments = payments.filter(payment => {
+        filteredPayments = payments.filter((payment: Payment) => {
             return [payment.email, payment.date, payment.paymentMethod].some(field =>
                 field.toLowerCase().includes(searchTerm.toLowerCase())
             );
@@ -64,7 +65,7 @@ const DashboardPaymentsPage: React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {filteredPayments.map((payment, index) => (
+                        {filteredPayments.map((payment: Payment, index) => (
                             <tr key={index}>
                                 <td>{payment.email}</td>
                                 <td>{format(new Date(payment.date), 'yyyy, MMMM do')}</td>

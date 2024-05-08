@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import {Form, Spinner} from 'react-bootstrap';
 import ButtonComponent from "../components/Button/Button.tsx";
 import { Location } from '../interfaces/location.ts';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const EditLocationPage: React.FC = () => {
     const { locationId } = useParams();
@@ -95,16 +94,6 @@ const EditLocationPage: React.FC = () => {
                 <Form.Control type="text" value={location.phoneNumber} onChange={e => setLocation({ ...location, phoneNumber: e.target.value })} isInvalid={!!formErrors.phoneNumber} />
                 <Form.Control.Feedback type="invalid">{formErrors.phoneNumber}</Form.Control.Feedback>
             </Form.Group>
-            <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
-                <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '400px' }}
-                    center={mapPosition}
-                    zoom={10}
-                    onClick={(e) => setMapPosition({  lat: e.latLng.lat(), lng: e.latLng.lng() })}
-                >
-                    <Marker position={mapPosition} />
-                </GoogleMap>
-            </LoadScript>
             <ButtonComponent variant="primary" type="submit">Update Location</ButtonComponent>
         </Form>
     );
