@@ -188,4 +188,15 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
+orderSchema.pre('save', function (next) {
+    this.items.map(item => {
+        item.itemId = item.itemId
+            .replace('+', '-')
+            .replace(' ', '-')
+            .replace('\'', '-')
+            .replace('/', '-');
+    });
+    next();
+});
+
 module.exports = Order;

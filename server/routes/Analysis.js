@@ -5,6 +5,10 @@ const moment = require('moment');
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 const { requireAdminRole } = require('../middlewares/auth');
+const Items = require("../models/Item");
+const {handleUnauthorized, handleServerError} = require("../handlers/error");
+const User = require("../models/User");
+const stringSimilarity = require("string-similarity");
 
 router.get('/dashboard', verifySession, attachUserDataToRequest, requireAdminRole, async (req, res) => {
     try {
@@ -152,6 +156,117 @@ router.get('/statistics', verifySession, attachUserDataToRequest, requireAdminRo
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.get('/items', verifySession, attachUserDataToRequest, requireAdminRole, async (req, res) => {
+    try {
+        const inStock = req.query.inStock === 'true';
+        const deleted = req.query.deleted === 'true';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+
+        if (deleted) {
+            if (!req.isAuthenticated() || !req.user) {
+                return handleUnauthorized(res);
+            }
+            const {role} = req.user;
+            if (role !== 'admin') {
+                return handleUnauthorized(res);
+            }
+        }
+
+        let query = {
+            deleted: deleted === false ? false : {$exists: true},
+            stock: inStock ? {$gt: 0} : {$gte: 0},
+        };
+
+        let items = await Items.find(query).skip((page - 1) * limit).limit(limit);
+        const itemStats = {};
+        const allOrders = await Order.find();
+
+        for (let order of allOrders) {
+            for (let orderItem of order.items) {
+                if (!itemStats[orderItem.itemId]) {
+                    itemStats[orderItem.itemId] = { purchases: 0, value: 0 };
+                }
+                itemStats[orderItem.itemId].purchases += orderItem.quantity;
+                itemStats[orderItem.itemId].value += orderItem.pricePerItem * orderItem.quantity;
+            }
+        }
+
+        items = items.map(item => {
+            item = item.toObject();
+            if (itemStats[item.itemId]) {
+                item.purchases = itemStats[item.itemId].purchases;
+                item.value = itemStats[item.itemId].value;
+            }
+            else {
+                item.purchases = 0;
+                item.value = 0;
+            }
+            return item;
+        });
+
+        const totalItems = await Items.countDocuments(query);
+        const maxPages = Math.ceil(totalItems / limit);
+
+        res.json({items: items, maxPages: maxPages});
+    }
+    catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
+router.get('/customers', verifySession, attachUserDataToRequest, requireAdminRole, async (req, res) => {
+    try {
+        const { page = 1, limit = 12 } = req.query;
+        const users = await User.find({}).skip((page - 1) * limit).limit(limit).populate('orders');
+        const customers = users.map(user => {
+            const ordersCount = user.orders.length;
+            const ordersValue = user.orders.reduce((total, order) => total + order.finalAmount, 0); // Added initial value 0
+            return {
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                balance: user.balance,
+                ordersCount: ordersCount,
+                ordersValue: ordersValue
+            };
+        });
+
+        const totalUsers = await User.countDocuments({});
+        const maxPages = Math.ceil(totalUsers / limit);
+
+        res.json({ customers, maxPages });
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
+    }
+});
+
+router.get('/payments', verifySession, attachUserDataToRequest, requireAdminRole, async (req, res) => {
+    try {
+        const { page = 1, limit = 12 } = req.query;
+        const allOrders = await Order.find().populate('userEmail');
+        const payments = allOrders.map(order => {
+            const paymentMethod = order.paymentMethod === 'balance' && order.cashAmount === 0 ? 'Balance' : order.paymentMethod === 'balance' && order.cashAmount !== 0 ? 'Cash + Balance' : 'Cash';
+            return {
+                email: order.userEmail,
+                date: order.date,
+                amount: order.finalAmount,
+                paymentMethod: paymentMethod
+            };
+        });
+
+        const maxPages = Math.ceil(payments.length / limit);
+        const paginatedPayments = payments.slice((page - 1) * limit, page * limit);
+
+        res.json({ payments: paginatedPayments, maxPages: maxPages });
+    } catch (error) {
+        console.error(error);
+        handleServerError(res);
     }
 });
 
