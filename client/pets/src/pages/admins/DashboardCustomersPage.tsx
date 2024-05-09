@@ -16,7 +16,7 @@ const DashboardCustomersPage: React.FC = () => {
     }, [page]);
 
     const fetchCustomers = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/analysis/customers?page=${page}`, {
+        const response = await fetch(`http://localhost:3001/api/analysis/customers?page=${page}`, {
             credentials: 'include'
         });
         const data: { customers: Customer[], maxPages: number } = await response.json();

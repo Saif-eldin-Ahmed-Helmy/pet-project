@@ -49,7 +49,7 @@ const UserPage: React.FC = () => {
     }, []);
 
     const fetchBalance = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/users/balance', {
+        const response = await fetch('http://localhost:3001/api/users/balance', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -57,7 +57,7 @@ const UserPage: React.FC = () => {
     };
 
     const handleLogout = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/users/logout', {
+        const response = await fetch('http://localhost:3001/api/users/logout', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -78,7 +78,7 @@ const UserPage: React.FC = () => {
             position: toast.POSITION.BOTTOM_RIGHT,
             autoClose: 2000
         });
-        const result = await fetch('https://pet-ssq2.onrender.com/api/users/language', {
+        const result = await fetch('http://localhost:3001/api/users/language', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

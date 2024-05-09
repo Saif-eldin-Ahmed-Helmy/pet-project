@@ -11,7 +11,7 @@ const AccountSettingsPage: React.FC = () => {
     }, []);
 
     const fetchLocations = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/users/locations', {
+        const response = await fetch('http://localhost:3001/api/users/locations', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -26,7 +26,7 @@ const AccountSettingsPage: React.FC = () => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const newLocation = Object.fromEntries(formData.entries());
-        const response = await fetch('https://pet-ssq2.onrender.com/api/users/locations', {
+        const response = await fetch('http://localhost:3001/api/users/locations', {
             method: 'POST',
             body: JSON.stringify(newLocation),
             headers: { 'Content-Type': 'application/json' },

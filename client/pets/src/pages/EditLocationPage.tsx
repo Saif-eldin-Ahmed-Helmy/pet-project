@@ -15,7 +15,7 @@ const EditLocationPage: React.FC = () => {
     }, [locationId]);
 
     const fetchLocation = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/users/locations?locationId=${locationId}`, {
+        const response = await fetch(`http://localhost:3001/api/users/locations?locationId=${locationId}`, {
             credentials: 'include'
         });
         const data = await response.json();
@@ -32,7 +32,7 @@ const EditLocationPage: React.FC = () => {
         if (location) {
             location.oldLocationId = locationId || location.locationId;
             setFormErrors({});
-            const response = await fetch(`https://pet-ssq2.onrender.com/api/users/locations`, {
+            const response = await fetch(`http://localhost:3001/api/users/locations`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },

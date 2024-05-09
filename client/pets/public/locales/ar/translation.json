@@ -103,5 +103,7 @@
   "deliveryFee": "رسوم التوصيل",
   "egp": "EGP",
   "admin": "قائمة الإدارة",
-  "dashboard": "لوحة التحكم"
+  "dashboard": "لوحة التحكم",
+  "package": "تعبئة",
+  "deliver": "توصيل"
 }

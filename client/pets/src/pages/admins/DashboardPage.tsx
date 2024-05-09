@@ -43,7 +43,7 @@ const DashboardPage = () => {
     });
 
     useEffect(() => {
-        fetch('https://pet-ssq2.onrender.com/api/analysis/dashboard', {
+        fetch('http://localhost:3001/api/analysis/dashboard', {
             credentials: 'include'
         })
             .then(response => response.json())

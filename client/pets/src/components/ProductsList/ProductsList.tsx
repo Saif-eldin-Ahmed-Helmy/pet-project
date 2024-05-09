@@ -19,7 +19,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true,
 
     useEffect(() => {
         const checkAuthentication = async () => {
-            const response = await fetch('https://pet-ssq2.onrender.com/api/users/session', {
+            const response = await fetch('http://localhost:3001/api/users/session', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -30,7 +30,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true,
     }, []);
 
     useEffect(() => {
-        fetch('https://pet-ssq2.onrender.com/api/users/favorites', {
+        fetch('http://localhost:3001/api/users/favorites', {
             credentials: 'include',
         })
             .then(response => response.json())
@@ -61,7 +61,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, enableBuy = true,
             }
         });
 
-        fetch('https://pet-ssq2.onrender.com/api/users/favorites', {
+        fetch('http://localhost:3001/api/users/favorites', {
             credentials: 'include',
             method: 'POST',
             headers: {
