@@ -77,7 +77,7 @@ const chat = new mongoose.Schema({
     messages: [message],
     type: {
         type: String,
-        enum: ['support', 'vet', 'ai']
+        enum: ['support', 'vet']
     },
     date: {
         type: String,

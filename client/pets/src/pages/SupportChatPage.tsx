@@ -211,11 +211,18 @@ function SupportChatPage() {
                         <Card.Header className="support-card-header">To: {(role !== 'support' && role !== 'admin') ? 'Support' : activeChat?.participants[0]}</Card.Header>
                         <Card.Body className="support-card-body chat active-chat" data-chat={activeChat?.sessionId}>
                             {activeChat?.messages.map(message => (
-                                <div key={message.id} className={`support-chat-message ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
-                                    <div className={`support-message-bubble ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
-                                        {message.sender === activeChat?.participants[0] && ((role === 'support' || role === 'admin') ? <FaUser size={30} /> : <FaHeadphones size={30} />)}
+                                <div key={message.id} className={`support-chat-message ${(message.sender === authContext?.user?.email) ? 'sent' : 'received'}`}>
+                                    <div
+                                        className={`support-message-bubble ${(message.sender === authContext?.user?.email) ? 'sent' : 'received'}`}>
+                                        {message.sender === activeChat?.participants[0] ? <FaUser size={30} /> : <FaHeadphones size={30} />}
                                         <p>{message.content}</p>
-                                        <span>{new Date(message.date).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                                        <span>{new Date(message.date).toLocaleString('en-US', {
+                                            month: 'short',
+                                            day: '2-digit',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}</span>
                                     </div>
                                 </div>
                             ))}

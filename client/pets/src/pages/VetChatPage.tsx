@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { Container, Row, Col, InputGroup, FormControl, Button, ListGroup, Card, Pagination, Form } from 'react-bootstrap';
-import { FaUser } from 'react-icons/fa';
+import {FaRobot, FaUser} from 'react-icons/fa';
 import './VetChatPage.css';
 import { AuthContext } from "../context/AuthContext.tsx";
 import { io, Socket } from "socket.io-client";
@@ -127,7 +127,8 @@ function VetChatPage() {
             id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             sender: authContext?.user?.email || '',
             content: newMessage,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            isAI: false
         };
         setActiveChat(prevChat => ({ ...prevChat!, messages: [...prevChat!.messages, optimisticMessage] }));
         setNewMessage('');
@@ -187,7 +188,7 @@ function VetChatPage() {
                                                 minute: 'numeric',
                                                 hour12: true
                                             })}</span>
-                                            <div className="preview">{chat.messages[chat.messages.length - 1]?.content}</div>
+                                            <div className="preview">{chat.messages[chat.messages.length - 1]?.content.substring(0, 100)}</div>
                                         </div>
                                     </ListGroup.Item>
                                 ))}
@@ -212,11 +213,18 @@ function VetChatPage() {
                         <Card.Header className="vet-card-header">To: {(role !== 'doctor' && role !== 'admin') ? 'Vet' : activeChat?.participants[0]}</Card.Header>
                         <Card.Body className="vet-card-body chat active-chat" data-chat={activeChat?.sessionId}>
                             {activeChat?.messages.map(message => (
-                                <div key={message.id} className={`vet-chat-message ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
-                                    <div className={`vet-message-bubble ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
-                                        {message.sender === activeChat?.participants[0] && (role === 'doctor' || role === 'admin') ? <FaUser size={30} /> : <FaUserDoctor size={30} />}
+                                <div key={message.id} className={`vet-chat-message ${(message.sender === authContext?.user?.email) ? 'sent' : 'received'}`}>
+                                    <div
+                                        className={`vet-message-bubble ${(message.sender === authContext?.user?.email) ? 'sent' : 'received'}`}>
+                                        {message.sender === activeChat?.participants[0] ? <FaUser size={30} /> : (message.isAI ? <FaRobot size={30}  /> : <FaUserDoctor size={30}  />)}
                                         <p>{message.content}</p>
-                                        <span>{new Date(message.date).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                                        <span>{new Date(message.date).toLocaleString('en-US', {
+                                            month: 'short',
+                                            day: '2-digit',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}</span>
                                     </div>
                                 </div>
                             ))}

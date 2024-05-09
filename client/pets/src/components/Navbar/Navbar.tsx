@@ -36,7 +36,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ brand, links, dropdown, isLogg
     return (
         <Navbar fixed="top" expand="lg" className="bg-body-tertiary">
             <Container>
-                {brand.logo && <img className="logo" src={brand.logo} alt={brand.label}/>}
+                {brand.logo && <img className="logo" src={brand.logo} alt={brand.label} onClick={() => window.location.href='/'}/>}
                 <Navbar.Brand href={brand.href}>{brand.label}</Navbar.Brand>
                 <Navbar.Toggle onClick={() => setShow(true)} aria-controls="offcanvasNavbar" className="d-lg-none"/>
                 <Navbar.Collapse id="responsive-navbar-nav" className="d-none d-lg-block">
