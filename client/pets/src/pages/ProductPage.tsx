@@ -38,19 +38,19 @@ const ProductPage: React.FC = () => {
     }, [quantity]);
 
     const fetchItem = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/items?itemId=${itemId}`);
+        const response = await fetch(`http://localhost:3001/api/items?itemId=${itemId}`);
         const data = await response.json();
         setItem(data.items[0]);
     };
 
     const fetchSimilarProducts = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/items?similarTo=${itemId}&limit=4`);
+        const response = await fetch(`http://localhost:3001/api/items?similarTo=${itemId}&limit=4`);
         const data = await response.json();
         setSimilarProducts(data.items);
     };
 
     const fetchCartItems = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/cart', {
+        const response = await fetch('http://localhost:3001/api/cart', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -66,7 +66,7 @@ const ProductPage: React.FC = () => {
     const handleBuy = async () => {
         setCartItems([...(cartItems || []), {itemId, quantity}]);
 
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
+        const response = await fetch(`http://localhost:3001/api/cart`, {
             credentials: 'include',
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -85,7 +85,7 @@ const ProductPage: React.FC = () => {
         if (quantity <= 0) {
             await handleRemoveFromBasket();
         } else {
-            const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
+            const response = await fetch(`http://localhost:3001/api/cart`, {
                 credentials: 'include',
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
@@ -105,7 +105,7 @@ const ProductPage: React.FC = () => {
             autoClose: 2000
         });
 
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
+        const response = await fetch(`http://localhost:3001/api/cart`, {
             credentials: 'include',
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},

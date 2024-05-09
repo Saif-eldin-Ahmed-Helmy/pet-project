@@ -30,6 +30,12 @@ const Layout: React.FC = () => {
                     ...(user?.role === 'admin' ? [
                         {href: "/admin/items", label: t("admin")},
                         {href: "/dashboard", label: t("dashboard")}
+                    ] : []),
+                    ...(user?.role === 'packager' || user?.role === 'admin' ? [
+                        {href: "/package", label: t("package")},
+                    ] : []),
+                    ...(user?.role === 'driver' || user?.role === 'admin' ? [
+                        {href: "/deliver", label: t("deliver")},
                     ] : [])
                 ]}
                 dropdown={[

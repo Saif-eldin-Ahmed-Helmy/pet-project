@@ -44,7 +44,7 @@ const ShoppingCartPage: React.FC = () => {
     }, [cartItems]);
 
     useEffect(() => {
-        fetch('https://pet-ssq2.onrender.com/api/cart', {
+        fetch('http://localhost:3001/api/cart', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -54,7 +54,7 @@ const ShoppingCartPage: React.FC = () => {
                 setSubTotal(subtotal);
             });
 
-        fetch('https://pet-ssq2.onrender.com/api/users/locations', {
+        fetch('http://localhost:3001/api/users/locations', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -69,7 +69,7 @@ const ShoppingCartPage: React.FC = () => {
     }, [promoCode]);
 
     useEffect(() => {
-        fetch('https://pet-ssq2.onrender.com/api/users/balance', {
+        fetch('http://localhost:3001/api/users/balance', {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -84,7 +84,7 @@ const ShoppingCartPage: React.FC = () => {
     }
 
     const handleQuantityChange = async (itemId: string, quantity: number) => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
+        const response = await fetch(`http://localhost:3001/api/cart`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({itemId, quantity}),
@@ -97,7 +97,7 @@ const ShoppingCartPage: React.FC = () => {
     };
 
     const handleRemoveItem = async (itemId: string) => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/cart`, {
+        const response = await fetch(`http://localhost:3001/api/cart`, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({itemId, removeFromBasket: true}),
@@ -124,7 +124,7 @@ const ShoppingCartPage: React.FC = () => {
             return;
         }
         setLoading(true);
-        await fetch(`https://pet-ssq2.onrender.com/api/orders`, {
+        await fetch(`http://localhost:3001/api/orders`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -201,13 +201,15 @@ const ShoppingCartPage: React.FC = () => {
                                 <ImageComponent src={item.picture} alt={item.itemId} className="cart-item-image"/>
                                 <p>{item.name}</p>
                             </td>
-                            <td>
+                            <td style={{wordBreak: 'normal'}}>
                                 <Form.Control type="number" value={item.quantity}
                                               onChange={e => handleQuantityChange(item.itemId, Number(e.target.value))}/>
                             </td>
-                            <td>{item.quantity * item.pricePerItem} {t('egp')}</td>
-                            <td>
-                                <Button variant="danger" onClick={() => handleRemoveItem(item.itemId)}>{t('remove')}</Button>
+                            <td style={{wordBreak: 'normal'}}>
+                                {item.quantity * item.pricePerItem} {t('egp')}</td>
+                            <td style={{wordBreak: 'normal'}}>
+                                <Button variant="danger"
+                                        onClick={() => handleRemoveItem(item.itemId)}>{t('remove')}</Button>
                             </td>
                         </tr>
                     ))}

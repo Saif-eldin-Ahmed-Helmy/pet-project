@@ -29,7 +29,7 @@ const AdminItemsPage: React.FC = () => {
     }, [showOutOfStock, minPrice, maxPrice, categoryState, subCategoryState]);
 
     const fetchProducts = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/items?deleted=true&priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&category=${categoryState}&subCategory=${subCategoryState}`, {
+        const response = await fetch(`http://localhost:3001/api/items?deleted=true&priceMin=${minPrice}${!showOutOfStock ? "&inStock=true" : ""}&priceMax=${maxPrice <= 0 ? 1000000 : maxPrice}&category=${categoryState}&subCategory=${subCategoryState}`, {
             credentials: 'include'
         });
         const data = await response.json();

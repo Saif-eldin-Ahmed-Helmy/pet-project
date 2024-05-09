@@ -24,7 +24,7 @@ const OrdersPage: React.FC = () => {
     }, []);
 
     const fetchOrders = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/orders', {
+        const response = await fetch('http://localhost:3001/api/orders', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -38,7 +38,7 @@ const OrdersPage: React.FC = () => {
 
     const handleReorder = async (order: Order) => {
         try {
-            const response = await fetch(`https://pet-ssq2.onrender.com/api/orders/reorder`, {
+            const response = await fetch(`http://localhost:3001/api/orders/reorder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: order.orderId }),
@@ -68,13 +68,13 @@ const OrdersPage: React.FC = () => {
         setShowReportModal(false);
     };
 
-    const handleTrackOrder = (orderId: number) => {
+    const handleTrackOrder = (orderId: string) => {
         navigate(`/user/orders/track/${orderId}`);
     };
 
     const handleRateOrder = async () => {
         if (selectedOrder) {
-            const response = await fetch(`https://pet-ssq2.onrender.com/api/orders/rate`, {
+            const response = await fetch(`http://localhost:3001/api/orders/rate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: selectedOrder.orderId, rating }),
@@ -92,7 +92,7 @@ const OrdersPage: React.FC = () => {
 
     const handleReportProblem = async () => {
         if (selectedOrder) {
-            const response = await fetch(`https://pet-ssq2.onrender.com/api/orders/report`, {
+            const response = await fetch(`http://localhost:3001/api/orders/report`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderId: selectedOrder.orderId, problem }),

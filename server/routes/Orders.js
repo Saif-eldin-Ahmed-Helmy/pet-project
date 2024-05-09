@@ -38,7 +38,8 @@ router.get("/", async (req, res) => {
             .limit(Number(limit));
 
         let filteredOrders = orders.filter(order => {
-            return (!traceType || order.trace.some(trace => trace.type === traceType)) &&
+            const lastTrace = order.trace[order.trace.length - 1];
+            return (!traceType || lastTrace.type === traceType) &&
                 (!itemId || order.items.some(item => item.itemId === itemId)) &&
                 (!itemCategory || order.items.some(item => item.category === itemCategory)) &&
                 (!couponCode || order.couponCodes.some(coupon => coupon.code === couponCode)) &&
@@ -57,6 +58,7 @@ router.get("/", async (req, res) => {
                 rating: order.rating,
                 items: order.items,
                 trace: order.trace,
+                location: order.location,
             };
         });
 
@@ -198,17 +200,19 @@ router.put("/", async(req, res) => {
         const {orderId, traceType, rating, comment, userRating, userComment, driverRating, driverComment} = req.body;
         const executor = req.email;
 
-        const order = await Order.findOne({orderId});
+        const order = await Order.findOne({orderId: orderId});
         if (!order) return handleBadRequest(res, `no order with this id, ${orderId}`);
 
         if (traceType) {
-            if (traceType === 'packed' && (req.role === 'packager' || req.role === 'admin')) {
+            if ((traceType === 'prepared' && (req.role === 'packager' || req.role === 'admin'))
+                || ((traceType === 'delivering' || traceType === 'delivered') && (req.role === 'driver' || req.role === 'admin'))) {
                 order.trace.push({
                     type: traceType,
                     date: new Date().toISOString(),
                     executor: executor,
                     active: true
                 })
+                console.log(order.trace);
             }
         } else if (rating || comment || userRating || userComment) {
             if ((order.trace.find(trace => trace.active === true).type === 'delivered')

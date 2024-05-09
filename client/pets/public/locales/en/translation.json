@@ -106,5 +106,7 @@
   "orderAbove200": "Order above 200, enjoy free delivery!",
   "deliveryFee": "Delivery Fee",
   "admin": "ADMIN",
-  "dashboard": "DASHBOARD"
+  "dashboard": "DASHBOARD",
+  "package": "PACKAGE",
+  "deliver": "DELIVERY"
 }
