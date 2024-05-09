@@ -1,10 +1,9 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { Container, Row, Col, InputGroup, FormControl, Button, ListGroup, Card, Pagination, Form } from 'react-bootstrap';
-import { FaUser } from 'react-icons/fa';
+import {FaHeadphones, FaUser} from 'react-icons/fa';
 import './SupportChatPage.css';
 import { AuthContext } from "../context/AuthContext.tsx";
 import { io, Socket } from "socket.io-client";
-import { FaUserDoctor } from "react-icons/fa6";
 import { Chat } from "../interfaces/chat.ts";
 import { Message } from "../interfaces/message.ts";
 
@@ -35,7 +34,7 @@ function SupportChatPage() {
     };
 
     useEffect(() => {
-        socket.current = io('https://pet-ssq2.onrender.com', { withCredentials: true });
+        socket.current = io('http://localhost:3001', { withCredentials: true });
 
         const onConnect = () => {
             console.log("connected");
@@ -91,7 +90,7 @@ function SupportChatPage() {
     }, [role, currentPage]);
 
     function fetchChats() {
-        fetch(`https://pet-ssq2.onrender.com/api/chats/support?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
+        fetch(`http://localhost:3001/api/chats/support?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -100,7 +99,7 @@ function SupportChatPage() {
                     setChats([]);
                     setActiveChat(null);
                 } else {
-                    if (role === 'doctor' || role === 'admin') {
+                    if (role === 'support' || role === 'admin') {
                         setChats(data.chats);
                         setMaxPage(data.maxPages);
                         if (data.chats.length > 0) {
@@ -131,7 +130,7 @@ function SupportChatPage() {
         };
         setActiveChat(prevChat => ({ ...prevChat!, messages: [...prevChat!.messages, optimisticMessage] }));
         setNewMessage('');
-        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/support/send', {
+        const response = await fetch('http://localhost:3001/api/chats/support/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -145,7 +144,7 @@ function SupportChatPage() {
     };
 
     const handleMarkAsHandled = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/support/handle', {
+        const response = await fetch('http://localhost:3001/api/chats/support/handle', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -162,7 +161,7 @@ function SupportChatPage() {
     return (
         <Container className="support-chat-container">
             <Row className="support-chat-row">
-                {role === 'doctor' || role === 'admin' ? (
+                {role === 'support' || role === 'admin' ? (
                     <Col md={4}>
                         <InputGroup className="support-input-group mb-3">
                             <FormControl placeholder="Search" value={searchEmail} onChange={handleSearchEmailChange} />
@@ -202,19 +201,19 @@ function SupportChatPage() {
                                 </Pagination.Item>
                             ))}
                         </Pagination>
-                        {role === 'doctor' || role === 'admin' && activeChat && (
+                        {(role === 'support' || role === 'admin') && activeChat && (
                             <Button className="support-chat-button" hidden={status === 'handled'} onClick={handleMarkAsHandled}>Mark as Handled</Button>
                         )}
                     </Col>
                 ) : null}
-                <Col md={role === 'doctor' || role === 'admin' ? 8 : 12}>
+                <Col md={role === 'support' || role === 'admin' ? 8 : 12}>
                     <Card className="support-card" style={{ height: '70vh' }}>
-                        <Card.Header className="support-card-header">To: {role === 'user' ? 'Support' : activeChat?.participants[0]}</Card.Header>
+                        <Card.Header className="support-card-header">To: {(role !== 'support' && role !== 'admin') ? 'Support' : activeChat?.participants[0]}</Card.Header>
                         <Card.Body className="support-card-body chat active-chat" data-chat={activeChat?.sessionId}>
                             {activeChat?.messages.map(message => (
-                                <div key={message.id} className={`support-chat-message ${message.sender === (authContext?.user?.email || '') ? 'sent' : 'received'}`}>
-                                    <div className={`support-message-bubble ${message.sender === (authContext?.user?.email || '') ? 'sent' : 'received'}`}>
-                                        {message.sender !== (authContext?.user?.email || '') && ((role === 'doctor' || role === 'admin') ? <FaUser size={30} /> : <FaUserDoctor size={30} />)}
+                                <div key={message.id} className={`support-chat-message ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
+                                    <div className={`support-message-bubble ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
+                                        {message.sender === activeChat?.participants[0] && ((role === 'support' || role === 'admin') ? <FaUser size={30} /> : <FaHeadphones size={30} />)}
                                         <p>{message.content}</p>
                                         <span>{new Date(message.date).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                     </div>

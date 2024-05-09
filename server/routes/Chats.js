@@ -25,7 +25,7 @@ router.get('/vet', async (req, res) => {
         const chats = await Chat.find(query).skip(skip).limit(chatsPerPage);
         const totalChats = await Chat.countDocuments(query);
         res.json({ chats, maxPages: Math.ceil(totalChats / chatsPerPage) });
-    } else if (role === 'user') {
+    } else {
         let userChat = await Chat.findOne({ participants: req.user.email, type: 'vet' });
         if (!userChat) {
             userChat = await Chat.create({
@@ -37,8 +37,6 @@ router.get('/vet', async (req, res) => {
             });
         }
         res.json(userChat);
-    } else {
-        res.status(403).json({ error: 'Unauthorized' });
     }
 });
 
@@ -105,11 +103,11 @@ router.get('/support', async (req, res) => {
         query.participants = { $in: [email] };
     }
 
-    if (role === 'doctor' || role === 'admin') {
+    if (role === 'support' || role === 'admin') {
         const chats = await Chat.find(query).skip(skip).limit(chatsPerPage);
         const totalChats = await Chat.countDocuments(query);
         res.json({ chats, maxPages: Math.ceil(totalChats / chatsPerPage) });
-    } else if (role === 'user') {
+    } else {
         let userChat = await Chat.findOne({ participants: req.user.email, type: 'support' });
         if (!userChat) {
             userChat = await Chat.create({
@@ -122,8 +120,6 @@ router.get('/support', async (req, res) => {
         }
         console.log(userChat);
         res.json(userChat);
-    } else {
-        res.status(403).json({ error: 'Unauthorized' });
     }
 });
 

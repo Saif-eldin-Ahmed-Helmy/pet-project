@@ -15,7 +15,7 @@ const AddLocationPage: React.FC = () => {
         e.preventDefault();
 
         setFormErrors({});
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/users/locations`, {
+        const response = await fetch(`http://localhost:3001/api/users/locations`, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },

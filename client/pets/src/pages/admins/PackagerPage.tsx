@@ -16,7 +16,7 @@ const PackagerPage: React.FC = () => {
     }, [currentPage]);
 
     const fetchOrders = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/orders?traceType=placed&page=${currentPage}&limit=${ordersPerPage}`, {
+        const response = await fetch(`http://localhost:3001/api/orders?traceType=placed&page=${currentPage}&limit=${ordersPerPage}`, {
             credentials: 'include',
         });
         const data = await response.json();
@@ -24,13 +24,13 @@ const PackagerPage: React.FC = () => {
     };
 
     const handleMarkAsPrepared = async (orderId: string) => {
-        await fetch(`https://pet-ssq2.onrender.com/api/orders/${orderId}`, {
+        await fetch(`http://localhost:3001/api/orders/`, {
             credentials: 'include',
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ status: 'prepared' }),
+            body: JSON.stringify({ orderId: orderId, traceType: 'prepared' }),
         });
 
         setOrders(orders.filter(order => order.orderId !== orderId));

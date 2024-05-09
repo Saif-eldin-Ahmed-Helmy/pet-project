@@ -19,7 +19,7 @@ const DashboardItemsPage: React.FC = () => {
     }, [showDeleted, page]);
 
     const fetchItems = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/analysis/items?deleted=${showDeleted}&page=${page}`, {
+        const response = await fetch(`http://localhost:3001/api/analysis/items?deleted=${showDeleted}&page=${page}`, {
             credentials: 'include'
         });
         const data = await response.json();

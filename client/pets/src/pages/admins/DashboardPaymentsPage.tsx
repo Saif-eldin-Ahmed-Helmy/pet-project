@@ -17,7 +17,7 @@ const DashboardPaymentsPage: React.FC = () => {
     }, [page]);
 
     const fetchPayments = async () => {
-        const response = await fetch(`https://pet-ssq2.onrender.com/api/analysis/payments?page=${page}`, {
+        const response = await fetch(`http://localhost:3001/api/analysis/payments?page=${page}`, {
             credentials: 'include'
         });
         const data = await response.json();

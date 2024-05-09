@@ -52,7 +52,7 @@ const StatisticsPage = () => {
     const [toDate, setToDate] = useState(new Date());
 
     const handleGenerateClick = () => {
-        fetch(`https://pet-ssq2.onrender.com/api/analysis/statistics?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
+        fetch(`http://localhost:3001/api/analysis/statistics?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`, {
             credentials: 'include'
         })
             .then(response => response.json())

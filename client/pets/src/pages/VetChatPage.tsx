@@ -35,7 +35,7 @@ function VetChatPage() {
     };
 
     useEffect(() => {
-        socket.current = io('https://pet-ssq2.onrender.com', { withCredentials: true });
+        socket.current = io('http://localhost:3001', { withCredentials: true });
 
         const onConnect = () => {
             console.log("connected");
@@ -91,7 +91,7 @@ function VetChatPage() {
     }, [role, currentPage]);
 
     function fetchChats() {
-        fetch(`https://pet-ssq2.onrender.com/api/chats/vet?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
+        fetch(`http://localhost:3001/api/chats/vet?page=${currentPage}&chatsPerPage=${chatsPerPage}&email=${searchEmail}&status=${status}`, {
             credentials: 'include'
         })
             .then(response => response.json())
@@ -131,7 +131,7 @@ function VetChatPage() {
         };
         setActiveChat(prevChat => ({ ...prevChat!, messages: [...prevChat!.messages, optimisticMessage] }));
         setNewMessage('');
-        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/vet/send', {
+        const response = await fetch('http://localhost:3001/api/chats/vet/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ function VetChatPage() {
     };
 
     const handleMarkAsHandled = async () => {
-        const response = await fetch('https://pet-ssq2.onrender.com/api/chats/vet/handle', {
+        const response = await fetch('http://localhost:3001/api/chats/vet/handle', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -162,7 +162,7 @@ function VetChatPage() {
     return (
         <Container className="vet-chat-container">
             <Row className="vet-chat-row">
-                {role === 'doctor' || role === 'admin' ? (
+                {(role === 'doctor' || role === 'admin') ? (
                     <Col md={4}>
                         <InputGroup className="vet-input-group mb-3">
                             <FormControl placeholder="Search" value={searchEmail} onChange={handleSearchEmailChange} />
@@ -202,19 +202,19 @@ function VetChatPage() {
                                 </Pagination.Item>
                             ))}
                         </Pagination>
-                        {role === 'doctor' || role === 'admin' && activeChat && (
+                        {(role === 'doctor' || role === 'admin') && activeChat && (
                             <Button hidden={status === 'handled'} onClick={handleMarkAsHandled}>Mark as Handled</Button>
                         )}
                     </Col>
                 ) : null}
-                <Col md={role === 'doctor' || role === 'admin' ? 8 : 12}>
+                <Col md={(role === 'doctor' || role === 'admin') ? 8 : 12}>
                     <Card className="vet-card" style={{ height: '70vh' }}>
-                        <Card.Header className="vet-card-header">To: {role === 'user' ? 'Vet' : activeChat?.participants[0]}</Card.Header>
+                        <Card.Header className="vet-card-header">To: {(role !== 'doctor' && role !== 'admin') ? 'Vet' : activeChat?.participants[0]}</Card.Header>
                         <Card.Body className="vet-card-body chat active-chat" data-chat={activeChat?.sessionId}>
                             {activeChat?.messages.map(message => (
-                                <div key={message.id} className={`vet-chat-message ${message.sender === (authContext?.user?.email || '') ? 'sent' : 'received'}`}>
-                                    <div className={`vet-message-bubble ${message.sender === (authContext?.user?.email || '') ? 'sent' : 'received'}`}>
-                                        {message.sender !== (authContext?.user?.email || '') && ((role === 'doctor' || role === 'admin') ? <FaUser size={30} /> : <FaUserDoctor size={30} />)}
+                                <div key={message.id} className={`vet-chat-message ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
+                                    <div className={`vet-message-bubble ${message.sender !== activeChat?.participants[0] ? 'sent' : 'received'}`}>
+                                        {message.sender === activeChat?.participants[0] && (role === 'doctor' || role === 'admin') ? <FaUser size={30} /> : <FaUserDoctor size={30} />}
                                         <p>{message.content}</p>
                                         <span>{new Date(message.date).toLocaleString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                     </div>

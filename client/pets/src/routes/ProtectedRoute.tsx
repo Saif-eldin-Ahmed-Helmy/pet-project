@@ -26,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ role = 'user', navigate
             return;
         }
         const checkAuthentication = async () => {
-            const response = await fetch('https://pet-ssq2.onrender.com/api/users/session', {
+            const response = await fetch('http://localhost:3001/api/users/session', {
                 credentials: 'include'
             });
             const data = await response.json();

@@ -13,7 +13,7 @@ const server = require("http").createServer(app);
 const wrap = (expressMiddleWare) => (socket, next) => expressMiddleWare(socket.request, {}, next);
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://pet-ssq2.onrender.com', 'http://localhost:3000'],
+    origin: ['http://localhost:5173', 'http://localhost:3001', 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
 };
 const io = new Server(server,{
@@ -61,13 +61,6 @@ io.on('connection', async (socket) => {
     if (socket.request.session.role === 'admin' || socket.request.session.role === 'support') {
         socket.join('support'); //Join a room for support
     }
-
-    socket.on('send-notification', (data) => {
-            console.log('Socket message: ' + data.SendToId + ' ' + data.message);
-            io.to(data.SendToId).emit("new-notification", data);
-        }
-    );
-
 
     socket.on('disconnect', () => {
         console.log('a user disconnected', socket.request.session.passport.user);
