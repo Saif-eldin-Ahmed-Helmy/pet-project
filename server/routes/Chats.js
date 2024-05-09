@@ -4,6 +4,7 @@ const Chat = require("../models/Chat");
 const User = require("../models/User");
 const { verifySession } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
+const { handleMessage } = require("../handlers/gemini");
 
 router.use(verifySession);
 router.use((req, res, next) => attachUserDataToRequest(req, res, next, ['chats']));
@@ -40,13 +41,16 @@ router.get('/vet', async (req, res) => {
     }
 });
 
+const queue = [];
 router.post('/vet/send', async (req, res) => {
-    const { id, text, sessionId } = req.body;
-    const chat = await Chat.findOne({ sessionId });
+    const role = req.user.role;
+    const {id, text, sessionId} = req.body;
+    const chat = await Chat.findOne({sessionId});
     if (!chat) {
-        res.status(404).json({ error: 'Chat not found.' });
+        res.status(404).json({error: 'Chat not found.'});
         return;
     }
+
     const message = {
         id: id || Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
         sender: req.user.email,
@@ -58,15 +62,47 @@ router.post('/vet/send', async (req, res) => {
     chat.messages.push(message);
     chat.status = 'active';
     try {
-        await chat.save();
         for (const participant of chat.participants) {
-            global.io.to(participant).emit('new-message', { sessionId, message });
+            global.io.to(participant).emit('new-message', {sessionId, message});
         }
-        global.io.to('vet').emit('new-message', { sessionId, message });
+        global.io.to('vet').emit('new-message', {sessionId, message});
+
+        if (role === 'user') {
+            let response = await handleMessage(sessionId, text);
+            if (!response.includes("%INVALID_INPUT%")) {
+                response = response.replace("%INVALID_INPUT%", "")
+                    .replace("%MEDICINE%", "")
+                    .replace("%FOOD%", "");
+                const content = `(This is an automated response it might not be accurate, A Doctor will be with you shortly):` + response;
+
+                const message = {
+                    id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                    sender: "AI",
+                    isAI: true,
+                    content,
+                    log: [],
+                    deleted: false,
+                    date: new Date().toISOString()
+                }
+                chat.messages.push(message);
+                try {
+                    for (const participant of chat.participants) {
+                        global.io.to(participant).emit('new-message', {sessionId, message});
+                    }
+                    global.io.to('vet').emit('new-message', {sessionId, message});
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({error: 'An error occurred while saving the chat.'});
+                }
+            }
+
+        }
+        await chat.save();
+
         res.json(chat);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while saving the chat.' });
+        res.status(500).json({error: 'An error occurred while saving the chat.'});
     }
 });
 
