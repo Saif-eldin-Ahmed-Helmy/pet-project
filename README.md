@@ -1,6 +1,8 @@
 # Whisker 🐾
 
-Whisker is an ecommerce website using the **MERN stack** for pet owners. It helps people buy pet food and accessories easily and have them delivered. It also offers automated vet chat support to answer questions about pets.
+Whisker is a student MERN ecommerce prototype for pet products. The source includes catalogue, account, ordering, chat, and operations screens. It is not ready for real payments or fulfilment: the order path does not use a database transaction, and failure after a stock update can leave inventory inconsistent.
+
+The server entry point is `server/index.js`. It requires MongoDB and credentials for enabled external integrations in environment variables; no live credentials are included. The client currently has dependency conflicts under a clean `npm ci`, so the screenshots below should be treated as a demonstration of the historical UI, not proof of a reproducible current build.
 
 ---
 
