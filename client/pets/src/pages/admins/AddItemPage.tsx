@@ -77,6 +77,7 @@ const AddItemPage: React.FC = () => {
 
         const response = await fetch('http://localhost:3001/api/images/upload', {
             method: 'POST',
+            credentials: 'include',
             body: formData
         });
 

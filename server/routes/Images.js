@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verifySession } = require('../middlewares/auth');
+const { verifySession, requireAdminRole } = require('../middlewares/auth');
 const { attachUserDataToRequest } = require("../middlewares/attachUserData");
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
@@ -13,10 +13,11 @@ cloudinary.config({
 
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-router.post('/upload', upload.single('image'), (req, res) => {
+router.post('/upload', verifySession, attachUserDataToRequest, requireAdminRole, upload.single('image'), (req, res) => {
     try {
+        if (!req.file) return res.status(400).json({error: 'Image required'});
         const image = req.file.buffer;
 
         cloudinary.uploader.upload_stream({resource_type: 'auto'}, (error, result) => {

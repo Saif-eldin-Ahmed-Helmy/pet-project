@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Local configuration and editor files
+.devagent/
+.idea/
+.vscode/
+.env.*
+!.env.example
+*.log

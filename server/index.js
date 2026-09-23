@@ -74,7 +74,6 @@ app.use(cookieParser());
 
 const mongooseConnectionPromise = connect();
 
-console.log(process.env.MONGODB_URI);
 
 app.use(sessionMiddleware);
 

@@ -1,6 +1,16 @@
 # Whisker 🐾
 
-Whisker is an ecommerce website using the **MERN stack** for pet owners. It helps people buy pet food and accessories easily and have them delivered. It also offers automated vet chat support to answer questions about pets.
+Whisker is a student MERN ecommerce prototype for pet products, with catalogue, account, ordering, chat, and operations screens.
+
+## Local setup
+
+Use Node.js 22 and a MongoDB replica set. Copy `server/.env.example` to an ignored `server/.env`, set `MONGODB_URI` and a random session secret, and configure the providers you use. Start the API with `npm ci` and `npm start` in `server/`. In `client/pets/`, run `npm ci`, `npm run build`, and `npm run dev`.
+
+Checkout applies inventory, order, cart, and balance changes in one MongoDB transaction. Orders support cash and account-balance payment.
+
+## Tests
+
+Run `npm test` in `server/`. Set `MONGODB_TEST_URI` to an isolated MongoDB replica set to include checkout rollback, discount, and concurrent-stock tests. Integration tests create and delete uniquely named test databases.
 
 ---
 
